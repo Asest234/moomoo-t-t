@@ -15,7 +15,9 @@ import { handlePacket } from "./packets.js";
 const DEBUG_PACKETS = Boolean(process.env.DEBUG_PACKETS);
 
 export function createConnectionHandler({ build, accounts, moderation, log }) {
-    const limiter = new ConnectionLimit(ANTICHEAT_CONFIG.connection.maxConnectionsPerIp);
+    const connectionCfg = (typeof ANTICHEAT_CONFIG !== 'undefined' && ANTICHEAT_CONFIG && ANTICHEAT_CONFIG.connection) ? ANTICHEAT_CONFIG.connection : { maxConnectionsPerIp: 10 };
+const limiter = new ConnectionLimit(connectionCfg.maxConnectionsPerIp);
+const rules = connectionCfg;
     const rules = ANTICHEAT_CONFIG.connection;
 
     return function onConnection(ws, req, game) {
