@@ -138,7 +138,7 @@ var config = {
     maxNameLength: 15,                      // [lf]
 
     // MAP:
-    mapScale: 14400,                        // [rf]
+    mapScale: 7200,                        // [rf]
     secretPool: {                           // [cf]
         gorgeX0: -1500,
         gorgeHalf: 520,
