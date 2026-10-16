@@ -205,7 +205,7 @@ export class AntiCheat {
         this.kickFn = kick;
         this.closeFn = close;
         this.store = store;
-        this.global = new Bucket(CONFIG.rateLimits && CONFIG.rateLimits.global ? CONFIG.rateLimits.global : { max: 100, time: 1000 });
+        this.global = new Bucket(Array.isArray(CONFIG.rateLimits?.global) ? CONFIG.rateLimits.global : [100, 1000]);
         this.buckets = {};
         this.strikes = 0;
         this.strikeTime = Date.now();
