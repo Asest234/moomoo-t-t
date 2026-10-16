@@ -119,7 +119,7 @@ export class Player {
             this.superUntil = 0;
             this.spawnedAt = Date.now();
             this.lifeStats = {
-                kills: 0, wood: 0, food: 0, stone: 0, gold: 0, damage: 0, animalDamage: 0,
+                kills: 0, wood: 4000, food: 4000, stone: 4000, gold: 400000, damage: 0, animalDamage: 0,
                 healing: 0, animals: 0, bosses: 0, score: this.points, animalKills: {}, bossKills: 0
             };
             this.applyPowers();
