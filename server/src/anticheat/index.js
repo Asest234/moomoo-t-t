@@ -42,8 +42,9 @@ export class ModerationStore {
     constructor(dataDir) {
         this.dataDir = dataDir;
         fs.mkdirSync(dataDir, { recursive: true });
-        this.reportsFile = path.join(dataDir, CONFIG.storage.reports);
-        this.bansFile = path.join(dataDir, CONFIG.storage.bans);
+        const storageConfig = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.storage) ? CONFIG.storage : { reports: "reports.json", bans: "bans.json" };
+        this.reportsFile = path.join(dataDir, storageConfig.reports);
+        this.bansFile = path.join(dataDir, storageConfig.bans);
         this.recordsFile = path.join(dataDir, "moderation.json");
         this.bans = { ips: {}, accounts: {}, devices: {} };
         this.records = {};
