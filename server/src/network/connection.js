@@ -15,11 +15,9 @@ import { handlePacket } from "./packets.js";
 const DEBUG_PACKETS = Boolean(process.env.DEBUG_PACKETS);
 
 export function createConnectionHandler({ build, accounts, moderation, log }) {
-    const connectionCfg = (typeof ANTICHEAT_CONFIG !== 'undefined' && ANTICHEAT_CONFIG && ANTICHEAT_CONFIG.connection) ? ANTICHEAT_CONFIG.connection : { maxConnectionsPerIp: 10 };
-const limiter = new ConnectionLimit(connectionCfg.maxConnectionsPerIp);
-const rules = connectionCfg;
-    const rules = ANTICHEAT_CONFIG.connection;
-
+ const connectionCfg = (typeof ANTICHEAT_CONFIG !== 'undefined' && ANTICHEAT_CONFIG && ANTICHEAT_CONFIG.connection) ? ANTICHEAT_CONFIG.connection : { maxConnectionsPerIp: 10 };
+    const limiter = new ConnectionLimit(connectionCfg.maxConnectionsPerIp);
+    const rules = connectionCfg;
     return function onConnection(ws, req, game) {
         const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress;
         const url = new URL(req.url, "http://localhost");
