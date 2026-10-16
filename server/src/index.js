@@ -32,7 +32,7 @@ const OFFICIAL_DIR = path.join(ROOT, "dist/official");
 const PUBLIC_DIR = path.join(ROOT, "client/public");
 const DATA_DIR = path.join(ROOT, "server/data");
 const PORT = Number(process.env.PORT ?? 8080);
-const HOST = process.env.HOST ?? "127.0.0.1";
+const HOST = process.env.HOST ?? "0.0.0.0";
 
 // Game servers shown in the client's server picker (region "local" = this host).
 const GAME_SERVERS = [
