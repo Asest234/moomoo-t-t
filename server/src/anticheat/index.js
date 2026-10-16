@@ -4,7 +4,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { ANTICHEAT_CONFIG as CONFIG } from "../../shared/config.js";
+import { ANTICHEAT_CONFIG as CONFIG } from "../../../shared/config.js";
 import { CLOSE } from "../protocol/constants.js";
 
 const SHAME_HAT = 45;
