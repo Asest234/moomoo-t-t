@@ -321,7 +321,7 @@ export class AntiCheat {
 
     // Called every server tick.
     tick(now) {
-        if (this.closed || !CONFIG.telemetry.required || !this.joinedAt) return;
+      if (this.closed || !CONFIG.telemetry?.required || !this.joinedAt) return; 
         const t = CONFIG.telemetry;
         if (!this.lastTelemetry) {
             if (now - this.joinedAt > t.firstReportMs + t.graceMs) {
