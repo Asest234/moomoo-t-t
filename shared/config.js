@@ -196,4 +196,7 @@ storage: {
 // Legacy alias used by the old webpack client in client/.
 config.isSandbox = config.inSandbox;
 
+const CONFIG = config;
+
 module.exports = config;
+module.exports.CONFIG = config;
