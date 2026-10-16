@@ -4,8 +4,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import * as CONFIG_MODULE from "../../../shared/config.js";
-const CONFIG = CONFIG_MODULE.default || CONFIG_MODULE;
+import CONFIG from "../../../shared/config.js";
 import { CLOSE } from "../protocol/constants.js";
 
 const SHAME_HAT = 45;
