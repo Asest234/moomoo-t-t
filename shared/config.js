@@ -184,12 +184,14 @@ config.server = {
         { index: 7, desired: 1, positions: [{ xRatio: 0.18, yRatio: 0.22 }] },  // Treasure
         { index: 8, desired: 1, positions: [{ xRatio: 0.78, yRatio: 0.08 }] },  // MOOFIE (snow)
         { index: 11, desired: 1, area: "secret", positions: [{ x: -2500, y: 7200 }] }  // Crab King (the only crab in the game)
-    ],
-    cactusDamage: 20,
+   cactusDamage: 20,
     leaderboardRate: 1000,
-    statsRate: 2000
+    statsRate: 2000,
+    storage: {
+        reports: "reports.json",
+        bans: "bans.json"
+    }
 };
-
 // Legacy alias used by the old webpack client in client/.
 config.isSandbox = config.inSandbox;
 
