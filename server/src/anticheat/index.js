@@ -200,6 +200,10 @@ export class ModerationStore {
 export class AntiCheat {
 
     constructor({ player, log, kick, close, store }) {
+        if (typeof CONFIG !== 'undefined') {
+            CONFIG.rateLimits = CONFIG.rateLimits || { global: [100, 1000] };
+            CONFIG.telemetry = CONFIG.telemetry || { required: false };
+        }
         this.player = player;
         this.log = log;
         this.kickFn = kick;
