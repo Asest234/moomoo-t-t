@@ -316,8 +316,7 @@ export class AI {
                     this.yVel = 0;
                 }
             }
-        };
-
+        
         // CAN SEE:
         this.canSee = function (other) {
             if (!other) return false;
