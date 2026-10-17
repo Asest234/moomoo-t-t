@@ -201,8 +201,10 @@ export class AntiCheat {
 
     constructor({ player, log, kick, close, store }) {
         if (typeof CONFIG !== 'undefined') {
-            CONFIG.rateLimits = CONFIG.rateLimits || { global: [100, 1000] };
+            CONFIG.rateLimits = CONFIG.rateLimits || { global: [100, 1000], packets: {} };
             CONFIG.telemetry = CONFIG.telemetry || { required: false };
+            CONFIG.transport = CONFIG.transport || {};
+            CONFIG.validation = CONFIG.validation || { strikesPerInvalid: 1 };
         }
         this.player = player;
         this.log = log;
