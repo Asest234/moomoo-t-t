@@ -99,12 +99,6 @@ export class AI {
         // UPDATE:
         let timerCount = 0;
             this.update = function (delta) {
-    return;
-    if (this.active) {
-        // ...
-            if (this.active) {
-
-                // SPAWN DELAY:
                 if (this.spawnCounter) {
                     this.spawnCounter -= delta * 1;
                     if (this.spawnCounter <= 0) {
