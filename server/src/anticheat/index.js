@@ -287,7 +287,7 @@ export class AntiCheat {
             this.strike(1, "global packet rate");
             return false;
         }
-        const limit = CONFIG.rateLimits?.packets?.[name] || [100, 1000];
+      const limit = CONFIG.rateLimits?.packets?.[name] || [100, 1000];
         if (!limit) return true;
         const bucket = this.buckets[name] || (this.buckets[name] = new Bucket(limit));
         if (!bucket.take(now)) {
