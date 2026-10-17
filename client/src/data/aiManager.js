@@ -143,14 +143,6 @@ module.exports = function (ais, AI, players, items, objectManager, config, UTILS
         drop: ["food", 1000]
     }];
      this.spawn = function (x, y, dir, index) {
-        return null;
-        var tmpObj;
-        for (var i = 0; i < ais.length; ++i) {
-            if (!ais[i].active) {
-                tmpObj = ais[i];
-                break;
-            }
-        }
         if (!tmpObj) {
             tmpObj = new AI(ais.length, objectManager, players, items, UTILS, config, scoreCallback, server);
             ais.push(tmpObj);
