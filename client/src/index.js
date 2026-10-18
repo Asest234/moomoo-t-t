@@ -1196,7 +1196,7 @@ function generateStoreList() {
                     } else {
                   UTILS.generateElement({
                     class: "joinAlBtn",
-                    style: "margin-top: 5px; cursor: pointer; pointer-events: auto;",
+                    style: style: "margin-top: 5px; cursor: pointer; pointer-events: auto !important; z-index: 99999; position: relative;",
                     text: "Equip",
                     onclick: function () {
                         storeEquip(tmpArray[i].id, index);
