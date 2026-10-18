@@ -3239,3 +3239,19 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
+// Orijinal Moomoo clone Equip buton hatasını çözen özel dinleyici
+document.addEventListener("click", function(e) {
+    var target = e.target;
+    // Tıklanan eleman veya onun parent'ı Equip butonu mu kontrol et
+    if (target && (target.innerText === "Equip" || target.textContent === "Equip" || target.classList.contains("joinAlBtn"))) {
+        // Butonun kapsayıcısından veya context'ten storeEquip'i tetikle
+        if (typeof storeEquip === "function") {
+            // Eğer butonda data-id varsa onu al, yoksa tıkladığında genel tetikle
+            var id = target.getAttribute("data-id");
+            var index = target.getAttribute("data-index") || 0;
+            if (id) {
+                storeEquip(parseInt(id), parseInt(index));
+            }
+        }
+    }
+}, true);
