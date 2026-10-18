@@ -1194,23 +1194,18 @@ function generateStoreList() {
                             parent: tmp
                         });
                     } else {
-                  UTILS.generateElement({
-                    class: "joinAlBtn",
-                    style: style: "margin-top: 5px; cursor: pointer; pointer-events: auto !important; z-index: 99999; position: relative;",
-                    text: "Equip",
-                    onclick: function () {
-                        storeEquip(tmpArray[i].id, index);
-                    },
-                    hookTouch: true,
-                    parent: tmp
-                });
-            })(i);
-        }
-    }
-}
+                UTILS.generateElement({
+                            class: "joinAlBtn",
+                            style: "margin-top: 5px",
+                            text: "Equip",
+                         onclick: function () {
+        storeEquip(tmpArray[i].id, index);
+    },
+                            hookTouch: true,
+                            parent: tmp
+                        });
 
 function storeEquip(id, index) {
-    console.log("Equip basildi:", id, index);
     io.send("c", 0, id, index);
 }
 
