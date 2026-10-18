@@ -1199,8 +1199,8 @@ function generateStoreList() {
                             style: "margin-top: 5px",
                             text: "Equip",
                            onclick: UTILS.checkTrusted(function () {
-    storeEquip(tmpArray[i].id, index);
-}),
+        storeEquip(tmpArray[i].id, index);
+    }),
                             },
                             hookTouch: true,
                             parent: tmp
