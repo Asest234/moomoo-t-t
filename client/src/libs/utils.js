@@ -229,7 +229,11 @@ module.exports.eventIsTrusted = function (ev) {
 }
 module.exports.checkTrusted = function (callback) {
     return function (ev) {
-        callback(ev);
+        if (ev && ev instanceof Event && module.exports.eventIsTrusted(ev)) {
+            callback(ev);
+        } else {
+
+        }
     }
 }
 module.exports.randomString = function (length) {
