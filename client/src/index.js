@@ -1212,11 +1212,11 @@ function generateStoreList() {
 }
 
 function storeEquip(id, index) {
-    io.send("c", 0, id, index);
+    io.send("c", 1, id, index);
 }
 
 function storeBuy(id, index) {
-    io.send("c", 1, id, index);
+    io.send("c", 0, id, index);
 }
 
 function hideAllWindows() {
