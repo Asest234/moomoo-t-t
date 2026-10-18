@@ -1194,13 +1194,16 @@ function generateStoreList() {
                             parent: tmp
                         });
                     } else {
-                    UTILS.generateElement({
-                    class: "joinAlBtn",
-                    style: "margin-top: 5px; pointer-events: auto; cursor: pointer;",
-                    text: "Equip",
-                    onclick: function (e) {
-                        if (e) e.stopPropagation();
-                        storeEquip(tmpArray[i].id, index);
+                     UTILS.generateElement({
+                            class: "joinAlBtn",
+                            style: "margin-top: 5px",
+                            text: "Equip",
+                         onclick: function () {
+        storeEquip(tmpArray[i].id, index);
+    },
+                            hookTouch: true,
+                            parent: tmp
+                        });
                     },
                     hookTouch: true,
                     parent: tmp
