@@ -1210,10 +1210,7 @@ function generateStoreList() {
 }
 
 function storeEquip(id, index) {
-    io.send("c", 0, id, index);
-}
-
-function storeEquip(id, index) {
+    console.log("Equip basildi:", id, index);
     io.send("c", 0, id, index);
 }
 
