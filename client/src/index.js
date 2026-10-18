@@ -1198,10 +1198,9 @@ function generateStoreList() {
                             class: "joinAlBtn",
                             style: "margin-top: 5px",
                             text: "Equip",
-                          onclick: function () {
-    console.log("Equip butonuna basildi!");
-    storeEquip(tmpArray[i].id, index);
-},
+                         onclick: function () {
+        storeEquip(tmpArray[i].id, index);
+    },
                             },
                             hookTouch: true,
                             parent: tmp
