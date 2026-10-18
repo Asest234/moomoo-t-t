@@ -1194,24 +1194,23 @@ function generateStoreList() {
                             parent: tmp
                         });
                     } else {
-                     UTILS.generateElement({
-                            class: "joinAlBtn",
-                            style: "margin-top: 5px",
-                            text: "Equip",
-                         onclick: function () {
-        storeEquip(tmpArray[i].id, index);
-    },
-                            hookTouch: true,
-                            parent: tmp
-                        });
+                  UTILS.generateElement({
+                    class: "joinAlBtn",
+                    style: "margin-top: 5px; cursor: pointer; pointer-events: auto;",
+                    text: "Equip",
+                    onclick: function () {
+                        storeEquip(tmpArray[i].id, index);
                     },
                     hookTouch: true,
                     parent: tmp
                 });
-                })(i);
-            }
+            })(i);
         }
     }
+}
+
+function storeEquip(id, index) {
+    io.send("c", 0, id, index);
 }
 
 function storeEquip(id, index) {
