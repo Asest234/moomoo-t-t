@@ -3239,18 +3239,38 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
-// Orijinal Moomoo clone Equip buton hatasını çözen özel dinleyici
-document.addEventListener("click", function(e) {
-    var target = e.target;
-    // Tıklanan eleman veya onun parent'ı Equip butonu mu kontrol et
-    if (target && (target.innerText === "Equip" || target.textContent === "Equip" || target.classList.contains("joinAlBtn"))) {
-        // Butonun kapsayıcısından veya context'ten storeEquip'i tetikle
-        if (typeof storeEquip === "function") {
-            // Eğer butonda data-id varsa onu al, yoksa tıkladığında genel tetikle
-            var id = target.getAttribute("data-id");
-            var index = target.getAttribute("data-index") || 0;
-            if (id) {
-                storeEquip(parseInt(id), parseInt(index));
+// Saydam katman engelini aşan ve Equip butonunu tetikleyen akıllı yama
+document.addEventListener("mousedown", function(e) {
+    // Fare imlecinin tam altında kalan gerçek elemanı yakala
+    var actualTarget = document.elementFromPoint(e.clientX, e.clientY) || e.target;
+    
+    // Tıklanan yer veya kapsayıcısı "Equip" yazıyor mu ya da buton mu?
+    var btn = actualTarget.closest(".joinAlBtn") || actualTarget.closest(".storeItem") || actualTarget;
+    var btnText = (actualTarget.innerText || actualTarget.textContent || "").trim();
+
+    if (btnText === "Equip" || actualTarget.classList.contains("joinAlBtn")) {
+        // Butonun içinde bulunduğu dükkan kartını bul
+        var itemContainer = actualTarget.closest("[id*='storeDisplay']") || actualTarget.closest(".storeItem") || actualTarget.parentElement;
+        
+        if (itemContainer) {
+            // ID'yi resim kaynağından veya element ID'sinden çek
+            var hatId = "";
+            var img = itemContainer.querySelector("img");
+            if (img && img.src) {
+                var match = img.src.match(/(?:hats|store|accessories)_(\d+)/) || img.src.match(/(\d+)\.png/);
+                if (match) hatId = match[1];
+            }
+            if (!hatId && itemContainer.id) {
+                hatId = itemContainer.id.replace(/[^0-9]/g, "");
+            }
+
+            // ID bulunduysa storeEquip'i doğrudan çağır
+            if (hatId) {
+                if (typeof window.storeEquip === "function") {
+                    window.storeEquip(parseInt(hatId), 0);
+                } else if (typeof storeEquip === "function") {
+                    storeEquip(parseInt(hatId), 0);
+                }
             }
         }
     }
