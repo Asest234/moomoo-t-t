@@ -198,6 +198,32 @@ module.exports.generateElement = function (config) {
         }
         element[key] = config[key];
     }
+
+    // ==========================================
+    // DÜKKAN EQUIP KÖPRÜSÜ
+    // ==========================================
+    if (element.className && (element.className.includes("joinAlBtn") || element.className.includes("storeItem"))) {
+        element.addEventListener("click", function(e) {
+            e.stopPropagation();
+            var card = element.closest(".storeItem") || element;
+            var hatId = "";
+            var img = card.querySelector("img");
+            if (img && img.src) {
+                var match = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
+                if (match) hatId = match[1];
+            }
+            if (!hatId && card.id) {
+                hatId = card.id.replace(/[^0-9]/g, "");
+            }
+
+            if (hatId && window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify(["c", [1, parseInt(hatId), 0]]));
+                console.log("[UI Store] Doğrudan sunucuya equip gönderildi -> ID:", hatId);
+            }
+        });
+    }
+    // ==========================================
+
     if (element.onclick)
         element.onclick = module.exports.checkTrusted(element.onclick);
     if (element.onmouseover)
@@ -219,6 +245,7 @@ module.exports.generateElement = function (config) {
         }
     }
     return element;
+};
 }
 module.exports.eventIsTrusted = function (ev) {
     if (ev && typeof ev.isTrusted == "boolean") {
