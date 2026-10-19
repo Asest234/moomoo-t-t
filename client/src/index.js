@@ -3239,24 +3239,3 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
-// Ham Tıklama Teşhis Kutusu
-var debugBox = document.getElementById("equipDebugBox");
-if (!debugBox) {
-    debugBox = document.createElement("div");
-    debugBox.id = "equipDebugBox";
-    debugBox.style.cssText = "position:fixed;top:10px;left:10px;z-index:999999;background:rgba(0,0,0,0.9);color:#00ff00;padding:12px;font-family:monospace;font-size:11px;border:1px solid #00ff00;max-width:350px;word-break:break-all;pointer-events:none;";
-    document.body.appendChild(debugBox);
-}
-
-document.addEventListener("mousedown", function(e) {
-    var t = e.target;
-    if (!t) return;
-    
-    // Tıklanan elemanın tüm detaylarını ekrana yazdıralım
-    var details = "<b>Tag:</b> " + t.tagName + 
-                  "<br><b>Class:</b> " + (t.className || "yok") + 
-                  "<br><b>ID:</b> " + (t.id || "yok") + 
-                  "<br><b>Text:</b> " + (t.innerText || t.textContent || "").trim();
-                  
-    debugBox.innerHTML = details;
-}, true);
