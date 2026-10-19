@@ -3239,48 +3239,63 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
-                        // ==========================================
-// KENDI ÖZEL VE GARANTILI EQUIP SISTEMIMIZ
+// ==========================================
+// KESİN ÇÖZÜM: GELİŞMİŞ EQUIP KÖPRÜSÜ
 // ==========================================
 (function() {
     window.directEquip = function(hatId, isTail) {
-        var actionType = 1; // 1 = Equip
-        var tailFlag = isTail ? 1 : 0;
-        
+        console.log("[Custom Equip] Sunucuya gönderiliyor -> ID:", hatId);
         if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-            window.ws.send(JSON.stringify(["c", [actionType, parseInt(hatId), tailFlag]]));
-            console.log("[Custom Equip] Sunucuya paket gönderildi -> ID:", hatId);
-        } else if (typeof send === "function") {
-            send("c", actionType, parseInt(hatId), tailFlag);
-            console.log("[Custom Equip] send() ile paket gönderildi -> ID:", hatId);
+            // Sunucunun beklediği [action, id, isTail] formatı
+            window.ws.send(JSON.stringify(["c", [1, parseInt(hatId), isTail ? 1 : 0]]));
+            console.log("[Custom Equip] Paket başarıyla fırlatıldı!");
+        } else {
+            console.warn("[Custom Equip] WebSocket bağlantısı aktif değil!");
         }
     };
 
-    document.addEventListener("mousedown", function(e) {
+    document.addEventListener("click", function(e) {
         var target = e.target;
         if (!target) return;
 
-        var btn = target.closest(".joinAlBtn") || target.closest(".storeItem") || target;
-        var btnText = (target.innerText || target.textContent || "").trim();
-
-        if (btnText === "Equip" || target.classList.contains("joinAlBtn")) {
-            e.stopPropagation();
-
-            var card = target.closest(".storeItem") || target.closest("[id*='storeDisplay']") || target.parentElement;
+        // Tıklanan eleman 'Equip' yazısını içeriyorsa veya dükkan butonuysa
+        var text = (target.innerText || target.textContent || "").trim();
+        if (text === "Equip" || target.classList.contains("joinAlBtn") || target.closest(".joinAlBtn")) {
+            
+            // Dükkan öğesi kutusunu bulalım
+            var card = target.closest(".storeItem") || target.closest("[id*='store']") || target.parentElement;
             if (!card) return;
 
-            var hatId = "";
-            var img = card.querySelector("img");
-            if (img && img.src) {
-                var match = img.src.match(/(?:hats|store|accessories)_(\d+)/) || img.src.match(/(\d+)\.png/);
-                if (match) hatId = match[1];
-            }
-            if (!hatId && card.id) {
-                hatId = card.id.replace(/[^0-9]/g, "");
+            var hatId = null;
+
+            // 1. Yöntem: Kartın veya içindeki elementlerin ID'sinden rakamı çek
+            var matchId = card.id ? card.id.replace(/[^0-9]/g, "") : "";
+            if (matchId) {
+                hatId = matchId;
             }
 
-            if (hatId) {
+            // 2. Yöntem: Görselin (img) dosya adından ID yakala (örn: hats_1.png -> 1)
+            if (!hatId) {
+                var img = card.querySelector("img");
+                if (img && img.src) {
+                    var imgMatch = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
+                    if (imgMatch) hatId = imgMatch[1];
+                }
+            }
+
+            // 3. Yöntem: Hiçbiri olmazsa butonun sırasından (index) tahmin et
+            if (!hatId) {
+                var allStoreBtns = Array.from(document.querySelectorAll(".joinAlBtn"));
+                var index = allStoreBtns.indexOf(target.closest(".joinAlBtn") || target);
+                if (index !== -1) hatId = index; // Varsayılan indeks
+            }
+
+            console.log("[Custom Equip] Yakalanan Şapka ID:", hatId);
+
+            if (hatId !== null && hatId !== "") {
                 window.directEquip(hatId, false);
+            } else {
+                console.error("[Custom Equip] Şapka ID'si çözülemedi!");
             }
         }
     }, true);
