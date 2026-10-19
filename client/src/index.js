@@ -3240,63 +3240,52 @@ window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
 // ==========================================
-// KESİN ÇÖZÜM: GELİŞMİŞ EQUIP KÖPRÜSÜ
+// KESİN ENGELLEME VE DOĞRUDAN TETİKLEME YÖNTEMİ
 // ==========================================
 (function() {
-    window.directEquip = function(hatId, isTail) {
-        console.log("[Custom Equip] Sunucuya gönderiliyor -> ID:", hatId);
-        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-            // Sunucunun beklediği [action, id, isTail] formatı
-            window.ws.send(JSON.stringify(["c", [1, parseInt(hatId), isTail ? 1 : 0]]));
-            console.log("[Custom Equip] Paket başarıyla fırlatıldı!");
-        } else {
-            console.warn("[Custom Equip] WebSocket bağlantısı aktif değil!");
-        }
-    };
-
     document.addEventListener("click", function(e) {
         var target = e.target;
         if (!target) return;
 
-        // Tıklanan eleman 'Equip' yazısını içeriyorsa veya dükkan butonuysa
+        // Tıklanan yer bir Equip butonu mu kontrol edelim
         var text = (target.innerText || target.textContent || "").trim();
-        if (text === "Equip" || target.classList.contains("joinAlBtn") || target.closest(".joinAlBtn")) {
-            
-            // Dükkan öğesi kutusunu bulalım
+        var isEquipBtn = text === "Equip" || target.classList.contains("joinAlBtn") || target.closest(".joinAlBtn");
+
+        if (isEquipBtn) {
+            // 1. ÖNEMLİ: Orijinal bozuk kodların araya girmesini ve hataya sebep olmasını kesinlikle engelle!
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            // 2. Dükkan kartını bul
             var card = target.closest(".storeItem") || target.closest("[id*='store']") || target.parentElement;
-            if (!card) return;
-
-            var hatId = null;
-
-            // 1. Yöntem: Kartın veya içindeki elementlerin ID'sinden rakamı çek
-            var matchId = card.id ? card.id.replace(/[^0-9]/g, "") : "";
-            if (matchId) {
-                hatId = matchId;
+            if (!card) {
+                console.warn("[Custom Equip] Buton kartı bulunamadı!");
+                return;
             }
 
-            // 2. Yöntem: Görselin (img) dosya adından ID yakala (örn: hats_1.png -> 1)
-            if (!hatId) {
-                var img = card.querySelector("img");
-                if (img && img.src) {
-                    var imgMatch = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
-                    if (imgMatch) hatId = imgMatch[1];
-                }
+            // 3. Şapka ID'sini yakala
+            var hatId = "";
+            var img = card.querySelector("img");
+            if (img && img.src) {
+                var match = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
+                if (match) hatId = match[1];
             }
-
-            // 3. Yöntem: Hiçbiri olmazsa butonun sırasından (index) tahmin et
-            if (!hatId) {
-                var allStoreBtns = Array.from(document.querySelectorAll(".joinAlBtn"));
-                var index = allStoreBtns.indexOf(target.closest(".joinAlBtn") || target);
-                if (index !== -1) hatId = index; // Varsayılan indeks
+            if (!hatId && card.id) {
+                hatId = card.id.replace(/[^0-9]/g, "");
             }
 
             console.log("[Custom Equip] Yakalanan Şapka ID:", hatId);
 
-            if (hatId !== null && hatId !== "") {
-                window.directEquip(hatId, false);
+            // 4. Doğrudan sunucuya paket fırlat
+            if (hatId && window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify(["c", [1, parseInt(hatId), 0]]));
+                console.log("[Custom Equip] Sunucuya kuşanma paketi gönderildi! ID:", hatId);
             } else {
-                console.error("[Custom Equip] Şapka ID'si çözülemedi!");
+                console.error("[Custom Equip] WebSocket açık değil veya ID bulunamadı!");
             }
+            
+            return false;
         }
-    }, true);
+    }, true); // true parametresi, olayı en üstten yakalayıp eski kodlardan ÖNCE çalışmasını sağlar.
 })();
