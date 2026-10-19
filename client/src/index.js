@@ -3239,3 +3239,49 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
+                        // ==========================================
+// KENDI ÖZEL VE GARANTILI EQUIP SISTEMIMIZ
+// ==========================================
+(function() {
+    window.directEquip = function(hatId, isTail) {
+        var actionType = 1; // 1 = Equip
+        var tailFlag = isTail ? 1 : 0;
+        
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify(["c", [actionType, parseInt(hatId), tailFlag]]));
+            console.log("[Custom Equip] Sunucuya paket gönderildi -> ID:", hatId);
+        } else if (typeof send === "function") {
+            send("c", actionType, parseInt(hatId), tailFlag);
+            console.log("[Custom Equip] send() ile paket gönderildi -> ID:", hatId);
+        }
+    };
+
+    document.addEventListener("mousedown", function(e) {
+        var target = e.target;
+        if (!target) return;
+
+        var btn = target.closest(".joinAlBtn") || target.closest(".storeItem") || target;
+        var btnText = (target.innerText || target.textContent || "").trim();
+
+        if (btnText === "Equip" || target.classList.contains("joinAlBtn")) {
+            e.stopPropagation();
+
+            var card = target.closest(".storeItem") || target.closest("[id*='storeDisplay']") || target.parentElement;
+            if (!card) return;
+
+            var hatId = "";
+            var img = card.querySelector("img");
+            if (img && img.src) {
+                var match = img.src.match(/(?:hats|store|accessories)_(\d+)/) || img.src.match(/(\d+)\.png/);
+                if (match) hatId = match[1];
+            }
+            if (!hatId && card.id) {
+                hatId = card.id.replace(/[^0-9]/g, "");
+            }
+
+            if (hatId) {
+                window.directEquip(hatId, false);
+            }
+        }
+    }, true);
+})();
