@@ -152,42 +152,44 @@ export function handlePacket(ctx, player, name, args) {
             return;
         }
 
-        // STORE: [0 buy | 1 equip, id, isAccessory]
+        // STORE: [action (0: buy, 1: equip), id, isTail]
         case "c": {
             if (!player.alive) return;
             const [action, id, isTail] = args;
             if (!isInt(id) || (action !== 0 && action !== 1)) return invalid("store");
+            
             const list = isTail ? accessories : hats;
             const owned = isTail ? player.tails : player.skins;
             const entry = list.find(x => x.id === id);
+            
+            if (!entry) return;
+
+            // SATIN ALMA (action === 0)
             if (action === 0) {
-                if (!entry || owned[id] || entry.dontSell || player.points < entry.price) return;
+                if (owned[id] || entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
                 owned[id] = 1;
                 player.send("5", 0, id, isTail ? 1 : 0);
                 return;
             }
-            if (id === 0) {
+
+            // KUŞANMA / GIYME (action === 1 - EQUIP)
+            if (action === 1) {
+                // Oyuncu bu eşyaya sahip mi kontrol et (varsayılan 0. eşyalar ücretsizdir)
+                if (!owned[id] && id !== 0) return;
+
                 if (isTail) {
-                    player.tail = null;
-                    player.tailIndex = 0;
+                    player.tail = (player.tail === id) ? 0 : id;
+                    player.tailIndex = player.tail;
                 } else {
-                    player.skin = null;
-                    player.skinIndex = 0;
+                    player.skin = (player.skin === id) ? 0 : id;
+                    player.skinIndex = player.skin;
                 }
-                player.send("5", 1, 0, isTail ? 1 : 0);
-                return;
+                
+                // Oyuncunun yeni görünümünü (şapka/aksesuar) oyun alanındaki herkese duyur
+                player.send("5", 1, id, isTail ? 1 : 0);
             }
-            if (!entry || !owned[id]) return;
-            if (isTail) {
-                player.tail = entry;
-                player.tailIndex = id;
-            } else {
-                player.skin = entry;
-                player.skinIndex = id;
-            }
-            player.send("5", 1, id, isTail ? 1 : 0);
-            return;
+            break;
         }
 
         // CHAT
