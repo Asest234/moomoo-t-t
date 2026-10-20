@@ -3239,53 +3239,48 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
-// ==========================================
-// KESİN ENGELLEME VE DOĞRUDAN TETİKLEME YÖNTEMİ
-// ==========================================
-(function() {
-    document.addEventListener("click", function(e) {
-        var target = e.target;
-        if (!target) return;
 
-        // Tıklanan yer bir Equip butonu mu kontrol edelim
-        var text = (target.innerText || target.textContent || "").trim();
-        var isEquipBtn = text === "Equip" || target.classList.contains("joinAlBtn") || target.closest(".joinAlBtn");
+// Global Mağaza Tıklama Yakalayıcısı (Event Delegation)
+document.addEventListener("click", function (e) {
+    // Tıklanan element veya onun en yakın dükkan kartı / butonu
+    var target = e.target;
+    var storeItem = target.closest(".storeItem") || target.closest("[id*='storeDisplay']");
+    var buyBtn = target.closest(".joinAlBtn") || target.closest(".storeTab");
 
-        if (isEquipBtn) {
-            // 1. ÖNEMLİ: Orijinal bozuk kodların araya girmesini ve hataya sebep olmasını kesinlikle engelle!
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-
-            // 2. Dükkan kartını bul
-            var card = target.closest(".storeItem") || target.closest("[id*='store']") || target.parentElement;
-            if (!card) {
-                console.warn("[Custom Equip] Buton kartı bulunamadı!");
-                return;
-            }
-
-            // 3. Şapka ID'sini yakala
-            var hatId = "";
-            var img = card.querySelector("img");
-            if (img && img.src) {
-                var match = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
-                if (match) hatId = match[1];
-            }
-            if (!hatId && card.id) {
-                hatId = card.id.replace(/[^0-9]/g, "");
-            }
-
-            console.log("[Custom Equip] Yakalanan Şapka ID:", hatId);
-
-            // 4. Doğrudan sunucuya paket fırlat
-            if (hatId && window.ws && window.ws.readyState === WebSocket.OPEN) {
-                window.ws.send(JSON.stringify(["c", [1, parseInt(hatId), 0]]));
-                console.log("[Custom Equip] Sunucuya kuşanma paketi gönderildi! ID:", hatId);
-            } else {
-                console.error("[Custom Equip] WebSocket açık değil veya ID bulunamadı!");
-            }
-            
-            return false;
+    if (storeItem || buyBtn) {
+        var el = storeItem || buyBtn;
+        
+        // ID veya Resim yolundan Hat ID'sini bul
+        var hatId = "";
+        
+        // 1. Resim src'sinden ID çekme
+        var img = el.querySelector("img");
+        if (img && img.src) {
+            var match = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
+            if (match) hatId = match[1];
         }
-    }, true); // true parametresi, olayı en üstten yakalayıp eski kodlardan ÖNCE çalışmasını sağlar.
-})();
+        
+        // 2. Element ID'sinden sayı çekme (Örn: storeDisplay5 -> 5)
+        if (!hatId && el.id) {
+            hatId = el.id.replace(/[^0-9]/g, "");
+        }
+
+        // 3. Oyun içi index/data attribute kontrolü
+        if (!hatId && el.getAttribute("data-id")) {
+            hatId = el.getAttribute("data-id");
+        }
+
+        if (hatId !== "" && hatId !== null) {
+            var parsedId = parseInt(hatId);
+            
+            // WebSocket Paketi Gönder
+            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                // Şapka kuşanma paketi: ["c", [1, hatId, 0]]
+                window.ws.send(JSON.stringify(["c", [1, parsedId, 0]]));
+                console.log("%c[STORE SUCCESS] Kuşanma paketi sunucuya fırlatıldı! ID:", "color: #00ff00; font-weight: bold;", parsedId);
+            } else if (typeof sendStorePacket === "function") {
+                sendStorePacket(1, parsedId, 0);
+            }
+        }
+    }
+}, true); // "true" kullanarak Event Capturing aşamasında en tepede yakalıyoruz!
