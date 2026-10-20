@@ -1140,13 +1140,12 @@ function updateStoreTabs() {
                             style: "margin-top: 5px;",
                             text: "Equip",
                             onclick: function () {
-                                storeEquip(tmpArray[i].id, index);
-                                console.log("[EQUIP] Kuşanıldı -> ID:", tmpArray[i].id);
-                            },
-                            hookTouch: true,
-                            parent: tmp
-                        });
-                    }
+                window.setEquipItem(tmpArray[i].id, index);
+                console.log("[EQUIP] Kuşanıldı -> ID:", tmpArray[i].id);
+            },
+            hookTouch: true,
+            parent: tmp
+        });
 
 function storeEquip(id, index) {
     io.send("c", 0, id, index);
