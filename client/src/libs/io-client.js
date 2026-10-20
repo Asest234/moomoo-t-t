@@ -190,6 +190,17 @@ IoClient.prototype._detachSocket = function () {
     this.socket.onmessage = null;
     this.socket = null;
 };
+module.exports = new IoClient();
+module.exports.IoClient = IoClient;
 
+// ==========================================
+// Dükkan Eşya Kuşanma Köprüsü (Global Erişim Sağlama)
+// ==========================================
+if (typeof window !== "undefined") {
+    window.setEquipItem = function(id, index) {
+        module.exports.send("c", 0, id, index);
+        console.log("[IO-CLIENT FIX] Kuşanma paketi msgpack ile fırlatıldı -> ID:", id, "Index:", index);
+    };
+}
 module.exports = new IoClient();
 module.exports.IoClient = IoClient;
