@@ -1,18 +1,18 @@
-// Global Dükkan Köprüsü
-if (typeof window !== "undefined") {
-    window.setEquipItem = function(id, index) {
-        // Doğrudan io modülü üzerinden gönderim yapalım
-        // Eğer io nesnesi buradaysa:
-        if (typeof io !== 'undefined' && io.send) {
-            io.send("c", 0, id, index);
-        } else {
-            console.error("[IO ERROR] io nesnesi bulunamadı!");
-        }
-        console.log("[EQUIP FIX] Paket fırlatıldı -> ID:", id, "Index:", index);
-    };
-}
-'use strict';
-
+// Global Dükkan Köprüsü (Kesin Global Tanımlama)
+(function() {
+    if (typeof window !== "undefined") {
+        window.setEquipItem = function(id, index) {
+            if (typeof io !== 'undefined' && io.send) {
+                io.send("c", 0, id, index);
+            } else if (window.io && window.io.send) {
+                window.io.send("c", 0, id, index);
+            } else {
+                console.error("[IO ERROR] io nesnesi bulunamadı!");
+            }
+            console.log("[EQUIP FIX] Paket fırlatıldı -> ID:", id, "Index:", index);
+        };
+    }
+})();
 // Ensure a minimal `process` shim exists before loading modules that depend on it.
 (function ensureProcessShim() {
     var globalObject = typeof globalThis !== "undefined" ? globalThis : window;
