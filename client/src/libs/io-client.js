@@ -1,16 +1,4 @@
-// Global Dükkan Köprüsü
-if (typeof window !== "undefined") {
-    window.setEquipItem = function(id, index) {
-        // Doğrudan io modülü üzerinden gönderim yapalım
-        // Eğer io nesnesi buradaysa:
-        if (typeof io !== 'undefined' && io.send) {
-            io.send("c", 0, id, index);
-        } else {
-            console.error("[IO ERROR] io nesnesi bulunamadı!");
-        }
-        console.log("[EQUIP FIX] Paket fırlatıldı -> ID:", id, "Index:", index);
-    };
-}
+
 var msgpack = require("msgpack-lite");
 
 var NO_OP = function () { };
