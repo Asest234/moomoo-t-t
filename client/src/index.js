@@ -1134,76 +1134,19 @@ function updateStoreTabs() {
     }
 }
 
-function generateStoreList() {
-    if (player) {
-        UTILS.removeAllChildren(storeHolder);
-        var index = currentStoreIndex;
-        var tmpArray = index ? accessories : hats;
-        for (var i = 0; i < tmpArray.length; ++i) {
-            if (!tmpArray[i].dontSell) {
-                (function (i) {
-                    var tmp = UTILS.generateElement({
-                        id: "storeDisplay" + i,
-                        class: "storeItem",
-                        onmouseout: function () {
-                            showItemInfo();
-                        },
-                        onmouseover: function () {
-                            showItemInfo(tmpArray[i], false, true);
-                        },
-                        parent: storeHolder
-                    });
-                    UTILS.hookTouchEvents(tmp, true);
-                    UTILS.generateElement({
-                        tag: "img",
-                        class: "hatPreview",
-                        src: "../img/" + (index ? "accessories/access_" : "hats/hat_") + tmpArray[i].id + (tmpArray[i].topSprite ? "_p" : "") + ".png",
-                        parent: tmp
-                    });
-                    UTILS.generateElement({
-                        tag: "span",
-                        text: tmpArray[i].name,
-                        parent: tmp
-                    });
-                    if (index ? (!player.tails[tmpArray[i].id]) : (!player.skins[tmpArray[i].id])) {
+} else {
                         UTILS.generateElement({
                             class: "joinAlBtn",
-                            style: "margin-top: 5px",
-                            text: "Buy",
-                            onclick: function () {
-                                storeBuy(tmpArray[i].id, index);
-                            },
-                            hookTouch: true,
-                            parent: tmp
-                        });
-                        UTILS.generateElement({
-                            tag: "span",
-                            class: "itemPrice",
-                            text: tmpArray[i].price,
-                            parent: tmp
-                        })
-                    } else if ((index ? player.tailIndex : player.skinIndex) == tmpArray[i].id) {
-                        UTILS.generateElement({
-                            class: "joinAlBtn",
-                            style: "margin-top: 5px",
-                            text: "Unequip",
-                            onclick: function () {
-                                storeEquip(0, index);
-                            },
-                            hookTouch: true,
-                            parent: tmp
-                        });
-                    } else {
-                UTILS.generateElement({
-                            class: "joinAlBtn",
-                            style: "margin-top: 5px",
+                            style: "margin-top: 5px;",
                             text: "Equip",
-                         onclick: function () {
-        storeEquip(tmpArray[i].id, index);
-    },
+                            onclick: function () {
+                                storeEquip(tmpArray[i].id, index);
+                                console.log("[EQUIP] Kuşanıldı -> ID:", tmpArray[i].id);
+                            },
                             hookTouch: true,
                             parent: tmp
                         });
+                    }
 
 function storeEquip(id, index) {
     io.send("c", 0, id, index);
