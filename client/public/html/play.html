@@ -566,15 +566,22 @@
 
 </html>
 <script>
-    // Arayüzün aradığı setEquipItem fonksiyonunu doğrudan kaynak kodda bağlıyoruz
-    window.setEquipItem = function(id, index) {
-        if (typeof window.storeEquip === "function") {
-            return window.storeEquip(id, index);
+    <script>
+    (function() {
+        function initEquipBridge() {
+            window.setEquipItem = function(id, index) {
+                if (typeof window.storeEquip === "function") {
+                    return window.storeEquip(id, index);
+                }
+                // storeEquip bulunamazsa doğrudan sunucuya paket gönder
+                if (typeof window.io !== 'undefined' && window.io.send) {
+                    window.io.send("c", [0, id, index]);
+                } else if (typeof io !== 'undefined' && io.send) {
+                    io.send("c", [0, id, index]);
+                }
+            };
         }
-        if (typeof io !== 'undefined' && io.send) {
-            io.send("c", [0, id, index]);
-        } else if (window.io && window.io.send) {
-            window.io.send("c", [0, id, index]);
-        }
-    };
+        initEquipBridge();
+        window.addEventListener('DOMContentLoaded', initEquipBridge);
+    })();
 </script>
