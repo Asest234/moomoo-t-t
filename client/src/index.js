@@ -1,11 +1,11 @@
-// Global Dükkan Köprüsü (Kesin Global Tanımlama)
 (function() {
     if (typeof window !== "undefined") {
         window.setEquipItem = function(id, index) {
+            // Parametreleri sunucunun beklediği dizi formatına [0, id, index] çevirdik
             if (typeof io !== 'undefined' && io.send) {
-                io.send("c", 0, id, index);
+                io.send("c", [0, id, index]);
             } else if (window.io && window.io.send) {
-                window.io.send("c", 0, id, index);
+                window.io.send("c", [0, id, index]);
             } else {
                 console.error("[IO ERROR] io nesnesi bulunamadı!");
             }
