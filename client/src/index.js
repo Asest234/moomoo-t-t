@@ -3194,48 +3194,17 @@ window.changeStoreIndex = changeStoreIndex;
 window.switchServerMode = switchServerMode;
 window.incrementPacketCounter = incrementPacketCounter;
 window.config = config;
-
-// Global Mağaza Tıklama Yakalayıcısı (Event Delegation)
-document.addEventListener("click", function (e) {
-    // Tıklanan element veya onun en yakın dükkan kartı / butonu
-    var target = e.target;
-    var storeItem = target.closest(".storeItem") || target.closest("[id*='storeDisplay']");
-    var buyBtn = target.closest(".joinAlBtn") || target.closest(".storeTab");
-
-    if (storeItem || buyBtn) {
-        var el = storeItem || buyBtn;
-        
-        // ID veya Resim yolundan Hat ID'sini bul
-        var hatId = "";
-        
-        // 1. Resim src'sinden ID çekme
-        var img = el.querySelector("img");
-        if (img && img.src) {
-            var match = img.src.match(/(\d+)\.png/) || img.src.match(/_(\d+)/);
-            if (match) hatId = match[1];
+// client/src/index.js dosyasının EN ALTINA ekle:
+if (typeof window !== "undefined") {
+    window.setEquipItem = function(id, index) {
+        if (typeof window.storeEquip === "function") {
+            return window.storeEquip(id, index);
         }
-        
-        // 2. Element ID'sinden sayı çekme (Örn: storeDisplay5 -> 5)
-        if (!hatId && el.id) {
-            hatId = el.id.replace(/[^0-9]/g, "");
+        // Eğer storeEquip fonksiyonu o an yoksa doğrudan paket gönder
+        if (typeof io !== 'undefined' && io.send) {
+            io.send("c", [0, id, index]);
+        } else if (window.io && window.io.send) {
+            window.io.send("c", [0, id, index]);
         }
-
-        // 3. Oyun içi index/data attribute kontrolü
-        if (!hatId && el.getAttribute("data-id")) {
-            hatId = el.getAttribute("data-id");
-        }
-
-        if (hatId !== "" && hatId !== null) {
-            var parsedId = parseInt(hatId);
-            
-            // WebSocket Paketi Gönder
-            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                // Şapka kuşanma paketi: ["c", [1, hatId, 0]]
-                window.ws.send(JSON.stringify(["c", [1, parsedId, 0]]));
-                console.log("%c[STORE SUCCESS] Kuşanma paketi sunucuya fırlatıldı! ID:", "color: #00ff00; font-weight: bold;", parsedId);
-            } else if (typeof sendStorePacket === "function") {
-                sendStorePacket(1, parsedId, 0);
-            }
-        }
-    }
-}, true); // "true" kullanarak Event Capturing aşamasında en tepede yakalıyoruz!
+    };
+}
