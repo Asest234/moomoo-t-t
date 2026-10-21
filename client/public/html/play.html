@@ -565,3 +565,16 @@
 </body>
 
 </html>
+<script>
+    // Arayüzün aradığı setEquipItem fonksiyonunu doğrudan kaynak kodda bağlıyoruz
+    window.setEquipItem = function(id, index) {
+        if (typeof window.storeEquip === "function") {
+            return window.storeEquip(id, index);
+        }
+        if (typeof io !== 'undefined' && io.send) {
+            io.send("c", [0, id, index]);
+        } else if (window.io && window.io.send) {
+            window.io.send("c", [0, id, index]);
+        }
+    };
+</script>
