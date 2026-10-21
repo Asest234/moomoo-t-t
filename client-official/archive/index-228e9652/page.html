@@ -1,3 +1,15 @@
+<script>
+    window.setEquipItem = function(id, index) {
+        if (typeof window.storeEquip === "function") {
+            return window.storeEquip(id, index);
+        }
+        if (typeof io !== 'undefined' && io.send) {
+            io.send("c", [0, id, index]);
+        } else if (window.io && window.io.send) {
+            window.io.send("c", [0, id, index]);
+        }
+    };
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0024)https://moomoo.io/#na:TU -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
