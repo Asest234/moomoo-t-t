@@ -224,3 +224,17 @@ const shutdown = () => {
 };
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+// client/src/index.js dosyasının EN ALTINA ekle:
+if (typeof window !== "undefined") {
+    window.setEquipItem = function(id, index) {
+        if (typeof window.storeEquip === "function") {
+            return window.storeEquip(id, index);
+        }
+        // Eğer storeEquip fonksiyonu o an yoksa doğrudan paket gönder
+        if (typeof io !== 'undefined' && io.send) {
+            io.send("c", [0, id, index]);
+        } else if (window.io && window.io.send) {
+            window.io.send("c", [0, id, index]);
+        }
+    };
+}
