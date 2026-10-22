@@ -224,3 +224,49 @@ const shutdown = () => {
 };
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+// Dükkan eşya/şapka giyme fonksiyonunu doğrudan global window'a bağlıyoruz
+window.setEquipItem = function(id, index) {
+    console.log("🔍 TIKLAMA YAKALANDI! ID:", id, "Index:", index);
+    
+    // 1. Oyunun içindeki orijinal Ta fonksiyonunu çalıştırmayı dene
+    try {
+        if (typeof Ta === "function") {
+            console.log("✅ Ta fonksiyonu çalıştırılıyor...");
+            return Ta(id, index);
+        }
+    } catch (err) {
+        console.error("❌ Ta hatası:", err);
+    }
+
+    // 2. Doğrudan WebSocket paketini fırlat
+    try {
+        if (window.io && typeof window.io.send === "function") {
+            window.io.send("c", [0, id, index]);
+            console.log("📦 Paket window.io.send ile gönderildi!");
+            return;
+        }
+        if (typeof socket !== 'undefined' && socket.send) {
+            socket.send("c", [0, id, index]);
+            console.log("📦 Paket socket.send ile gönderildi!");
+            return;
+        }
+        
+        // Alternatif socket taraması
+        for (let key in window) {
+            if (window[key] && typeof window[key].send === 'function' && window[key] !== window) {
+                window[key].send("c", [0, id, index]);
+                console.log("📦 Bulunan socket ile paket gönderildi:", key);
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("❌ Socket paket hatası:", err);
+    }
+};
+
+window.storeClick = function(id, index) {
+    console.log("🛒 storeClick yakalandı -> ID:", id, "Index:", index);
+    if (typeof window.setEquipItem === "function") {
+        window.setEquipItem(id, index);
+    }
+};
