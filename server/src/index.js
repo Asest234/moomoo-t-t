@@ -224,32 +224,3 @@ const shutdown = () => {
 };
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
-// Tarayıcı tarafında çalıştığından emin olarak global köprüyü ekliyoruz
-if (typeof window !== 'undefined') {
-    window.setEquipItem = function(id, index) {
-        console.log("🔍 TIKLAMA YAKALANDI! ID:", id, "Index:", index);
-        
-        try {
-            if (typeof Ta === "function") {
-                return Ta(id, index);
-            }
-        } catch (err) {}
-
-        try {
-            if (window.io && typeof window.io.send === "function") {
-                window.io.send("c", [0, id, index]);
-                return;
-            }
-            if (typeof socket !== 'undefined' && socket.send) {
-                socket.send("c", [0, id, index]);
-                return;
-            }
-        } catch (err) {}
-    };
-
-    window.storeClick = function(id, index) {
-        if (typeof window.setEquipItem === "function") {
-            window.setEquipItem(id, index);
-        }
-    };
-}
