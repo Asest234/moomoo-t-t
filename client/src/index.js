@@ -1,18 +1,32 @@
-(function() {
-    if (typeof window !== "undefined") {
-        window.setEquipItem = function(id, index) {
-            // Parametreleri sunucunun beklediği dizi formatına [0, id, index] çevirdik
-            if (typeof io !== 'undefined' && io.send) {
-                io.send("c", [0, id, index]);
-            } else if (window.io && window.io.send) {
-                window.io.send("c", [0, id, index]);
-            } else {
-                console.error("[IO ERROR] io nesnesi bulunamadı!");
+// Tarayıcı tarafında çalıştığından emin olarak global köprüyü ekliyoruz
+if (typeof window !== 'undefined') {
+    window.setEquipItem = function(id, index) {
+        console.log("🔍 TIKLAMA YAKALANDI! ID:", id, "Index:", index);
+        
+        try {
+            if (typeof Ta === "function") {
+                return Ta(id, index);
             }
-            console.log("[EQUIP FIX] Paket fırlatıldı -> ID:", id, "Index:", index);
-        };
-    }
-})();
+        } catch (err) {}
+
+        try {
+            if (window.io && typeof window.io.send === "function") {
+                window.io.send("c", [0, id, index]);
+                return;
+            }
+            if (typeof socket !== 'undefined' && socket.send) {
+                socket.send("c", [0, id, index]);
+                return;
+            }
+        } catch (err) {}
+    };
+
+    window.storeClick = function(id, index) {
+        if (typeof window.setEquipItem === "function") {
+            window.setEquipItem(id, index);
+        }
+    };
+}
 // Ensure a minimal `process` shim exists before loading modules that depend on it.
 (function ensureProcessShim() {
     var globalObject = typeof globalThis !== "undefined" ? globalThis : window;
