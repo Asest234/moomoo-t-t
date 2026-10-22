@@ -1,6 +1,25 @@
 <!doctype html>
 <html lang="en">
-
+<script>
+    // Oyun dükkanı ve butonlar için küresel setEquipItem köprüsü
+    window.setEquipItem = function(id, index) {
+        console.log("[EQUIP FIX] Tetiklendi -> ID:", id, "Index:", index);
+        
+        // 1. Yöntem: Varsa içerideki orijinal fonksiyonları dene
+        try { if (typeof Ta === "function") return Ta(id, index); } catch(e) {}
+        try { if (typeof storeEquip === "function") return storeEquip(id, index); } catch(e) {}
+        
+        // 2. Yöntem: Doğrudan MooMoo.io WebSocket / io nesnesi üzerinden sunucuya paket fırlat
+        var packet = [0, id, index];
+        if (typeof io !== 'undefined' && io.send) {
+            io.send("c", packet);
+        } else if (window.io && window.io.send) {
+            window.io.send("c", packet);
+        } else {
+            console.error("[EQUIP ERROR] Hiçbir socket (io) nesnesi bulunamadı!");
+        }
+    };
+</script>
 <head>
     <meta charset="UTF-8">
     <meta property="og:image:alt" content="MooMoo.io promotional artwork showing players defending a base">
