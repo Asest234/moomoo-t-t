@@ -1,25 +1,48 @@
+<script>
+    // window.setEquipItem'ı dışarıdan ezilemez ve her koşulda çalışır hale getiren korumalı köprü
+    (function() {
+        let internalEquip = function(id, index) {
+            console.log("[EQUIP] Tetiklendi -> ID:", id, "Index:", index);
+            
+            // Oyunun sunucuyla haberleştiği olası socket yollarını dener
+            try {
+                if (typeof io !== 'undefined' && io.send) {
+                    io.send("c", [0, id, index]);
+                    return;
+                }
+                if (window.io && window.io.send) {
+                    window.io.send("c", [0, id, index]);
+                    return;
+                }
+                // Alternatif global socket taraması
+                for (let key in window) {
+                    if (window[key] && typeof window[key].send === 'function') {
+                        window[key].send("c", [0, id, index]);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error("[EQUIP] Paket gönderilemedi:", e);
+            }
+        };
+
+        // Bu fonksiyonu tarayıcıda kilitliyoruz, kimse ezemez veya yok edemez
+        Object.defineProperty(window, 'setEquipItem', {
+            get: function() { return internalEquip; },
+            set: function(v) { 
+                // Eğer oyun kendi orijinal fonksiyonunu atamak isterse onu da kabul et, yoksa bizimkini koru
+                if (typeof v === 'function') {
+                    internalEquip = v;
+                }
+            },
+            configurable: true,
+            enumerable: true
+        });
+    })();
+</script>
 <!doctype html>
 <html lang="en">
 <script>
-    // Oyun dükkanı ve butonlar için küresel setEquipItem köprüsü
-    window.setEquipItem = function(id, index) {
-        console.log("[EQUIP FIX] Tetiklendi -> ID:", id, "Index:", index);
-        
-        // 1. Yöntem: Varsa içerideki orijinal fonksiyonları dene
-        try { if (typeof Ta === "function") return Ta(id, index); } catch(e) {}
-        try { if (typeof storeEquip === "function") return storeEquip(id, index); } catch(e) {}
-        
-        // 2. Yöntem: Doğrudan MooMoo.io WebSocket / io nesnesi üzerinden sunucuya paket fırlat
-        var packet = [0, id, index];
-        if (typeof io !== 'undefined' && io.send) {
-            io.send("c", packet);
-        } else if (window.io && window.io.send) {
-            window.io.send("c", packet);
-        } else {
-            console.error("[EQUIP ERROR] Hiçbir socket (io) nesnesi bulunamadı!");
-        }
-    };
-</script>
 <head>
     <meta charset="UTF-8">
     <meta property="og:image:alt" content="MooMoo.io promotional artwork showing players defending a base">
@@ -585,22 +608,3 @@
 
 </html>
 <script>
-    <script>
-    (function() {
-        function initEquipBridge() {
-            window.setEquipItem = function(id, index) {
-                if (typeof window.storeEquip === "function") {
-                    return window.storeEquip(id, index);
-                }
-                // storeEquip bulunamazsa doğrudan sunucuya paket gönder
-                if (typeof window.io !== 'undefined' && window.io.send) {
-                    window.io.send("c", [0, id, index]);
-                } else if (typeof io !== 'undefined' && io.send) {
-                    io.send("c", [0, id, index]);
-                }
-            };
-        }
-        initEquipBridge();
-        window.addEventListener('DOMContentLoaded', initEquipBridge);
-    })();
-</script>
