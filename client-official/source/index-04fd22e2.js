@@ -1,5 +1,5 @@
 window.setEquipItem = function(id, index) {
-    console.log("🔥 EŞYA SEÇİLİYOR | ID:", id, "Index:", index);
+    console.log("EŞYA SEÇİLİYOR | ID:", id, "Index:", index);
 
     // 1. Eğer oyunun kendi eşya giyme fonksiyonu (storeEquip) varsa onu çağır
     if (typeof window.storeEquip === "function") {
