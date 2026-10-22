@@ -1,26 +1,27 @@
 window.setEquipItem = function(id, index) {
     console.log("EŞYA SEÇİLİYOR | ID:", id, "Index:", index);
 
-    // 1. Eğer oyunun kendi eşya giyme fonksiyonu (storeEquip) varsa onu çağır
+    // 1. Oyun modülü içinde tanımlı mağaza fonksiyonu varsa doğrudan çalıştır
     if (typeof window.storeEquip === "function") {
         return window.storeEquip(id, index);
     }
 
-    // 2. Güvenli Soket Bulma ve Paket Gönderimi
-    let ws = window.ws || window.socket || (window.v ? window.v.ws : null);
-    let type = (index === 0 || index === undefined) ? "ch" : "c";
+    // 2. Aktif WebSocket istemcisini bul
+    let socket = window.v ? window.v.ws : (window.ws || window.socket);
 
-    try {
-        if (ws && typeof ws.send === "function") {
-            ws.send(type, [id]);
-            return;
+    if (socket && socket.readyState === 1) { // 1 = OPEN (Bağlantı Açık)
+        // MooMoo.io paket yapısı: [paket_tipi, [eşya_id, eşya_türü]]
+        // index 0 -> Hat (13 / "13"), index 1 -> Accessory (13 / "13")
+        try {
+            if (typeof socket.send === "function") {
+                socket.send("13", [id, index || 0]);
+                socket.send("ch", [id]);
+            }
+        } catch (e) {
+            console.error("Soket gönderim hatası:", e);
         }
-        if (window.io && typeof window.io.send === "function") {
-            window.io.send(type, [id]);
-            return;
-        }
-    } catch (err) {
-        console.error("Paket hatası:", err);
+    } else {
+        console.warn("Oyun bağlantısı henüz kurulmadı veya oyuna girilmedi!");
     }
 };
 
