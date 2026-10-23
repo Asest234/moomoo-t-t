@@ -1,12 +1,18 @@
 window.setEquipItem = function(id, index) {
     console.log("KOD ÇALIŞTI! ID:", id, "Index:", index);
-    if (typeof Ta === "function") {
-        try { return Ta(id, index); } catch(e) {}
-    }
-    if (window.io && window.io.send) {
-        try { window.io.send("c", [0, id, index]); } catch(e) {}
-    }
+    try {
+        if (typeof Ta === "function") {
+            return Ta(id, index);
+        }
+    } catch(e) {}
+    
+    try {
+        if (window.io && typeof window.io.send === "function") {
+            window.io.send("c", [0, id, index]);
+        }
+    } catch(e) {}
 };
+
 window.storeClick = function(id, index) {
     if (typeof window.setEquipItem === "function") {
         window.setEquipItem(id, index);
