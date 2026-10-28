@@ -1,40 +1,35 @@
 window.setEquipItem = function(id, index) {
-    console.log("🔥 [GERÇEK KÖPRÜ] Eşya İşleniyor -> ID:", id, "Index:", index);
-
-    // 1. Oyunun kendi iç modüllerinde store/equip fonksiyonu var mı tarayalım
-    if (typeof window.storeEquip === "function") {
-        return window.storeEquip(id, index);
-    }
-    if (window.game && typeof window.game.storeEquip === "function") {
-        return window.game.storeEquip(id, index);
-    }
-
-    // 2. Aktif WebSocket üzerinden oyunun orijinal veri yapısına uygun gönderim denemesi
-    let targetSocket = null;
+    console.log("🔥 [KÖPRÜ AKTİF] Eşya Sunucuya Gönderiliyor -> ID:", id, "Index:", index);
     
-    // Oyunun olası socket yerlerini tara
+    // Aktif WebSocket bağlantısını bulalım
+    let targetSocket = null;
     if (window.v && window.v.ws) targetSocket = window.v.ws;
     else if (window.ws) targetSocket = window.ws;
     else if (window.socket) targetSocket = window.socket;
+    
+    // Eğer doğrudan bulunamadıysa global nesnelerde arayalım
+    if (!targetSocket) {
+        for (let key in window) {
+            try {
+                if (window[key] && window[key] instanceof WebSocket && window[key].readyState === WebSocket.OPEN) {
+                    targetSocket = window[key];
+                    break;
+                }
+            } catch(e) {}
+        }
+    }
 
     if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
         try {
-            // MooMoo.io FRVR (v1.9.1) standart paket dizilimi
-            // Genellikle [tip_kodu, [id, type]] veya binary arraybuffer bekler
-            const packetData = [13, [id, index || 0]];
-            
-            // Eğer oyun msgpack kullanıyorsa veya düz JSON/Array kabul ediyorsa:
-            if (typeof targetSocket.sendPacked === "function") {
-                targetSocket.sendPacked("c", [id, index]);
-            } else {
-                targetSocket.send(JSON.stringify(["c", [id, index]]));
-            }
-            console.log("✅ Paket sokağa fırlatıldı!");
+            // MooMoo.io standart paket formatı
+            const packet = ["c", [id, index || 0]];
+            targetSocket.send(JSON.stringify(packet));
+            console.log("✅ Paket sokağa fırlatıldı:", packet);
         } catch (err) {
-            console.error("❌ Soket iletim hatası:", err);
+            console.error("❌ Soket gönderim hatası:", err);
         }
     } else {
-        console.warn("⚠️ Aktif oyun soketi (WebSocket) bulunamadı! Oyunda olduğundan emin ol.");
+        console.warn("⚠️ Aktif WebSocket soketi bulunamadı! Oyuna giriş yaptığından emin ol.");
     }
 };
 
