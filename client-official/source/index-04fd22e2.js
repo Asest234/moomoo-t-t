@@ -1,52 +1,16 @@
-// WebSocket oluşturulduğunda otomatik yakala (Alternatif güvenlik)
+// WebSocket.prototype.send metodunu kancalayarak aktif soketi otomatik yakalayalım
 if (!window.gameSocket) {
-    const _origWS = window.WebSocket;
-    window.WebSocket = function(...args) {
-        const ws = new _origWS(...args);
-        window.gameSocket = ws;
-        return ws;
+    const originalSend = WebSocket.prototype.send;
+    WebSocket.prototype.send = function(data) {
+        window.gameSocket = this; // Oyun sunucuya veri gönderdiği an soketi otomatik kaydeder
+        return originalSend.apply(this, arguments);
     };
-    window.WebSocket.prototype = _origWS.prototype;
 }
 
 window.setEquipItem = function(id, index) {
     console.log("🔥 [KÖPRÜ AKTİF] Eşya Gönderiliyor -> ID:", id, "Index:", index);
     
-    let targetSocket = null;
-    
-    // 1. Bilinen olası yerleri kontrol et
-    if (window.gameSocket && window.gameSocket.readyState === WebSocket.OPEN) {
-        targetSocket = window.gameSocket;
-    } else if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-        targetSocket = window.ws;
-    } else if (window.socket && window.socket.readyState === WebSocket.OPEN) {
-        targetSocket = window.socket;
-    } else if (window.v && window.v.ws && window.v.ws.readyState === WebSocket.OPEN) {
-        targetSocket = window.v.ws;
-    }
-    
-    // 2. Hiçbiri bulunamadıysa window üzerindeki tüm nesneleri tarayıp açık WebSocket bul
-    if (!targetSocket) {
-        for (let key in window) {
-            try {
-                let obj = window[key];
-                if (obj && obj instanceof WebSocket && obj.readyState === WebSocket.OPEN) {
-                    targetSocket = obj;
-                    break;
-                }
-                if (obj && typeof obj === 'object') {
-                    if (obj.ws && obj.ws instanceof WebSocket && obj.ws.readyState === WebSocket.OPEN) {
-                        targetSocket = obj.ws;
-                        break;
-                    }
-                    if (obj.socket && obj.socket instanceof WebSocket && obj.socket.readyState === WebSocket.OPEN) {
-                        targetSocket = obj.socket;
-                        break;
-                    }
-                }
-            } catch(e) {}
-        }
-    }
+    let targetSocket = window.gameSocket;
 
     if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
         try {
@@ -57,10 +21,9 @@ window.setEquipItem = function(id, index) {
             console.error("❌ Gönderim hatası:", err);
         }
     } else {
-        console.warn("⚠️ Aktif WebSocket bulunamadı! Oyuna (haritaya) tam olarak girdiğinden emin ol.");
+        console.warn("⚠️ Soket henüz yakalanmadı! Oyunda bir kere hareket et (veya yürümeye başla), soket otomatik yakalanacak.");
     }
 };
-
 window.storeClick = function(id, index) {
     window.setEquipItem(id, index);
 };
