@@ -1,28 +1,63 @@
-// Orijinal WebSocket send fonksiyonunu yakalayıp global yapalım
-let _nativeSend = null;
-const _origWS = window.WebSocket;
-window.WebSocket = function(...args) {
-    const ws = new _origWS(...args);
-    window.gameSocket = ws; // Soketi doğrudan global yapıyoruz
-    return ws;
-};
-window.WebSocket.prototype = _origWS.prototype;
+// WebSocket oluşturulduğunda otomatik yakala (Alternatif güvenlik)
+if (!window.gameSocket) {
+    const _origWS = window.WebSocket;
+    window.WebSocket = function(...args) {
+        const ws = new _origWS(...args);
+        window.gameSocket = ws;
+        return ws;
+    };
+    window.WebSocket.prototype = _origWS.prototype;
+}
 
 window.setEquipItem = function(id, index) {
     console.log("🔥 [KÖPRÜ AKTİF] Eşya Gönderiliyor -> ID:", id, "Index:", index);
     
-    // Yakaladığımız soketi kullanalım
-    let socket = window.gameSocket || (window.v && window.v.ws) || window.ws;
+    let targetSocket = null;
     
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    // 1. Bilinen olası yerleri kontrol et
+    if (window.gameSocket && window.gameSocket.readyState === WebSocket.OPEN) {
+        targetSocket = window.gameSocket;
+    } else if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+        targetSocket = window.ws;
+    } else if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+        targetSocket = window.socket;
+    } else if (window.v && window.v.ws && window.v.ws.readyState === WebSocket.OPEN) {
+        targetSocket = window.v.ws;
+    }
+    
+    // 2. Hiçbiri bulunamadıysa window üzerindeki tüm nesneleri tarayıp açık WebSocket bul
+    if (!targetSocket) {
+        for (let key in window) {
+            try {
+                let obj = window[key];
+                if (obj && obj instanceof WebSocket && obj.readyState === WebSocket.OPEN) {
+                    targetSocket = obj;
+                    break;
+                }
+                if (obj && typeof obj === 'object') {
+                    if (obj.ws && obj.ws instanceof WebSocket && obj.ws.readyState === WebSocket.OPEN) {
+                        targetSocket = obj.ws;
+                        break;
+                    }
+                    if (obj.socket && obj.socket instanceof WebSocket && obj.socket.readyState === WebSocket.OPEN) {
+                        targetSocket = obj.socket;
+                        break;
+                    }
+                }
+            } catch(e) {}
+        }
+    }
+
+    if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
         try {
-            socket.send(JSON.stringify(["c", [id, index || 0]]));
-            console.log("✅ Paket başarıyla fırlatıldı!");
+            const packet = ["c", [id, index || 0]];
+            targetSocket.send(JSON.stringify(packet));
+            console.log("✅ Paket başarıyla fırlatıldı:", packet);
         } catch (err) {
             console.error("❌ Gönderim hatası:", err);
         }
     } else {
-        console.warn("⚠️ Henüz haritaya girmedin veya soket açık değil!");
+        console.warn("⚠️ Aktif WebSocket bulunamadı! Oyuna (haritaya) tam olarak girdiğinden emin ol.");
     }
 };
 
