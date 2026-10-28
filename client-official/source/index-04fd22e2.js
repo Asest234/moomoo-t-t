@@ -1,35 +1,28 @@
-window.setEquipItem = function(id, index) {
-    console.log("🔥 [KÖPRÜ AKTİF] Eşya Sunucuya Gönderiliyor -> ID:", id, "Index:", index);
-    
-    // Aktif WebSocket bağlantısını bulalım
-    let targetSocket = null;
-    if (window.v && window.v.ws) targetSocket = window.v.ws;
-    else if (window.ws) targetSocket = window.ws;
-    else if (window.socket) targetSocket = window.socket;
-    
-    // Eğer doğrudan bulunamadıysa global nesnelerde arayalım
-    if (!targetSocket) {
-        for (let key in window) {
-            try {
-                if (window[key] && window[key] instanceof WebSocket && window[key].readyState === WebSocket.OPEN) {
-                    targetSocket = window[key];
-                    break;
-                }
-            } catch(e) {}
-        }
-    }
+// Orijinal WebSocket send fonksiyonunu yakalayıp global yapalım
+let _nativeSend = null;
+const _origWS = window.WebSocket;
+window.WebSocket = function(...args) {
+    const ws = new _origWS(...args);
+    window.gameSocket = ws; // Soketi doğrudan global yapıyoruz
+    return ws;
+};
+window.WebSocket.prototype = _origWS.prototype;
 
-    if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
+window.setEquipItem = function(id, index) {
+    console.log("🔥 [KÖPRÜ AKTİF] Eşya Gönderiliyor -> ID:", id, "Index:", index);
+    
+    // Yakaladığımız soketi kullanalım
+    let socket = window.gameSocket || (window.v && window.v.ws) || window.ws;
+    
+    if (socket && socket.readyState === WebSocket.OPEN) {
         try {
-            // MooMoo.io standart paket formatı
-            const packet = ["c", [id, index || 0]];
-            targetSocket.send(JSON.stringify(packet));
-            console.log("✅ Paket sokağa fırlatıldı:", packet);
+            socket.send(JSON.stringify(["c", [id, index || 0]]));
+            console.log("✅ Paket başarıyla fırlatıldı!");
         } catch (err) {
-            console.error("❌ Soket gönderim hatası:", err);
+            console.error("❌ Gönderim hatası:", err);
         }
     } else {
-        console.warn("⚠️ Aktif WebSocket soketi bulunamadı! Oyuna giriş yaptığından emin ol.");
+        console.warn("⚠️ Henüz haritaya girmedin veya soket açık değil!");
     }
 };
 
