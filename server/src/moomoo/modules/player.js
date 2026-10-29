@@ -22,10 +22,11 @@ export class Player {
         this.skinIndex = 0;
         this.skinIndex = 0;
         this.tailIndex = 0;
+       // Buradaki mevcut tails ve skins döngülerini bununla değiştiriyoruz:
         this.tails = {};
         for (let i = 0; i < accessories.length; ++i) {
             if (config.inSandbox || (accessories[i].price <= 0 && !accessories[i].dontSell)) {
-                this.tails[accessories[i].id] / (this.tails[accessories[i].id] = 1);
+                this.tails[accessories[i].id] = 1;
             }
         }
         this.skins = {};
@@ -34,6 +35,14 @@ export class Player {
                 this.skins[hats[i].id] = 1;
             }
         }
+
+        // Getter'ları da en alta ekliyoruz:
+        Object.defineProperty(this, 'skin', {
+            get: () => hats.find(x => x.id === this.skinIndex) || hats[this.skinIndex]|| null
+        });
+        Object.defineProperty(this, 'tail', {
+            get: () => accessories.find(x => x.id === this.tailIndex) || accessories[this.tailIndex] || null
+        });
         this.tailIndex = 0;
         this.hitTime = 0;
         this.tails = {};
