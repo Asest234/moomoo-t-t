@@ -80,7 +80,7 @@ var config = {
     // SANDBOX:
     inSandbox: Boolean(env.IS_SANDBOX),     // [Id]  ({}.IS_SANDBOX in the client build)
     // SERVER: SANDBOX_UNLIMITED=1 keeps every resource and gold topped up, so nothing costs anything.
-    unlimitedResources: Boolean(env.SANDBOX_UNLIMITED),
+    unlimitedResources: true,
     unlimitedAmount: 1000000,
 
     // PLAYER:
