@@ -1,27 +1,30 @@
-// WebSocket.prototype.send metodunu kancalayarak aktif soketi otomatik yakalayalım
-if (!window.gameSocket) {
-    const originalSend = WebSocket.prototype.send;
-    WebSocket.prototype.send = function(data) {
-        window.gameSocket = this; // Oyun sunucuya veri gönderdiği an soketi otomatik kaydeder
-        return originalSend.apply(this, arguments);
-    };
-}
+let lastEquippedId = -999;
+let lastPacketTime = 0;
 
 window.setEquipItem = function(id, index) {
+    // Aynı şapka zaten giyilmek isteniyorsa ve aradan 250ms geçmediyse spam yapma!
+    const now = Date.now();
+    if (lastEquippedId === id && (now - lastPacketTime) < 250) {
+        return; 
+    }
+
+    lastEquippedId = id;
+    lastPacketTime = now;
+
     console.log("🔥 [KÖPRÜ AKTİF] Eşya Gönderiliyor -> ID:", id, "Index:", index);
     
     let targetSocket = window.gameSocket;
 
     if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
         try {
-            const packet = ["c", [id, index || 0]];
+            const packet = ["c", [1, id, index || 0]];
             targetSocket.send(JSON.stringify(packet));
             console.log("✅ Paket başarıyla fırlatıldı:", packet);
         } catch (err) {
             console.error("❌ Gönderim hatası:", err);
         }
     } else {
-        console.warn("⚠️ Soket henüz yakalanmadı! Oyunda bir kere hareket et (veya yürümeye başla), soket otomatik yakalanacak.");
+        console.warn("⚠️ Soket aktif değil!");
     }
 };
 window.storeClick = function(id, index) {
