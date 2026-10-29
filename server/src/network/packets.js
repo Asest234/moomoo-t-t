@@ -178,7 +178,7 @@ export function handlePacket(ctx, player, name, args) {
             if (!entry) return;
 
             // Oyuncu eşyaya sahip değilse önce otomatik satın al
-            if (!owned[id]) {
+           if (!config.inSandbox && !owned[id]) {
                 if (entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
                 owned[id] = 1;
