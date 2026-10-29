@@ -105,14 +105,14 @@ export class Game {
             for (let ay = 0; ay < cfg.areaCount; ay++) {
                 const left = ax * areaSize;
                 const top = ay * areaSize;
-                for (let placed = 0, tries = 0; placed < cfg.treesPerArea && tries < 0; tries++) {
+                for (let placed = 0, tries = 0; placed < cfg.treesPerArea && tries < 200; tries++) {
                     const x = UTILS.randInt(left, left + areaSize);
                     const y = UTILS.randInt(top, top + areaSize);
                     if (y >= riverTop - 100 && y <= riverBottom + 100) continue;
                     if (y >= cfg.mapScale - cfg.snowBiomeTop) continue;
-                    if (place(x, y, pick(cfg.treeScales), 0, false)) placed++;
+                    if (place(x, y, pick(cfg.treeScales), 50, false)) placed++;
                 }
-                for (let placed = 0, tries = 0; placed < cfg.bushesPerArea && tries < 0; tries++) {
+                for (let placed = 0, tries = 0; placed < cfg.bushesPerArea && tries < 100; tries++) {
                     const x = UTILS.randInt(left, left + areaSize);
                     const y = UTILS.randInt(top, top + areaSize);
                     if (y >= riverTop - 50 && y <= riverBottom + 50) continue;
@@ -120,10 +120,10 @@ export class Game {
                 }
             }
         }
-        for (let placed = 0, tries = 0; placed < cfg.totalRocks && tries < 0; tries++) {
+        for (let placed = 0, tries = 0; placed < cfg.totalRocks && tries < 5000; tries++) {
             if (place(UTILS.randInt(0, cfg.mapScale), UTILS.randInt(0, cfg.mapScale), pick(cfg.rockScales), 2, true)) placed++;
         }
-        for (let placed = 0, tries = 0; placed < cfg.goldOres && tries < 0; tries++) {
+        for (let placed = 0, tries = 0; placed < cfg.goldOres && tries < 5000; tries++) {
             if (place(UTILS.randInt(0, cfg.mapScale), UTILS.randInt(0, cfg.mapScale), pick(cfg.rockScales), 3, true)) placed++;
         }
     }
