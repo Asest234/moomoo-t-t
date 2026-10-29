@@ -55,10 +55,10 @@ export class Game {
         this.scoreCallback = (player, amount) => {
             if (!player || !player.isPlayer) return;
             if (config.unlimitedResources && amount < 0) return;
-            player.points += amount * 500;
+            player.points += amount;
             player.send("N", "points", player.points, 1);
             if (amount > 0) {
-                player.earnXP(amount);
+               player.earnXP(amount * 500);
                 if (player.lifeStats) {
                     player.lifeStats.gold += amount;
                     player.lifeStats.score = Math.max(player.lifeStats.score, player.points);
