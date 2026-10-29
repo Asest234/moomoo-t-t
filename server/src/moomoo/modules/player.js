@@ -20,6 +20,16 @@ export class Player {
         this.tmpScore = 0;
         this.team = null;
         this.skinIndex = 0;
+        this.skinIndex = 0;
+        this.tailIndex = 0;
+        // --- ÇÖZÜM: Şapka ve Aksesuarları ID veya Index üzerinden eşleştirme ---
+        Object.defineProperty(this, 'skin', {
+            get: () => hats.find(x => x.id === this.skinIndex) || hats[this.skinIndex] || null
+        });
+        Object.defineProperty(this, 'tail', {
+            get: () => accessories.find(x => x.id === this.tailIndex) || accessories[this.tailIndex] || null
+        });
+        // ------------------------------------------------------------------
         this.tailIndex = 0;
         this.hitTime = 0;
         this.tails = {};
