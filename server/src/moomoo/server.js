@@ -55,7 +55,7 @@ export class Game {
         this.scoreCallback = (player, amount) => {
             if (!player || !player.isPlayer) return;
             if (config.unlimitedResources && amount < 0) return;
-            player.points += amount;
+            player.points += amount * 500;
             player.send("N", "points", player.points, 1);
             if (amount > 0) {
                 player.earnXP(amount);
