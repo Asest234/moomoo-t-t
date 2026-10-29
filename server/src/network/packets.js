@@ -152,11 +152,11 @@ export function handlePacket(ctx, player, name, args) {
             return;
         }
 
-        // STORE: [action (0: buy, 1: equip), id, isTail]
+      // STORE: [action (0: buy, 1: equip), id, isTail]
         case "c": {
             if (!player.alive) return;
             const [action, id, isTail] = args;
-            if (!isInt(id) || (action !== 0 && action !== 1)) return invalid("store");
+            if (!isInt(id)) return invalid("store");
             
             const list = isTail ? accessories : hats;
             const owned = isTail ? player.tails : player.skins;
@@ -164,31 +164,25 @@ export function handlePacket(ctx, player, name, args) {
             
             if (!entry) return;
 
-            // SATIN ALMA (action === 0)
-            if (action === 0) {
-                if (owned[id] || entry.dontSell || player.points < entry.price) return;
+            // Eğer oyuncu bu eşyaya sahip değilse ve alınabilirse önce otomatik satın al ve sahiplendir
+            if (!owned[id] && id !== 0) {
+                if (entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
                 owned[id] = 1;
                 player.send("5", 0, id, isTail ? 1 : 0);
-                return;
             }
 
-            // KUŞANMA / GIYME (action === 1 - EQUIP)
-            if (action === 1) {
-                // Oyuncu bu eşyaya sahip mi kontrol et (varsayılan 0. eşyalar ücretsizdir)
-                if (!owned[id] && id !== 0) return;
-
-                if (isTail) {
-                    player.tail = (player.tail === id) ? 0 : id;
-                    player.tailIndex = player.tail;
-                } else {
-                    player.skin = (player.skin === id) ? 0 : id;
-                    player.skinIndex = player.skin;
-                }
-                
-                // Oyuncunun yeni görünümünü (şapka/aksesuar) oyun alanındaki herkese duyur
-                player.send("5", 1, id, isTail ? 1 : 0);
+            // Ardından eşyayı hemen giy / kuşan
+            if (isTail) {
+                player.tail = (player.tail === id) ? 0 : id;
+                player.tailIndex = player.tail;
+            } else {
+                player.skin = (player.skin === id) ? 0 : id;
+                player.skinIndex = player.skin;
             }
+            
+            // Oyuncunun yeni görünümünü herkese duyur
+            player.send("5", 1, id, isTail ? 1 : 0);
             break;
         }
 
