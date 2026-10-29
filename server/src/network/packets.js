@@ -152,7 +152,7 @@ export function handlePacket(ctx, player, name, args) {
             return;
         }
 
-      // STORE: [action (0: buy, 1: equip), id, isTail]
+     // STORE: [action (0: buy, 1: equip), id, isTail]
         case "c": {
             if (!player.alive) return;
             const [action, id, isTail] = args;
@@ -164,7 +164,7 @@ export function handlePacket(ctx, player, name, args) {
             
             if (!entry) return;
 
-            // Eğer oyuncu bu eşyaya sahip değilse ve alınabilirse önce otomatik satın al ve sahiplendir
+            // Oyuncu eşyaya sahip değilse (ve ID 0 değilse) önce otomatik satın al
             if (!owned[id] && id !== 0) {
                 if (entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
@@ -172,7 +172,7 @@ export function handlePacket(ctx, player, name, args) {
                 player.send("5", 0, id, isTail ? 1 : 0);
             }
 
-            // Ardından eşyayı hemen giy / kuşan
+            // Eşyayı giy / kuşan veya çıkar (toggle mantığı)
             if (isTail) {
                 player.tail = (player.tail === id) ? 0 : id;
                 player.tailIndex = player.tail;
@@ -181,11 +181,10 @@ export function handlePacket(ctx, player, name, args) {
                 player.skinIndex = player.skin;
             }
             
-            // Oyuncunun yeni görünümünü herkese duyur
+            // Yeni görünümü herkese bildir
             player.send("5", 1, id, isTail ? 1 : 0);
-            break;
+            return;
         }
-
         // CHAT
         case "6": {
             if (!player.alive) return;
