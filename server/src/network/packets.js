@@ -173,16 +173,19 @@ export function handlePacket(ctx, player, name, args) {
             }
 
             // Eşyayı giy / kuşan veya çıkar (toggle mantığı)
+            let activeId = id;
             if (isTail) {
                 player.tail = (player.tail === id) ? 0 : id;
                 player.tailIndex = player.tail;
+                activeId = player.tail;
             } else {
                 player.skin = (player.skin === id) ? 0 : id;
                 player.skinIndex = player.skin;
+                activeId = player.skin;
             }
             
-            // Yeni görünümü herkese bildir
-            player.send("5", 1, id, isTail ? 1 : 0);
+            // İstemciye güncel durumu bildir (Çıkarıldıysa activeId 0 gider, giyildiyse ID gider)
+            player.send("5", 1, activeId, isTail ? 1 : 0);
             return;
         }
         // CHAT
