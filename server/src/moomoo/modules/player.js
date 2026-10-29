@@ -22,7 +22,7 @@ export class Player {
         this.skinIndex = 0;
         this.skinIndex = 0;
         this.tailIndex = 0;
-       // Buradaki mevcut tails ve skins döngülerini bununla değiştiriyoruz:
+       // Sandbox modunda tüm şapka ve aksesuarları otomatik açar
         this.tails = {};
         for (let i = 0; i < accessories.length; ++i) {
             if (config.inSandbox || (accessories[i].price <= 0 && !accessories[i].dontSell)) {
@@ -36,23 +36,13 @@ export class Player {
             }
         }
 
-        // Getter'ları da en alta ekliyoruz:
+        // Şapka ve aksesuar özelliklerini sunucuya okutan getter tanımları
         Object.defineProperty(this, 'skin', {
-            get: () => hats.find(x => x.id === this.skinIndex) || hats[this.skinIndex]|| null
+            get: () => hats.find(x => x.id === this.skinIndex) || hats[this.skinIndex] || null
         });
         Object.defineProperty(this, 'tail', {
             get: () => accessories.find(x => x.id === this.tailIndex) || accessories[this.tailIndex] || null
         });
-        this.tailIndex = 0;
-        this.hitTime = 0;
-        this.tails = {};
-        for (let i = 0; i < accessories.length; ++i) {
-            if (accessories[i].price <= 0 && !accessories[i].dontSell) this.tails[accessories[i].id] = 1;
-        }
-        this.skins = {};
-        for (let i = 0; i < hats.length; ++i) {
-            if (hats[i].price <= 0 && !hats[i].dontSell) this.skins[hats[i].id] = 1;
-        }
         this.points = 0;
         this.dt = 0;
         this.hidden = false;
