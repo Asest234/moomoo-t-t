@@ -2,9 +2,10 @@ let lastEquippedId = -999;
 let lastPacketTime = 0;
 
 window.setEquipItem = function(id, index) {
-    // Aynı şapka zaten giyilmek isteniyorsa ve aradan 250ms geçmediyse spam yapma!
     const now = Date.now();
-    if (lastEquippedId === id && (now - lastPacketTime) < 250) {
+    
+    // Eğer aynı ID üst üste 500ms içinde tekrar çağrıldıysa kesinlikle atma
+    if (lastEquippedId === id && (now - lastPacketTime) < 500) {
         return; 
     }
 
@@ -17,16 +18,15 @@ window.setEquipItem = function(id, index) {
 
     if (targetSocket && targetSocket.readyState === WebSocket.OPEN) {
         try {
+            // Sadece gerçekten yeni bir istek olduğunda paket at
             const packet = ["c", [1, id, index || 0]];
             targetSocket.send(JSON.stringify(packet));
-            console.log("✅ Paket başarıyla fırlatıldı:", packet);
         } catch (err) {
             console.error("❌ Gönderim hatası:", err);
         }
-    } else {
-        console.warn("⚠️ Soket aktif değil!");
     }
 };
+
 window.storeClick = function(id, index) {
     window.setEquipItem(id, index);
 };
