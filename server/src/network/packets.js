@@ -171,22 +171,14 @@ export function handlePacket(ctx, player, name, args) {
                 return;
             }
 
-           const list = isTail ? accessories : hats;
-    const owned = isTail ? player.tails : player.skins;
-    const entry = list.find(x => x.id === id);
-
-    if (!entry) return;
-
-    // Sandbox ortamında olduğumuz için her şapka/aksesuar otomatik olarak sahiplenilir ve açılır
-    owned[id] = 1;
-
-    // Seçilen şapka veya aksesuarı doğrudan oyuncuya giydir
-    if (isTail) {
-        player.tail = entry;
-        player.tailIndex = id;
-    } else {
-        player.skin = entry;
-        player.skinIndex = id;
+          if (id === 0) {
+        if (isTail) {
+            player.tailIndex = 0;
+        } else {
+            player.skinIndex = 0;
+        }
+        player.send("5", 1, 0, isTail ? 1 : 0);
+        return;
     }
             // Oyuncu eşyaya sahip değilse önce otomatik satın al
            if (!config.inSandbox && !owned[id]) {
