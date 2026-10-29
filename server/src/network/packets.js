@@ -158,34 +158,43 @@ export function handlePacket(ctx, player, name, args) {
             const [action, id, isTail] = args;
             if (!isInt(id)) return invalid("store");
             
+            // Eğer ID 0 ise, bu bir "çıkarma (unequip)" komutudur
+            if (id === 0) {
+                if (isTail) {
+                    player.tail = 0;
+                    player.tailIndex = 0;
+                } else {
+                    player.skin = 0;
+                    player.skinIndex = 0;
+                }
+                player.send("5", 1, 0, isTail ? 1 : 0);
+                return;
+            }
+
             const list = isTail ? accessories : hats;
             const owned = isTail ? player.tails : player.skins;
             const entry = list.find(x => x.id === id);
             
             if (!entry) return;
 
-            // Oyuncu eşyaya sahip değilse (ve ID 0 değilse) önce otomatik satın al
-            if (!owned[id] && id !== 0) {
+            // Oyuncu eşyaya sahip değilse önce otomatik satın al
+            if (!owned[id]) {
                 if (entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
                 owned[id] = 1;
                 player.send("5", 0, id, isTail ? 1 : 0);
             }
 
-            // Eşyayı giy / kuşan veya çıkar (toggle mantığı)
-            let activeId = id;
+            // Eşyayı giy / kuşan
             if (isTail) {
-                player.tail = (player.tail === id) ? 0 : id;
-                player.tailIndex = player.tail;
-                activeId = player.tail;
+                player.tail = id;
+                player.tailIndex = id;
             } else {
-                player.skin = (player.skin === id) ? 0 : id;
-                player.skinIndex = player.skin;
-                activeId = player.skin;
+                player.skin = id;
+                player.skinIndex = id;
             }
             
-            // İstemciye güncel durumu bildir (Çıkarıldıysa activeId 0 gider, giyildiyse ID gider)
-            player.send("5", 1, activeId, isTail ? 1 : 0);
+            player.send("5", 1, id, isTail ? 1 : 0);
             return;
         }
         // CHAT
