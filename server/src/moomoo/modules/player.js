@@ -22,14 +22,18 @@ export class Player {
         this.skinIndex = 0;
         this.skinIndex = 0;
         this.tailIndex = 0;
-        // --- ÇÖZÜM: Şapka ve Aksesuarları ID veya Index üzerinden eşleştirme ---
-        Object.defineProperty(this, 'skin', {
-            get: () => hats.find(x => x.id === this.skinIndex) || hats[this.skinIndex] || null
-        });
-        Object.defineProperty(this, 'tail', {
-            get: () => accessories.find(x => x.id === this.tailIndex) || accessories[this.tailIndex] || null
-        });
-        // ------------------------------------------------------------------
+        this.tails = {};
+        for (let i = 0; i < accessories.length; ++i) {
+            if (config.inSandbox || (accessories[i].price <= 0 && !accessories[i].dontSell)) {
+                this.tails[accessories[i].id] / (this.tails[accessories[i].id] = 1);
+            }
+        }
+        this.skins = {};
+        for (let i = 0; i < hats.length; ++i) {
+            if (config.inSandbox || (hats[i].price <= 0 && !hats[i].dontSell)) {
+                this.skins[hats[i].id] = 1;
+            }
+        }
         this.tailIndex = 0;
         this.hitTime = 0;
         this.tails = {};
