@@ -1,13 +1,26 @@
 <script>
+    let lastEquippedId = -999;
+    let lastPacketTime = 0;
+
     window.setEquipItem = function(id, index) {
-        if (typeof window.storeEquip === "function") {
-            return window.storeEquip(id, index);
+        const now = Date.now();
+        if (lastEquippedId === id && (now - lastPacketTime) < 500) {
+            return; 
         }
+        lastEquippedId = id;
+        lastPacketTime = now;
+
         if (typeof io !== 'undefined' && io.send) {
-            io.send("c", [0, id, index]);
+            io.send("c", [1, id, index || 0]);
         } else if (window.io && window.io.send) {
-            window.io.send("c", [0, id, index]);
+            window.io.send("c", [1, id, index || 0]);
+        } else if (window.gameSocket && window.gameSocket.readyState === 1) {
+            window.gameSocket.send(JSON.stringify(["c", [1, id, index || 0]]));
         }
+    };
+
+    window.storeClick = function(id, index) {
+        window.setEquipItem(id, index);
     };
 </script>
 <!DOCTYPE html>
