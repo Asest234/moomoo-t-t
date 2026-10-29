@@ -86,7 +86,7 @@ export class Player {
             this.noMovTimer = 0;
             this.maxXP = 300;
             this.XP = 0;
-            this.age = 9;
+            this.age = 1;
             this.kills = 0;
             this.upgrAge = 9;
             this.upgradePoints = 0;
