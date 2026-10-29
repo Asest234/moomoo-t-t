@@ -88,7 +88,7 @@ export class Player {
             this.XP = 0;
             this.age = 1;
             this.kills = 0;
-            this.upgrAge = 9;
+            this.upgrAge = 2;
             this.upgradePoints = 0;
             this.x = 0;
             this.y = 0;
