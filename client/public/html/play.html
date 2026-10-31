@@ -611,40 +611,50 @@
 (function() {
     "use strict";
 
-    function startCanvasRender() {
-        let canvas = document.getElementById("gameCanvas");
-        if (!canvas) return;
-        let ctx = canvas.getContext("2d");
-        let screenWidth = 1920;
-        let screenHeight = 1080;
-        let screenW = screenWidth / 2;
-        let screenH = screenHeight / 2;
-
-        function render() {
-            if (ctx) {
-                ctx.beginPath();
-                let gradient = ctx.createRadialGradient(screenW, screenH, 0, screenW, screenH, screenWidth);
-                for (let i = 0; i <= 1; i++) {
-                    gradient.addColorStop(i, "rgba(0, 0, 0, " + i + ")");
-                }
-                ctx.fillStyle = gradient;
-                ctx.rect(0, 0, screenWidth, screenHeight);
-                ctx.fill();
-            }
-            window.requestAnimationFrame(render);
+    // Vignette (karartma) katmanını oluşturan fonksiyon
+    function addVignette() {
+        if (!document.getElementById('customVignette')) {
+            const vignette = document.createElement('div');
+            vignette.id = 'customVignette';
+            vignette.style.position = 'fixed';
+            vignette.style.top = '0';
+            vignette.style.left = '0';
+            vignette.style.width = '100vw';
+            vignette.style.height = '100vh';
+            vignette.style.pointerEvents = 'none'; // Oyunu oynamanı engellemez, tıklamalar içinden geçer
+            vignette.style.zIndex = '999999';
+            vignette.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)';
+            document.body.appendChild(vignette);
         }
-        render();
     }
 
-    const runAll = () => {
-        startCanvasRender();
-    };
-
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        runAll();
-    } else {
-        window.addEventListener("DOMContentLoaded", runAll);
+    // Vignette katmanını kaldıran fonksiyon (Menüye dönüldüğünde silinmesi için)
+    function removeVignette() {
+        const vignette = document.getElementById('customVignette');
+        if (vignette) vignette.remove();
     }
-    window.addEventListener("load", runAll);
+
+    // Oyuna başlama butonuna ("Play") tıklandığında efekti devreye sok
+    document.addEventListener('click', (e) => {
+        if (e.target && (e.target.id === 'enterGame' || e.target.id === 'loadingText')) {
+            setTimeout(addVignette, 800); // Oyun yüklenme süresi sonrasında ekle
+        }
+    });
+
+    // Ana menünün gizlenip gizlenmediğini (oyuna geçilip geçilmediğini) sürekli takip et
+    window.addEventListener('load', () => {
+        const mainMenu = document.getElementById('mainMenu');
+        if (mainMenu) {
+            const observer = new MutationObserver(() => {
+                // Eğer menü gizlendiyse (oyuna girildiyse) efekti çalıştır
+                if (mainMenu.style.display === 'none' || mainMenu.style.opacity === '0') {
+                    addVignette();
+                } else {
+                    removeVignette();
+                }
+            });
+            observer.observe(mainMenu, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+    });
 })();
 </script>
