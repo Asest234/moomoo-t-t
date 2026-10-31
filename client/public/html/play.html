@@ -609,28 +609,42 @@
 </html>
 <script>
 (function() {
-    function addVignette() {
-        if (!document.getElementById('customVignette') && document.body) {
-            const vignette = document.createElement('div');
-            vignette.id = 'customVignette';
-            vignette.style.position = 'fixed';
-            vignette.style.top = '0';
-            vignette.style.left = '0';
-            vignette.style.width = '100vw';
-            vignette.style.height = '100vh';
-            vignette.style.pointerEvents = 'none';
-            vignette.style.zIndex = '999999';
-            vignette.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)';
-            document.body.appendChild(vignette);
+    "use strict";
+
+    function startCanvasRender() {
+        let canvas = document.getElementById("gameCanvas");
+        if (!canvas) return;
+        let ctx = canvas.getContext("2d");
+        let screenWidth = 1920;
+        let screenHeight = 1080;
+        let screenW = screenWidth / 2;
+        let screenH = screenHeight / 2;
+
+        function render() {
+            if (ctx) {
+                ctx.beginPath();
+                let gradient = ctx.createRadialGradient(screenW, screenH, 0, screenW, screenH, screenWidth);
+                for (let i = 0; i <= 1; i++) {
+                    gradient.addColorStop(i, "rgba(0, 0, 0, " + i + ")");
+                }
+                ctx.fillStyle = gradient;
+                ctx.rect(0, 0, screenWidth, screenHeight);
+                ctx.fill();
+            }
+            window.requestAnimationFrame(render);
         }
+        render();
     }
 
-    // Sayfa durumuna göre hemen veya yüklenir yüklenmez uygula
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', addVignette);
+    const runAll = () => {
+        startCanvasRender();
+    };
+
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        runAll();
     } else {
-        addVignette();
+        window.addEventListener("DOMContentLoaded", runAll);
     }
-    window.addEventListener('load', addVignette);
+    window.addEventListener("load", runAll);
 })();
 </script>
