@@ -2733,3 +2733,7 @@ span {
 	left: 0;
 	right: 0;
 }
+/* Oyun içi kenar karartma (Vignette) efekti */
+#gameCanvas {
+    filter: brightness(0.75) contrast(1.15);
+}
