@@ -2733,7 +2733,15 @@ span {
 	left: 0;
 	right: 0;
 }
-/* Oyun içi kenar karartma (Vignette) efekti */
-#gameCanvas {
-    filter: brightness(0.75) contrast(1.15);
+/* Oyun içi karanlık vignette (Dark Visuals) efekti */
+#gameUI::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.85) 100%);
+    z-index: 98;
 }
