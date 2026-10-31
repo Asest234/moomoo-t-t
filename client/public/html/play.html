@@ -608,10 +608,9 @@
 
 </html>
 <script>
-<script>
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        if (!document.getElementById('customVignette')) {
+(function() {
+    function addVignette() {
+        if (!document.getElementById('customVignette') && document.body) {
             const vignette = document.createElement('div');
             vignette.id = 'customVignette';
             vignette.style.position = 'fixed';
@@ -619,11 +618,19 @@ window.addEventListener('load', () => {
             vignette.style.left = '0';
             vignette.style.width = '100vw';
             vignette.style.height = '100vh';
-            vignette.style.pointerEvents = 'none'; // Oyunu oynamanı engellemez, tıklamalar içinden geçer
+            vignette.style.pointerEvents = 'none';
             vignette.style.zIndex = '999999';
             vignette.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)';
             document.body.appendChild(vignette);
         }
-    }, 1000);
-});
+    }
+
+    // Sayfa durumuna göre hemen veya yüklenir yüklenmez uygula
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addVignette);
+    } else {
+        addVignette();
+    }
+    window.addEventListener('load', addVignette);
+})();
 </script>
