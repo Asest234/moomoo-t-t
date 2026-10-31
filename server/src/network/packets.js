@@ -404,10 +404,3 @@ function handleAdmin(ctx, admin, args) {
             return;
     }
 }
-// Oyuncu sohbet kutusuna şifreyi yazdığında:
-if (message === process.env.admin) {
-    player.isAdmin = true;
-    player.powers.god = 1;
-    player.powers.godlike = 1;
-    console.log(player.name + " admin yetkisi aldı!");
-}
