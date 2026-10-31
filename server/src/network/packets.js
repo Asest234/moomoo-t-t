@@ -158,8 +158,8 @@ export function handlePacket(ctx, player, name, args) {
             const [action, id, isTail] = args;
             if (!isInt(id)) return invalid("store");
             
-            // Eğer ID 0 ise, bu bir "çıkarma (unequip)" komutudur
-            if (id === 0) {
+            // Eğer ID 0 ise veya zaten giyili olan şapkaya tekrar tıklandıysa (Toggle / Unequip)
+            if (id === 0 || (isTail ? player.tailIndex === id : player.skinIndex === id)) {
                 if (isTail) {
                     player.tailIndex = 0;
                 } else {
@@ -175,15 +175,11 @@ export function handlePacket(ctx, player, name, args) {
 
             if (!entry) return;
 
-            // Oyuncu eşyaya sahip değilse ve sandbox'ta değilsek kontrol et
-            if (!config.inSandbox && !owned[id]) {
-                if (entry.dontSell || player.points < entry.price) return;
-                if (entry.price > 0) player.addResource(3, -entry.price, true);
-                owned[id] = 1;
-                player.send("5", 0, id, isTail ? 1 : 0);
-            }
+            // Eşyayı otomatik sahiplenilmiş yap ve istemciye "satın alındı" (0) paketini gönder
+            owned[id] = 1;
+            player.send("5", 0, id, isTail ? 1 : 0);
 
-            // Eşyayı giy / kuşan (Sadece Index güncellenir, getter otomatik okur)
+            // Eşyayı giy / kuşan
             if (isTail) {
                 player.tailIndex = id;
             } else {
