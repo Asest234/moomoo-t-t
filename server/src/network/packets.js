@@ -152,7 +152,7 @@ export function handlePacket(ctx, player, name, args) {
             return;
         }
 
-     // STORE: [action (0: buy, 1: equip), id, isTail]
+    // STORE: [action (0: buy, 1: equip), id, isTail]
         case "c": {
             if (!player.alive) return;
             const [action, id, isTail] = args;
@@ -161,39 +161,32 @@ export function handlePacket(ctx, player, name, args) {
             // Eğer ID 0 ise, bu bir "çıkarma (unequip)" komutudur
             if (id === 0) {
                 if (isTail) {
-                    player.tail = 0;
                     player.tailIndex = 0;
                 } else {
-                    player.skin = 0;
                     player.skinIndex = 0;
                 }
                 player.send("5", 1, 0, isTail ? 1 : 0);
                 return;
             }
 
-          if (id === 0) {
-        if (isTail) {
-            player.tailIndex = 0;
-        } else {
-            player.skinIndex = 0;
-        }
-        player.send("5", 1, 0, isTail ? 1 : 0);
-        return;
-    }
-            // Oyuncu eşyaya sahip değilse önce otomatik satın al
-           if (!config.inSandbox && !owned[id]) {
+            const list = isTail ? accessories : hats;
+            const owned = isTail ? player.tails : player.skins;
+            const entry = list.find(x => x.id === id);
+
+            if (!entry) return;
+
+            // Oyuncu eşyaya sahip değilse ve sandbox'ta değilsek kontrol et
+            if (!config.inSandbox && !owned[id]) {
                 if (entry.dontSell || player.points < entry.price) return;
                 if (entry.price > 0) player.addResource(3, -entry.price, true);
                 owned[id] = 1;
                 player.send("5", 0, id, isTail ? 1 : 0);
             }
 
-            // Eşyayı giy / kuşan
+            // Eşyayı giy / kuşan (Sadece Index güncellenir, getter otomatik okur)
             if (isTail) {
-                player.tail = id;
                 player.tailIndex = id;
             } else {
-                player.skin = id;
                 player.skinIndex = id;
             }
             
