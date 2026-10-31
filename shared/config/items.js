@@ -62,7 +62,7 @@ module.exports.groups = [{
     id: 10,
     name: "spawn",
     place: true,
-    limit: 1,
+    limit: 50,
     layer: -1
 }, {
     id: 11,
