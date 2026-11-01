@@ -356,7 +356,7 @@
         const DIV = `
             <style>
                 #show_key_menu {
-                    background-color: rgba(0, 0, 0, 0.8);
+                    background-color: rgba(0, 0, 0, 0.85);
                     width: fit-content;
                     height: fit-content;
                     pointer-events: all;
@@ -423,10 +423,10 @@
                     box-sizing: border-box;
                 }
                 .keys.active { color: black; background: white; }
-                #keys { display: flex; flex-wrap: wrap; align-content: start; width: 300px; }
+                #keys { display: flex; flex-wrap: wrap; align-content: start; width: ${storage.container}px; }
                 #fast { display: flex; margin-bottom: 10px; margin-left: 5px; align-items: center; }
-                #mouseContainer { width: 65px; height: 94px; }
-                #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; }
+                #mouseContainer { width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px; display: ${storage.mouse > 0 ? "block" : "none"}; }
+                #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; transform: scale(${storage.mouse / 100}); }
                 #mouse_0 { flex-basis: 24px; height: 50px; border-radius: 100px 10px 10px 10px; border: 2px solid white; }
                 #mouse_1 { flex-basis: 4px; height: 50px; border-radius: 10px; border: 2px solid white; }
                 #mouse_2 { flex-basis: 24px; height: 50px; border-radius: 10px 100px 10px 10px; border: 2px solid white; }
@@ -473,19 +473,19 @@
             </div>
             <div id="show_key_container">
                 <div id="fast">
-                    <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
-                        <div id="mouse" style="transform: scale(${storage.mouse}%)">
+                    <div id="mouseContainer">
+                        <div id="mouse">
                             <div id="mouse_0"></div>
                             <div id="mouse_1"></div>
                             <div id="mouse_2"></div>
                             <div id="mouse_bottom"></div>
                         </div>
                     </div>
-                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content; display: ${storage.space > 0 ? "block" : "none"}">_______</div>
+                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content; display: ${storage.space > 0 ? "block" : "none"}">${"_".repeat(storage.space)}</div>
                 </div>
                 <div id="cpsDisplay" class="resourceDisplay" style="display: ${storage.cps ? "block" : "none"}">CPS: 0</div>
                 <div id="maxCpsDisplay" class="resourceDisplay" style="display: ${storage.maxCps ? "block" : "none"}">MAX CPS: 0</div>
-                <div id="keys" style="display: ${storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex"}; width: ${storage.container}px"></div>
+                <div id="keys" style="display: ${storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex"}"></div>
             </div>
         `;
 
@@ -502,7 +502,6 @@
             if (keysContainer) keysContainer.appendChild(element);
         });
 
-        // Olay Dinleyicileri (Event Listeners) - Ayarların çalışmasını sağlayan kısım
         function updateProperty(id, value) {
             storage[id] = value;
             try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
@@ -524,7 +523,9 @@
                 kSpace.textContent = "_".repeat(storage.space);
                 kSpace.style.display = storage.space > 0 ? "block" : "none";
             }
-            if (mDiv) mDiv.style.transform = `scale(${storage.mouse}%)`;
+            if (mDiv) {
+                mDiv.style.transform = `scale(${storage.mouse / 100})`;
+            }
             if (cpsEl) cpsEl.style.display = storage.cps ? "block" : "none";
             if (maxCpsEl) maxCpsEl.style.display = storage.maxCps ? "block" : "none";
             if (keysEl) {
