@@ -328,619 +328,139 @@
       c-3.234,7.801-1.903,14.467,3.999,19.985l140.757,140.753v138.755c0,4.955,1.809,9.232,5.424,12.854l73.085,73.083
       c3.429,3.614,7.71,5.428,12.851,5.428c2.282,0,4.66-0.479,7.135-1.43c7.426-3.238,11.14-8.851,11.14-16.845V172.166L396.861,31.413
       C402.765,25.895,404.093,19.231,400.858,11.427z"></path></g></svg></button></div><div id="ot-anchor"></div><section id="ot-fltr-modal"><div id="ot-fltr-cnt"><button id="clear-filters-handler">Clear</button><div class="ot-fltr-scrlcnt ot-pc-scrollbar"><div class="ot-fltr-opts"><div class="ot-fltr-opt"><div class="ot-chkbox"><input id="chkbox-id" type="checkbox" aria-checked="false" class="category-filter-handler"> <label for="chkbox-id"><span class="ot-label-txt">checkbox label</span></label> <span class="ot-label-status">label</span></div></div></div><div class="ot-fltr-btns"><button id="filter-apply-handler">Apply</button> <button id="filter-cancel-handler">Cancel</button></div></div></div></section></div></div><section id="ot-lst-cnt" class="ot-host-cnt ot-pc-scrollbar"><div id="ot-sel-blk"><div class="ot-sel-all"><div class="ot-sel-all-hdr"><span class="ot-consent-hdr">Consent</span> <span class="ot-li-hdr">Leg.Interest</span></div><div class="ot-sel-all-chkbox"><div class="ot-chkbox" id="ot-selall-hostcntr"><input id="select-all-hosts-groups-handler" type="checkbox" aria-checked="false"> <label for="select-all-hosts-groups-handler"><span class="ot-label-txt">checkbox label</span></label> <span class="ot-label-status">label</span></div><div class="ot-chkbox" id="ot-selall-vencntr"><input id="select-all-vendor-groups-handler" type="checkbox" aria-checked="false"> <label for="select-all-vendor-groups-handler"><span class="ot-label-txt">checkbox label</span></label> <span class="ot-label-status">label</span></div><div class="ot-chkbox" id="ot-selall-licntr"><input id="select-all-vendor-leg-handler" type="checkbox" aria-checked="false"> <label for="select-all-vendor-leg-handler"><span class="ot-label-txt">checkbox label</span></label> <span class="ot-label-status">label</span></div></div></div></div><div class="ot-sdk-row"><div class="ot-sdk-column"><ul id="ot-ven-lst"></ul></div></div></section></section><div class="ot-pc-footer"><div class="ot-btn-container"> <button class="save-preference-btn-handler onetrust-close-btn-handler">Confirm My Choices</button></div><!-- Footer logo --><div class="ot-pc-footer-logo"><a href="https://www.cookiepro.com/products/cookie-consent/" target="_blank" rel="noopener noreferrer" aria-label="Powered by OneTrust Opens in a new Tab"><img alt="Powered by Onetrust" src="./MooMoo.io - Free Multiplayer Survival IO Game_files/poweredBy_cp_logo.svg" title="Powered by OneTrust Opens in a new Tab"></a></div></div><!-- Cookie subgroup container --><!-- Vendor list link --><!-- Cookie lost link --><!-- Toggle HTML element --><!-- Checkbox HTML --><!-- plus minus--><!-- Arrow SVG element --><!-- Accordion basic element --><span class="ot-scrn-rdr" aria-atomic="true" aria-live="polite"></span><!-- Vendor Service container and item template --></div><iframe class="ot-text-resize" sandbox="allow-same-origin" title="onetrust-text-resize" style="position: absolute; top: -50000px; width: 100em;" aria-hidden="true" src="./MooMoo.io - Free Multiplayer Survival IO Game_files/saved_resource(1).html"></iframe></div></div></body></html>
-<script>
-(function() {
-    'use strict';
-
-    // ==========================================
-    // SECTION 1: STORE HAT & ACCESSORY FILTERING
-    // ==========================================
-    const hatOrder = [
-        "soldier helmet",
-        "bull helmet",
-        "turret gear",
-        "tank gear",
-        "plague mask",
-        "booster hat",
-        "flipper hat",
-        "polar head"
-    ];
-
-    const accessoryOrder = [
-        "monkey tail",
-        "corrupt x wings"
-    ];
-
-    function filterStoreItems() {
-        const storeHolder = document.getElementById("storeHolder");
-        if (!storeHolder) return;
-
-        const storeItems = Array.from(storeHolder.querySelectorAll(".storeItem"));
-        if (!storeItems.length) return;
-
-        storeItems.forEach(item => {
-            const itemTitle = (item.innerText || item.textContent || "").toLowerCase();
-            const isHat = hatOrder.some(hat => itemTitle.includes(hat));
-            const isAcc = accessoryOrder.some(acc => itemTitle.includes(acc));
-
-            if (!isHat && !isAcc) {
-                item.style.display = "none";
-            } else {
-                item.style.display = "";
-            }
-        });
-
-        const combinedOrder = [...hatOrder, ...accessoryOrder];
-        combinedOrder.forEach(targetName => {
-            const matchedItem = storeItems.find(item => {
-                const title = (item.innerText || item.textContent || "").toLowerCase();
-                return title.includes(targetName);
-            });
-            if (matchedItem) {
-                storeHolder.appendChild(matchedItem);
-            }
-        });
+<!-- Arayüz Stilleri -->
+<style>
+    #show_key_menu {
+        background-color: rgba(0, 0, 0, 0.85);
+        width: fit-content;
+        height: fit-content;
+        pointer-events: all;
+        color: white;
+        padding: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 99999;
+        border-radius: 8px;
     }
-
-    // ==========================================
-    // SECTION 2: PROTOTYPE HOOKS & ENGINE SETUP
-    // ==========================================
-    try {
-        const symbol = Symbol("maxPlayers");
-        Object.defineProperty(Object.prototype, "maxPlayers", {
-            get() {
-                return this[symbol];
-            },
-            set(value) {
-                delete Object.prototype.maxPlayers;
-                this.maxPlayers = value + 12;
-            },
-            configurable: true
-        });
-    } catch (e) {
-        console.warn("MaxPlayers hook error:", e);
+    .show_key_inputs {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        margin-bottom: 10px;
     }
-
-    // ==========================================
-    // SECTION 3: SHOW KEYS & MOUSE OVERLAY
-    // ==========================================
-    let storage = null;
-    try {
-        storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
-    } catch (e) {}
-
-    if (storage == null) {
-        storage = {
-            keys: ["Q", "F", "V", "1", "2", "3"],
-            cps: true,
-            maxCps: true,
-            mouse: 100,
-            space: 7,
-            container: 270
-        };
-        try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
+    .show_key_inputs > * { font-size: 24px; }
+    .show_key_inputs > input[type="number"], .show_key_inputs > input[type="text"] {
+        width: 100px;
+        padding: 6px;
+        border: none;
+        outline: none;
+        box-sizing: border-box;
+        color: #4A4A4A;
+        background-color: #e5e3e3;
+        border-radius: 4px;
+        text-transform: uppercase;
     }
+    .show_key_inputs > input[type="checkbox"] { align-self: center; cursor: pointer; }
+    .show_key_inputs > label { margin-left: 10px; }
+    .show_key_inputs > div {
+        margin-left: 10px;
+        text-align: center;
+        padding: 6px 10px;
+        box-sizing: border-box;
+        width: fit-content;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    #add_key { background-color: #8ecc51; }
+    #remove_key { background-color: #cc5151; }
+    #add_key:hover { background-color: #6a983f; }
+    #remove_key:hover { background-color: #983f3f; }
+    #show_key_container {
+        position: absolute;
+        left: 15px;
+        bottom: 210px;
+        z-index: 99;
+        pointer-events: none;
+    }
+    .keys {
+        width: 50px;
+        height: 45px;
+        margin: 5px;
+        padding: 2px 10px;
+        border: 2px solid white;
+        color: white;
+        text-align: center;
+        font-size: 25px;
+        line-height: 45px;
+        box-sizing: border-box;
+    }
+    .keys.active { color: black; background: white; }
+    #keys { display: flex; flex-wrap: wrap; align-content: start; width: 270px; }
+    #fast { display: flex; margin-bottom: 10px; margin-left: 5px; align-items: center; }
+    #mouseContainer { width: 65px; height: 94px; }
+    #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; }
+    #mouse_0 { flex-basis: 24px; height: 50px; border-radius: 100px 10px 10px 10px; border: 2px solid white; }
+    #mouse_1 { flex-basis: 4px; height: 50px; border-radius: 10px; border: 2px solid white; }
+    #mouse_2 { flex-basis: 24px; height: 50px; border-radius: 10px 100px 10px 10px; border: 2px solid white; }
+    #mouse_bottom { margin-top: 1px; flex-basis: 100%; height: 34px; border-radius: 10px 10px 100px 100px; border: 2px solid white; }
+    .active2 { background: white; }
+    #cpsDisplay, #maxCpsDisplay {
+        position: initial;
+        padding-right: 10px;
+        width: fit-content;
+        height: fit-content;
+        text-align: left;
+        margin-bottom: 10px;
+        margin-left: 5px;
+        color: white;
+        text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+    }
+</style>
 
-    function initKeysAndMouse() {
-        const gameUI = document.getElementById("gameUI") || document.body;
-        if (!gameUI || document.getElementById("show_key_container")) return;
-
-        const DIV = `
-            <style>
-                #show_key_menu {
-                    background-color: rgba(0, 0, 0, 0.85);
-                    width: fit-content;
-                    height: fit-content;
-                    pointer-events: all;
-                    color: white;
-                    padding: 20px;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    z-index: 99999;
-                    border-radius: 8px;
-                }
-                .show_key_inputs {
-                    width: 100%;
-                    display: flex;
-                    flex-direction: row;
-                    align-items: flex-end;
-                    margin-bottom: 10px;
-                }
-                .show_key_inputs > * { font-size: 24px; }
-                .show_key_inputs > input[type="number"], .show_key_inputs > input[type="text"] {
-                    width: 100px;
-                    padding: 6px;
-                    border: none;
-                    outline: none;
-                    box-sizing: border-box;
-                    color: #4A4A4A;
-                    background-color: #e5e3e3;
-                    border-radius: 4px;
-                    text-transform: uppercase;
-                }
-                .show_key_inputs > input[type="checkbox"] { align-self: center; cursor: pointer; }
-                .show_key_inputs > label { margin-left: 10px; }
-                .show_key_inputs > div {
-                    margin-left: 10px;
-                    text-align: center;
-                    padding: 6px 10px;
-                    box-sizing: border-box;
-                    width: fit-content;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                #add_key { background-color: #8ecc51; }
-                #remove_key { background-color: #cc5151; }
-                #add_key:hover { background-color: #6a983f; }
-                #remove_key:hover { background-color: #983f3f; }
-                #show_key_container {
-                    position: absolute;
-                    left: 15px;
-                    bottom: 210px;
-                    z-index: 99;
-                    pointer-events: none;
-                }
-                .keys {
-                    width: 50px;
-                    height: 45px;
-                    margin: 5px;
-                    padding: 2px 10px;
-                    border: 2px solid white;
-                    color: white;
-                    text-align: center;
-                    font-size: 25px;
-                    line-height: 45px;
-                    box-sizing: border-box;
-                }
-                .keys.active { color: black; background: white; }
-                #keys { display: flex; flex-wrap: wrap; align-content: start; width: ${storage.container}px; }
-                #fast { display: flex; margin-bottom: 10px; margin-left: 5px; align-items: center; }
-                #mouseContainer { width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px; display: ${storage.mouse > 0 ? "block" : "none"}; }
-                #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; transform: scale(${storage.mouse / 100}); }
-                #mouse_0 { flex-basis: 24px; height: 50px; border-radius: 100px 10px 10px 10px; border: 2px solid white; }
-                #mouse_1 { flex-basis: 4px; height: 50px; border-radius: 10px; border: 2px solid white; }
-                #mouse_2 { flex-basis: 24px; height: 50px; border-radius: 10px 100px 10px 10px; border: 2px solid white; }
-                #mouse_bottom { margin-top: 1px; flex-basis: 100%; height: 34px; border-radius: 10px 10px 100px 100px; border: 2px solid white; }
-                .active2 { background: white; }
-                #cpsDisplay, #maxCpsDisplay {
-                    position: initial;
-                    padding-right: 10px;
-                    width: fit-content;
-                    height: fit-content;
-                    text-align: left;
-                    margin-bottom: 10px;
-                    margin-left: 5px;
-                    color: white;
-                    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
-                }
-            </style>
-            <div id="show_key_menu" style="display: none">
-                <div class="show_key_inputs">
-                    <input id="mouse_size" type="number" value="${storage.mouse}" min="0">
-                    <label for="mouse_size">Mouse Size</label>
-                </div>
-                <div class="show_key_inputs">
-                    <input id="spacebar_size" type="number" value="${storage.space}" max="20" min="0">
-                    <label for="spacebar_size">Spacebar Size</label>
-                </div>
-                <div class="show_key_inputs">
-                    <input id="container_size" type="number" value="${storage.container}" min="0">
-                    <label for="container_size">Container Size</label>
-                </div>
-                <div class="show_key_inputs">
-                    <input id="show_cps" type="checkbox" ${storage.cps ? "checked" : ""}>
-                    <label for="show_cps">CPS</label>
-                </div>
-                <div class="show_key_inputs">
-                    <input id="show_maxcps" type="checkbox" ${storage.maxCps ? "checked" : ""}>
-                    <label for="show_maxcps">MAX CPS</label>
-                </div>
-                <div class="show_key_inputs">
-                    <input id="enter_key" type="text" maxlength="1" placeholder="Enter Key" style="width: 200px; text-align: center;">
-                    <div id="add_key"><span>Add</span></div>
-                    <div id="remove_key"><span>Remove</span></div>
-                </div>
+<!-- Arayüz Elementleri -->
+<div id="show_key_menu" style="display: none">
+    <div class="show_key_inputs">
+        <input id="mouse_size" type="number" value="100" min="0">
+        <label for="mouse_size">Mouse Size</label>
+    </div>
+    <div class="show_key_inputs">
+        <input id="spacebar_size" type="number" value="7" max="20" min="0">
+        <label for="spacebar_size">Spacebar Size</label>
+    </div>
+    <div class="show_key_inputs">
+        <input id="container_size" type="number" value="270" min="0">
+        <label for="container_size">Container Size</label>
+    </div>
+    <div class="show_key_inputs">
+        <input id="show_cps" type="checkbox" checked>
+        <label for="show_cps">CPS</label>
+    </div>
+    <div class="show_key_inputs">
+        <input id="show_maxcps" type="checkbox" checked>
+        <label for="show_maxcps">MAX CPS</label>
+    </div>
+    <div class="show_key_inputs">
+        <input id="enter_key" type="text" maxlength="1" placeholder="Enter Key" style="width: 200px; text-align: center;">
+        <div id="add_key"><span>Add</span></div>
+        <div id="remove_key"><span>Remove</span></div>
+    </div>
+</div>
+<div id="show_key_container">
+    <div id="fast">
+        <div id="mouseContainer">
+            <div id="mouse">
+                <div id="mouse_0"></div>
+                <div id="mouse_1"></div>
+                <div id="mouse_2"></div>
+                <div id="mouse_bottom"></div>
             </div>
-            <div id="show_key_container">
-                <div id="fast">
-                    <div id="mouseContainer">
-                        <div id="mouse">
-                            <div id="mouse_0"></div>
-                            <div id="mouse_1"></div>
-                            <div id="mouse_2"></div>
-                            <div id="mouse_bottom"></div>
-                        </div>
-                    </div>
-                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content; display: ${storage.space > 0 ? "block" : "none"}">${"_".repeat(storage.space)}</div>
-                </div>
-                <div id="cpsDisplay" class="resourceDisplay" style="display: ${storage.cps ? "block" : "none"}">CPS: 0</div>
-                <div id="maxCpsDisplay" class="resourceDisplay" style="display: ${storage.maxCps ? "block" : "none"}">MAX CPS: 0</div>
-                <div id="keys" style="display: ${storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex"}"></div>
-            </div>
-        `;
-
-        const container = document.createElement("div");
-        container.innerHTML = DIV;
-        gameUI.appendChild(container);
-
-        storage.keys.forEach((key) => {
-            const element = document.createElement("div");
-            element.id = `key_${key}`;
-            element.className = "keys";
-            element.textContent = key;
-            const keysContainer = document.getElementById("keys");
-            if (keysContainer) keysContainer.appendChild(element);
-        });
-
-        function updateProperty(id, value) {
-            storage[id] = value;
-            try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
-            
-            const mContainer = document.getElementById("mouseContainer");
-            const kSpace = document.getElementById("key_Space");
-            const mDiv = document.getElementById("mouse");
-            const cpsEl = document.getElementById("cpsDisplay");
-            const maxCpsEl = document.getElementById("maxCpsDisplay");
-            const keysEl = document.getElementById("keys");
-
-            if (mContainer) {
-                mContainer.style.width = `${65 * (storage.mouse / 100)}px`;
-                mContainer.style.height = `${94 * (storage.mouse / 100)}px`;
-                mContainer.style.display = storage.mouse > 0 ? "block" : "none";
-            }
-            if (kSpace) {
-                kSpace.style.marginLeft = `${storage.mouse > 0 ? 10 : 0}px`;
-                kSpace.textContent = "_".repeat(storage.space);
-                kSpace.style.display = storage.space > 0 ? "block" : "none";
-            }
-            if (mDiv) {
-                mDiv.style.transform = `scale(${storage.mouse / 100})`;
-            }
-            if (cpsEl) cpsEl.style.display = storage.cps ? "block" : "none";
-            if (maxCpsEl) maxCpsEl.style.display = storage.maxCps ? "block" : "none";
-            if (keysEl) {
-                keysEl.style.display = storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex";
-                keysEl.style.width = `${storage.container}px`;
-            }
-        }
-
-        document.getElementById("mouse_size").addEventListener("input", (e) => updateProperty('mouse', parseFloat(e.target.value) || 0));
-        document.getElementById("spacebar_size").addEventListener("input", (e) => updateProperty('space', parseInt(e.target.value) || 0));
-        document.getElementById("container_size").addEventListener("input", (e) => updateProperty('container', parseFloat(e.target.value) || 0));
-        document.getElementById("show_cps").addEventListener("change", (e) => updateProperty('cps', e.target.checked));
-        document.getElementById("show_maxcps").addEventListener("change", (e) => updateProperty('maxCps', e.target.checked));
-
-        document.getElementById("add_key").addEventListener("click", () => {
-            const input = document.getElementById("enter_key");
-            if (!input || !input.value) return;
-            const key = input.value.toUpperCase();
-            let element = document.getElementById(`key_${key}`);
-            if (element == null) {
-                element = document.createElement("div");
-                element.id = `key_${key}`;
-                element.className = "keys";
-                element.textContent = key;
-                const keysContainer = document.getElementById("keys");
-                if (keysContainer) keysContainer.appendChild(element);
-                storage.keys.push(key);
-                try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
-            }
-            input.value = "";
-        });
-
-        document.getElementById("remove_key").addEventListener("click", () => {
-            const input = document.getElementById("enter_key");
-            if (!input || !input.value) return;
-            const key = input.value.toUpperCase();
-            const element = document.getElementById(`key_${key}`);
-            if (element != null) {
-                element.remove();
-                const index = storage.keys.indexOf(key);
-                if (index > -1) {
-                    storage.keys.splice(index, 1);
-                    try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
-                }
-                const keysEl = document.getElementById("keys");
-                if (keysEl) keysEl.style.display = storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex";
-            }
-            input.value = "";
-        });
-
-        var currentCps = 0;
-        var maxCps = 0;
-        var spaceDown = false;
-
-        function addCPS() {
-            currentCps++;
-            const cpsEl = document.getElementById("cpsDisplay");
-            if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
-            if (currentCps > maxCps) {
-                maxCps = currentCps;
-                const maxCpsEl = document.getElementById("maxCpsDisplay");
-                if (maxCpsEl) maxCpsEl.innerText = `MAX CPS: ${maxCps}`;
-            }
-            setTimeout(() => {
-                currentCps--;
-                if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
-            }, 1000);
-        }
-
-        function keysActive() {
-            const allianceMenu = document.getElementById("allianceMenu");
-            const chatHolder = document.getElementById("chatHolder");
-            const isAllianceOpen = allianceMenu && allianceMenu.style.display === "block";
-            const isChatOpen = chatHolder && chatHolder.style.display === "block";
-            return !isAllianceOpen && !isChatOpen;
-        }
-
-        window.addEventListener("keydown", (event) => {
-            if (keysActive()) {
-                if (event.code === "Backslash") {
-                    const menu = document.getElementById("show_key_menu");
-                    if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
-                } else if (event.code === "Space") {
-                    if (!spaceDown) {
-                        spaceDown = true;
-                        const keyDiv = document.getElementById(`key_Space`);
-                        if (keyDiv && !keyDiv.classList.contains("active")) keyDiv.classList.add("active");
-                        addCPS();
-                    }
-                } else if (event.key) {
-                    const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
-                    if (keyDiv && !keyDiv.classList.contains("active")) keyDiv.classList.add("active");
-                }
-            }
-        });
-
-        window.addEventListener("keyup", (event) => {
-            if (event.code === "Space") {
-                spaceDown = false;
-                const keyDiv = document.getElementById(`key_Space`);
-                if (keyDiv && keyDiv.classList.contains("active")) keyDiv.classList.remove("active");
-            } else if (event.key) {
-                const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
-                if (keyDiv && keyDiv.classList.contains("active")) keyDiv.classList.remove("active");
-            }
-        });
-
-        const touchControls = document.getElementById("touch-controls-fullscreen") || document;
-        touchControls.addEventListener("mousedown", (event) => {
-            if ([0, 1, 2].includes(event.button)) {
-                addCPS();
-            }
-            let mouseDiv = document.getElementById(`mouse_${event.button}`);
-            if (mouseDiv && !mouseDiv.classList.contains("active2")) {
-                mouseDiv.classList.add("active2");
-            }
-        });
-
-        touchControls.addEventListener("mouseup", (event) => {
-            let mouseDiv = document.getElementById(`mouse_${event.button}`);
-            if (mouseDiv && mouseDiv.classList.contains("active2")) {
-                mouseDiv.classList.remove("active2");
-            }
-        });
-    }
-
-    // ==========================================
-    // SECTION 4: STORE TOGGLE (G KEY & MIDDLE CLICK)
-    // ==========================================
-    function toggleStoreMenu() {
-        let storeKey = document.getElementById('storeMenu');
-        if (storeKey) {
-            const isOpening = storeKey.style.display !== "block";
-            storeKey.style.display = isOpening ? "block" : "none";
-            if (isOpening) {
-                filterStoreItems();
-            }
-        }
-    }
-
-    window.addEventListener('keydown', function(e) {
-        if (e.key === 'g' || e.key === 'G') {
-            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
-            e.preventDefault();
-            e.stopPropagation();
-            toggleStoreMenu();
-        }
-    }, true);
-
-    window.addEventListener('mousedown', function(e) {
-        if (e.button === 1) {
-            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
-            e.preventDefault();
-            e.stopPropagation();
-            toggleStoreMenu();
-        }
-    }, true);
-
-    // ==========================================
-    // SECTION 5: DARK VISUALS THEME
-    // ==========================================
-    function applyDarkVisuals() {
-        if (typeof CanvasRenderingContext2D !== "undefined" && CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() {
-                if (this.fillStyle === "#8ecc51") {
-                    this.fillStyle = "#8551f5";
-                }
-                return oldFunc.call(this, ...arguments);
-            })(CanvasRenderingContext2D.prototype.roundRect);
-        }
-
-        const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
-        const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
-
-        setHTML('enterGame', 'Play');
-        setHTML('loadingText', '');
-        setHTML('gameName', '');
-        setPlaceholder('nameInput', '');
-        setPlaceholder('chatBox', '');
-
-        const elementsToRemove = [
-            "#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText",
-            "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2",
-            "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions",
-            "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge",
-            "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
-            ".menuText", ".menuHeader", ".menuLink"
-        ];
-
-        elementsToRemove.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => el.remove());
-        });
-
-        const chatBtn = document.getElementById('chatButton');
-        if (chatBtn) chatBtn.style.display = 'none';
-
-        const mainMenu = document.getElementById("mainMenu");
-        if (mainMenu) {
-            mainMenu.style.backgroundImage = "url('https://wallpaperset.com/w/full/1/0/f/380248.jpg')";
-            mainMenu.style.backgroundSize = "cover";
-            mainMenu.style.width = "100%";
-            mainMenu.style.height = "100vh";
-        }
-
-        const purpleElements = [
-            "pingDisplay", "killCounter", "foodDisplay", "woodDisplay",
-            "stoneDisplay", "leaderboard", "chatBox", "chatButton",
-            "allianceButton", "storeButton"
-        ];
-
-        purpleElements.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.color = "#584487";
-                if (id !== "pingDisplay") {
-                    el.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-                }
-            }
-        });
-
-        const storeButton = document.getElementById("storeButton");
-        if (storeButton) {
-            storeButton.addEventListener("click", () => {
-                setTimeout(filterStoreItems, 50);
-            });
-        }
-
-        const ageText = document.getElementById("ageText");
-        if (ageText) ageText.style.color = "#584487";
-
-        const scoreDisplay = document.getElementById("scoreDisplay");
-        if (scoreDisplay) scoreDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const ageBar = document.getElementById("ageBar");
-        if (ageBar) ageBar.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const ageBarBody = document.getElementById("ageBarBody");
-        if (ageBarBody) ageBarBody.style.backgroundColor = "#584487";
-
-        const mapDisplay = document.getElementById("mapDisplay");
-        if (mapDisplay) mapDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const shadowStyle = "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
-        const setupCard = document.getElementById('setupCard');
-        if (setupCard) setupCard.style.cssText += shadowStyle;
-
-        const guideCard = document.getElementById('guideCard');
-        if (guideCard) guideCard.style.cssText += shadowStyle;
-
-        const serverBrowser = document.getElementById('serverBrowser');
-        if (serverBrowser) {
-            serverBrowser.style.color = '#333';
-            serverBrowser.style.backgroundColor = '#e5e3e4';
-        }
-
-        const enterGameBtn = document.getElementById('enterGame');
-        if (enterGameBtn) enterGameBtn.style.backgroundColor = '#333';
-
-        const nameInput = document.getElementById('nameInput');
-        if (nameInput) nameInput.style.color = '#333';
-
-        const pingDisplay = document.querySelector('#pingDisplay');
-        if (pingDisplay) {
-            pingDisplay.style.color = '#fff';
-            pingDisplay.style.textShadow = '3px 3px 3px black';
-            document.body.appendChild(pingDisplay);
-        }
-
-        const shutdownDisplay = document.querySelector('#shutdownDisplay');
-        if (shutdownDisplay) {
-            shutdownDisplay.style.position = 'absolute';
-            shutdownDisplay.style.top = '15px';
-            shutdownDisplay.style.left = '150px';
-            shutdownDisplay.style.color = '#820000';
-            shutdownDisplay.style.fontSize = '200%';
-            shutdownDisplay.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
-        }
-
-        const style = document.createElement('style');
-        style.innerHTML = `
-            .menuLink { font-size: 20px; color: #333; }
-            a { color: #333; text-decoration: none; }
-        `;
-        document.head.appendChild(style);
-
-        if (typeof window.follmoo === "function") {
-            try { window.follmoo("moofoll", 1); } catch(e) {}
-        }
-    }
-
-    function startCanvasRender() {
-        let canvas = document.getElementById("gameCanvas");
-        if (!canvas) return;
-        let ctx = canvas.getContext("2d");
-        let screenWidth = 1920;
-        let screenHeight = 1080;
-        let screenW = screenWidth / 2;
-        let screenH = screenHeight / 2;
-
-        function render() {
-            if (ctx) {
-                ctx.beginPath();
-                let gradient = ctx.createRadialGradient(screenW, screenH, 0, screenW, screenH, screenWidth);
-                for (let i = 0; i <= 1; i++) {
-                    gradient.addColorStop(i, "rgba(0, 0, 0, " + i + ")");
-                }
-                ctx.fillStyle = gradient;
-                ctx.rect(0, 0, screenWidth, screenHeight);
-                ctx.fill();
-            }
-            window.requestAnimationFrame(render);
-        }
-        render();
-    }
-
-    // ==========================================
-    // SECTION 6: INITIALIZATION LOADERS
-    // ==========================================
-    let isFiltering = false;
-    const runAll = () => {
-        applyDarkVisuals();
-        startCanvasRender();
-        initKeysAndMouse();
-
-        const storeHolder = document.getElementById("storeHolder");
-        if (storeHolder) {
-            const observer = new MutationObserver(() => {
-                if (!isFiltering) {
-                    isFiltering = true;
-                    filterStoreItems();
-                    setTimeout(() => { isFiltering = false; }, 50);
-                }
-            });
-            observer.observe(storeHolder, { childList: true, subtree: true });
-        }
-    };
-
-    window.addEventListener("load", runAll);
-
-    if (document.readyState !== "loading") {
-        runAll();
-    } else {
-        window.addEventListener("DOMContentLoaded", runAll);
-    }
-})();
-</script>
+        </div>
+        <div class="keys" id="key_Space" style="margin-left: 10px; width: fit-content;">_______</div>
+    </div>
+    <div id="cpsDisplay" class="resourceDisplay">CPS: 0</div>
+    <div id="maxCpsDisplay" class="resourceDisplay">MAX CPS: 0</div>
+    <div id="keys"></div>
+</div>
