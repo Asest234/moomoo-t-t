@@ -3223,13 +3223,13 @@ if (typeof window !== "undefined") {
     };
 }
 // ==========================================
-// MOOMOO.IO ABSOLUTE SAFE CLIENT MOD
+// MOOMOO.IO GITHUB DIRECT CLIENT FIX
 // ==========================================
 
 (function() {
     "use strict";
 
-    // 1. CSS Stilleri ve İmleç Garantisi
+    // 1. Tüm Stil ve İmleç Zorlamaları
     const style = document.createElement("style");
     style.innerHTML = `
         button, .menuButton, #settingsButton, #storeButton, #allianceButton, #chatButton, #enterGame, .show_key_inputs > div, input[type="checkbox"], label {
@@ -3336,171 +3336,165 @@ if (typeof window !== "undefined") {
     `;
     document.head.appendChild(style);
 
-    // 2. Arka Planda Asla Kilitleme Yapmayan Güvenli Enjeksiyon
-    setTimeout(() => {
-        try {
-            const gameUI = document.getElementById("gameUI") || document.body;
-            if (!gameUI || document.getElementById("show_key_container")) return;
+    // 2. Güvenli Kurulum Fonksiyonu
+    function setupClient() {
+        const gameUI = document.getElementById("gameUI") || document.body;
+        if (!gameUI || document.getElementById("show_key_container")) return;
 
-            let storage = null;
-            try {
-                storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
-            } catch (e) {}
+        let storage = null;
+        try { storage = JSON.parse(localStorage.getItem("showKeys&Mouse")); } catch (e) {}
 
-            if (!storage) {
-                storage = {
-                    keys: ["Q", "F", "V", "1", "2", "3"],
-                    cps: true,
-                    maxCps: true,
-                    mouse: 100,
-                    space: 7,
-                    container: 270
-                };
-                try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
-            }
+        if (!storage) {
+            storage = { keys: ["Q", "F", "V", "1", "2", "3"], cps: true, maxCps: true, mouse: 100, space: 7, container: 270 };
+            try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
+        }
 
-            const menuDiv = document.createElement("div");
-            menuDiv.id = "show_key_menu";
-            menuDiv.style.display = "none";
-            menuDiv.innerHTML = `
-                <div class="show_key_inputs"><input id="mouse_size" type="number" value="${storage.mouse}" min="0" onchange="window.changeShowKeyMouseProperty('mouse', parseFloat(this.value))"><label>Mouse Size</label></div>
-                <div class="show_key_inputs"><input id="spacebar_size" type="number" value="${storage.space}" onchange="window.changeShowKeyMouseProperty('space', parseInt(this.value))" max="20" min="0"><label>Spacebar Size</label></div>
-                <div class="show_key_inputs"><input id="container_size" type="number" value="${storage.container}" min="0" onchange="window.changeShowKeyMouseProperty('container', parseFloat(this.value))"><label>Container Size</label></div>
-                <div class="show_key_inputs"><input id="show_cps" type="checkbox" ${storage.cps ? "checked" : ""} onchange="window.changeShowKeyMouseProperty('cps', this.checked)"><label>CPS</label></div>
-                <div class="show_key_inputs"><input id="show_maxcps" type="checkbox" ${storage.maxCps ? "checked" : ""} onchange="window.changeShowKeyMouseProperty('maxCps', this.checked)"><label>MAX CPS</label></div>
-                <div class="show_key_inputs"><input id="enter_key" type="text" maxlength="1" placeholder="Key" style="width: 200px; text-align: center;"><div id="add_key" onclick="window.addKey_ShowKeyMouse()"><span>Add</span></div><div id="remove_key" onclick="window.removeKey_ShowKeyMouse()"><span>Remove</span></div></div>
-            `;
+        const menuDiv = document.createElement("div");
+        menuDiv.id = "show_key_menu";
+        menuDiv.style.display = "none";
+        menuDiv.innerHTML = `
+            <div class="show_key_inputs"><input id="mouse_size" type="number" value="${storage.mouse}" min="0" onchange="window.changeShowKeyMouseProperty('mouse', parseFloat(this.value))"><label>Mouse Size</label></div>
+            <div class="show_key_inputs"><input id="spacebar_size" type="number" value="${storage.space}" onchange="window.changeShowKeyMouseProperty('space', parseInt(this.value))" max="20" min="0"><label>Spacebar Size</label></div>
+            <div class="show_key_inputs"><input id="container_size" type="number" value="${storage.container}" min="0" onchange="window.changeShowKeyMouseProperty('container', parseFloat(this.value))"><label>Container Size</label></div>
+            <div class="show_key_inputs"><input id="show_cps" type="checkbox" ${storage.cps ? "checked" : ""} onchange="window.changeShowKeyMouseProperty('cps', this.checked)"><label>CPS</label></div>
+            <div class="show_key_inputs"><input id="show_maxcps" type="checkbox" ${storage.maxCps ? "checked" : ""} onchange="window.changeShowKeyMouseProperty('maxCps', this.checked)"><label>MAX CPS</label></div>
+            <div class="show_key_inputs"><input id="enter_key" type="text" maxlength="1" placeholder="Key" style="width: 200px; text-align: center;"><div id="add_key" onclick="window.addKey_ShowKeyMouse()"><span>Add</span></div><div id="remove_key" onclick="window.removeKey_ShowKeyMouse()"><span>Remove</span></div></div>
+        `;
 
-            const containerDiv = document.createElement("div");
-            containerDiv.id = "show_key_container";
-            containerDiv.innerHTML = `
-                <div id="fast">
-                    <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
-                        <div id="mouse" style="transform: scale(${storage.mouse}%)">
-                            <div id="mouse_0"></div><div id="mouse_1"></div><div id="mouse_2"></div><div id="mouse_bottom"></div>
-                        </div>
+        const containerDiv = document.createElement("div");
+        containerDiv.id = "show_key_container";
+        containerDiv.innerHTML = `
+            <div id="fast">
+                <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
+                    <div id="mouse" style="transform: scale(${storage.mouse}%)">
+                        <div id="mouse_0"></div><div id="mouse_1"></div><div id="mouse_2"></div><div id="mouse_bottom"></div>
                     </div>
-                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content;">_______</div>
                 </div>
-                <div id="cpsDisplay">CPS: 0</div>
-                <div id="maxCpsDisplay">MAX CPS: 0</div>
-                <div id="keys" style="display: flex; width: ${storage.container}px"></div>
-            `;
+                <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content;">_______</div>
+            </div>
+            <div id="cpsDisplay">CPS: 0</div>
+            <div id="maxCpsDisplay">MAX CPS: 0</div>
+            <div id="keys" style="display: flex; width: ${storage.container}px"></div>
+        `;
 
-            gameUI.appendChild(menuDiv);
-            gameUI.appendChild(containerDiv);
+        gameUI.appendChild(menuDiv);
+        gameUI.appendChild(containerDiv);
 
-            const keysContainer = document.getElementById("keys");
-            storage.keys.forEach((key) => {
+        const keysContainer = document.getElementById("keys");
+        storage.keys.forEach((key) => {
+            const element = document.createElement("div");
+            element.id = `key_${key}`;
+            element.className = "keys";
+            element.textContent = key;
+            if (keysContainer) keysContainer.appendChild(element);
+        });
+
+        window.changeShowKeyMouseProperty = (id, value) => {
+            storage[id] = value;
+            try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
+        };
+
+        window.addKey_ShowKeyMouse = () => {
+            const input = document.getElementById("enter_key");
+            if (!input || !input.value) return;
+            const key = input.value.toUpperCase();
+            if (!document.getElementById(`key_${key}`)) {
                 const element = document.createElement("div");
                 element.id = `key_${key}`;
                 element.className = "keys";
                 element.textContent = key;
                 if (keysContainer) keysContainer.appendChild(element);
-            });
-
-            window.changeShowKeyMouseProperty = (id, value) => {
-                storage[id] = value;
+                storage.keys.push(key);
                 try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
-            };
+            }
+        };
 
-            window.addKey_ShowKeyMouse = () => {
-                const input = document.getElementById("enter_key");
-                if (!input || !input.value) return;
-                const key = input.value.toUpperCase();
-                if (!document.getElementById(`key_${key}`)) {
-                    const element = document.createElement("div");
-                    element.id = `key_${key}`;
-                    element.className = "keys";
-                    element.textContent = key;
-                    if (keysContainer) keysContainer.appendChild(element);
-                    storage.keys.push(key);
+        window.removeKey_ShowKeyMouse = () => {
+            const input = document.getElementById("enter_key");
+            if (!input || !input.value) return;
+            const key = input.value.toUpperCase();
+            const element = document.getElementById(`key_${key}`);
+            if (element != null) {
+                element.remove();
+                const index = storage.keys.indexOf(key);
+                if (index > -1) {
+                    storage.keys.splice(index, 1);
                     try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
                 }
-            };
-
-            window.removeKey_ShowKeyMouse = () => {
-                const input = document.getElementById("enter_key");
-                if (!input || !input.value) return;
-                const key = input.value.toUpperCase();
-                const element = document.getElementById(`key_${key}`);
-                if (element != null) {
-                    element.remove();
-                    const index = storage.keys.indexOf(key);
-                    if (index > -1) {
-                        storage.keys.splice(index, 1);
-                        try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
-                    }
-                }
-            };
-
-            let currentCps = 0, maxCps = 0, spaceDown = false;
-            function addCPS() {
-                currentCps++;
-                const cpsEl = document.getElementById("cpsDisplay");
-                const maxCpsEl = document.getElementById("maxCpsDisplay");
-                if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
-                if (currentCps > maxCps) {
-                    maxCps = currentCps;
-                    if (maxCpsEl) maxCpsEl.innerText = `MAX CPS: ${maxCps}`;
-                }
-                setTimeout(() => {
-                    currentCps--;
-                    if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
-                }, 1000);
             }
+        };
 
-            window.addEventListener("keydown", (event) => {
-                if (event.code === "Backslash") {
-                    const menu = document.getElementById("show_key_menu");
-                    if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
-                } else if (event.code === "Space") {
-                    if (!spaceDown) {
-                        spaceDown = true;
-                        const keyDiv = document.getElementById(`key_Space`);
-                        if (keyDiv) keyDiv.classList.add("active");
-                        addCPS();
-                    }
-                } else if (event.key) {
-                    const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
-                    if (keyDiv) keyDiv.classList.add("active");
-                }
-            });
+        let currentCps = 0, maxCps = 0, spaceDown = false;
+        function addCPS() {
+            currentCps++;
+            const cpsEl = document.getElementById("cpsDisplay");
+            const maxCpsEl = document.getElementById("maxCpsDisplay");
+            if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            if (currentCps > maxCps) {
+                maxCps = currentCps;
+                if (maxCpsEl) maxCpsEl.innerText = `MAX CPS: ${maxCps}`;
+            }
+            setTimeout(() => {
+                currentCps--;
+                if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            }, 1000);
+        }
 
-            window.addEventListener("keyup", (event) => {
-                if (event.code === "Space") {
-                    spaceDown = false;
+        window.addEventListener("keydown", (event) => {
+            if (event.code === "Backslash") {
+                const menu = document.getElementById("show_key_menu");
+                if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
+            } else if (event.code === "Space") {
+                if (!spaceDown) {
+                    spaceDown = true;
                     const keyDiv = document.getElementById(`key_Space`);
-                    if (keyDiv) keyDiv.classList.remove("active");
-                } else if (event.key) {
-                    const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
-                    if (keyDiv) keyDiv.classList.remove("active");
+                    if (keyDiv) keyDiv.classList.add("active");
+                    addCPS();
                 }
-            });
+            } else if (event.key) {
+                const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
+                if (keyDiv) keyDiv.classList.add("active");
+            }
+        });
 
-            window.addEventListener("mousedown", (event) => {
-                if ([0, 1, 2].includes(event.button)) addCPS();
-                let mouseDiv = document.getElementById(`mouse_${event.button}`);
-                if (mouseDiv) mouseDiv.classList.add("active2");
-            });
+        window.addEventListener("keyup", (event) => {
+            if (event.code === "Space") {
+                spaceDown = false;
+                const keyDiv = document.getElementById(`key_Space`);
+                if (keyDiv) keyDiv.classList.remove("active");
+            } else if (event.key) {
+                const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
+                if (keyDiv) keyDiv.classList.remove("active");
+            }
+        });
 
-            window.addEventListener("mouseup", (event) => {
-                let mouseDiv = document.getElementById(`mouse_${event.button}`);
-                if (mouseDiv) mouseDiv.classList.remove("active2");
-            });
+        window.addEventListener("mousedown", (event) => {
+            if ([0, 1, 2].includes(event.button)) addCPS();
+            let mouseDiv = document.getElementById(`mouse_${event.button}`);
+            if (mouseDiv) mouseDiv.classList.add("active2");
+        });
 
-            const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
-            const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
-            setHTML('enterGame', 'Play');
-            setPlaceholder('nameInput', '');
-            setPlaceholder('chatBox', '');
+        window.addEventListener("mouseup", (event) => {
+            let mouseDiv = document.getElementById(`mouse_${event.button}`);
+            if (mouseDiv) mouseDiv.classList.remove("active2");
+        });
 
-            ["#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText", "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2", "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions", "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge", "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions", ".menuText", ".menuHeader", ".menuLink"].forEach(s => {
-                document.querySelectorAll(s).forEach(el => el.remove());
-            });
+        const enterGameBtn = document.getElementById('enterGame');
+        if (enterGameBtn) enterGameBtn.innerHTML = 'Play';
 
-            const chatBtn = document.getElementById('chatButton');
-            if (chatBtn) chatBtn.style.display = 'none';
-        } catch (e) {}
-    }, 1500);
+        const chatBtn = document.getElementById('chatButton');
+        if (chatBtn) chatBtn.style.display = 'none';
+
+        ["#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText", "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2", "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions", "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge", "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions", ".menuText", ".menuHeader", ".menuLink"].forEach(s => {
+            document.querySelectorAll(s).forEach(el => el.remove());
+        });
+    }
+
+    // Webpack yüklenmesini tıkamayacak şekilde güvenli aralık
+    const interval = setInterval(() => {
+        if (document.getElementById("mainMenu") || document.getElementById("gameUI")) {
+            setupClient();
+            clearInterval(interval);
+        }
+    }, 200);
 })();
