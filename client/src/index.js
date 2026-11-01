@@ -3222,3 +3222,262 @@ if (typeof window !== "undefined") {
         }
     };
 }
+// ==========================================
+// MOOMOO.IO CLIENT PERMANENT MODIFICATION
+// ==========================================
+
+(function() {
+    "use strict";
+
+    function initClientMods() {
+        if (typeof window === 'undefined') return;
+        if (document.getElementById('show_key_container')) return;
+
+        // 1. Keys & Mouse Overlay Storage & Setup
+        let storage = null;
+        try {
+            storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
+        } catch (err) {
+            storage = null;
+        }
+
+        if (!storage) {
+            storage = {
+                keys: ["Q", "F", "V", "1", "2", "3"],
+                cps: true,
+                maxCps: true,
+                mouse: 100,
+                space: 7,
+                container: 270
+            };
+            try {
+                localStorage.setItem("showKeys&Mouse", JSON.stringify(storage));
+            } catch (err) {}
+        }
+
+        const gameUI = document.getElementById("gameUI") || document.body;
+
+        const customStyle = document.createElement("style");
+        customStyle.textContent = `
+            #show_key_menu { background-color: rgba(0, 0, 0, 0.4); width: fit-content; height: fit-content; pointer-events: all; color: white; padding: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 99999; border-radius: 8px; }
+            .show_key_inputs { width: 100%; display: flex; flex-direction: row; align-items: flex-end; margin-bottom: 10px; }
+            .show_key_inputs > * { font-size: 24px; }
+            .show_key_inputs > input[type="number"], .show_key_inputs > input[type="text"] { width: 100px; padding: 6px; border: none; outline: none; box-sizing: border-box; color: #4A4A4A; background-color: #e5e3e3; border-radius: 4px; text-transform: uppercase; }
+            .show_key_inputs > input[type="checkbox"] { align-self: center; }
+            .show_key_inputs > label { margin-left: 10px; }
+            .show_key_inputs > div { margin-left: 10px; text-align: center; padding: 6px 10px; box-sizing: border-box; width: fit-content; border-radius: 4px; cursor: pointer; }
+            #add_key { background-color: #8ecc51; }
+            #remove_key { background-color: #cc5151; }
+            #show_key_container { position: absolute; left: 15px; bottom: 210px; z-index: 99; pointer-events: none; }
+            .keys { width: 50px; height: 45px; margin: 5px; padding: 2px 10px; border: 2px solid white; color: white; text-align: center; font-size: 25px; line-height: 45px; box-sizing: border-box; }
+            .keys.active { color: black; background: white; }
+            #keys { display: flex; flex-wrap: wrap; align-content: start; width: 300px; }
+            #fast { display: flex; margin-bottom: 10px; margin-left: 5px; align-items: center; }
+            #mouseContainer { width: 65px; height: 94px; }
+            #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; }
+            #mouse_0 { flex-basis: 24px; height: 50px; border-radius: 100px 10px 10px 10px; border: 2px solid white; }
+            #mouse_1 { flex-basis: 4px; height: 50px; border-radius: 10px; border: 2px solid white; }
+            #mouse_2 { flex-basis: 24px; height: 50px; border-radius: 10px 100px 10px 10px; border: 2px solid white; }
+            #mouse_bottom { margin-top: 1px; flex-basis: 100%; height: 34px; border-radius: 10px 10px 100px 100px; border: 2px solid white; }
+            .active2 { background: white; }
+            #cpsDisplay, #maxCpsDisplay { position: initial; padding-right: 10px; width: fit-content; height: fit-content; text-align: left; margin-bottom: 10px; margin-left: 5px; color: white; text-shadow: 2px 2px 2px rgba(0,0,0,0.5); }
+        `;
+        document.head.appendChild(customStyle);
+
+        const menuElement = document.createElement("div");
+        menuElement.id = "show_key_menu";
+        menuElement.style.display = "none";
+        menuElement.innerHTML = `
+            <div class="show_key_inputs"><input id="mouse_size" type="number" value="${storage.mouse}"><label>Mouse Size</label></div>
+            <div class="show_key_inputs"><input id="spacebar_size" type="number" value="${storage.space}"><label>Spacebar Size</label></div>
+            <div class="show_key_inputs"><input id="container_size" type="number" value="${storage.container}"><label>Container Size</label></div>
+            <div class="show_key_inputs"><input id="enter_key" type="text" maxlength="1" placeholder="Key" style="width:100px;"><div id="add_key"><span>Add</span></div><div id="remove_key"><span>Remove</span></div></div>
+        `;
+
+        const containerElement = document.createElement("div");
+        containerElement.id = "show_key_container";
+        containerElement.innerHTML = `
+            <div id="fast">
+                <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
+                    <div id="mouse" style="transform: scale(${storage.mouse}%)">
+                        <div id="mouse_0"></div><div id="mouse_1"></div><div id="mouse_2"></div><div id="mouse_bottom"></div>
+                    </div>
+                </div>
+                <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content;">_______</div>
+            </div>
+            <div id="cpsDisplay" class="resourceDisplay">CPS: 0</div>
+            <div id="maxCpsDisplay" class="resourceDisplay">MAX CPS: 0</div>
+            <div id="keys" style="display: flex; width: ${storage.container}px"></div>
+        `;
+
+        gameUI.appendChild(menuElement);
+        gameUI.appendChild(containerElement);
+
+        const keysContainer = document.getElementById("keys");
+        storage.keys.forEach((k) => {
+            const el = document.createElement("div");
+            el.id = `key_${k}`;
+            el.className = "keys";
+            el.textContent = k;
+            if (keysContainer) keysContainer.appendChild(el);
+        });
+
+        const addBtn = document.getElementById("add_key");
+        if (addBtn) {
+            addBtn.onclick = () => {
+                const input = document.getElementById("enter_key");
+                if (!input || !input.value) return;
+                const k = input.value.toUpperCase();
+                if (!document.getElementById(`key_${k}`)) {
+                    const el = document.createElement("div");
+                    el.id = `key_${k}`;
+                    el.className = "keys";
+                    el.textContent = k;
+                    if (keysContainer) keysContainer.appendChild(el);
+                    storage.keys.push(k);
+                    try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
+                }
+            };
+        }
+
+        const removeBtn = document.getElementById("remove_key");
+        if (removeBtn) {
+            removeBtn.onclick = () => {
+                const input = document.getElementById("enter_key");
+                if (!input || !input.value) return;
+                const k = input.value.toUpperCase();
+                const el = document.getElementById(`key_${k}`);
+                if (el) {
+                    el.remove();
+                    const idx = storage.keys.indexOf(k);
+                    if (idx > -1) storage.keys.splice(idx, 1);
+                    try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch(e){}
+                }
+            };
+        }
+
+        let currentCps = 0;
+        let maxCps = 0;
+        let spaceDown = false;
+
+        function addCPSCount() {
+            currentCps++;
+            const cpsEl = document.getElementById("cpsDisplay");
+            const maxCpsEl = document.getElementById("maxCpsDisplay");
+            if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            if (currentCps > maxCps) {
+                maxCps = currentCps;
+                if (maxCpsEl) maxCpsEl.innerText = `MAX CPS: ${maxCps}`;
+            }
+            setTimeout(() => {
+                currentCps--;
+                if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            }, 1000);
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Backslash") {
+                const m = document.getElementById("show_key_menu");
+                if (m) m.style.display = m.style.display === "block" ? "none" : "block";
+            } else if (e.code === "Space") {
+                if (!spaceDown) {
+                    spaceDown = true;
+                    const el = document.getElementById("key_Space");
+                    if (el) el.classList.add("active");
+                    addCPSCount();
+                }
+            } else {
+                const el = document.getElementById(`key_${e.key.toUpperCase()}`);
+                if (el) el.classList.add("active");
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.code === "Space") {
+                spaceDown = false;
+                const el = document.getElementById("key_Space");
+                if (el) el.classList.remove("active");
+            } else {
+                const el = document.getElementById(`key_${e.key.toUpperCase()}`);
+                if (el) el.classList.remove("active");
+            }
+        });
+
+        window.addEventListener("mousedown", (e) => {
+            if ([0, 1, 2].includes(e.button)) addCPSCount();
+            const el = document.getElementById(`mouse_${e.button}`);
+            if (el) el.classList.add("active2");
+        });
+
+        window.addEventListener("mouseup", (e) => {
+            const el = document.getElementById(`mouse_${e.button}`);
+            if (el) el.classList.remove("active2");
+        });
+
+        // 2. Dark Visuals Theme Modifications
+        const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+        const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
+
+        setHTML('enterGame', 'Play');
+        setHTML('loadingText', '');
+        setHTML('gameName', '');
+        setPlaceholder('nameInput', '');
+        setPlaceholder('chatBox', '');
+
+        const elementsToRemove = [
+            "#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText",
+            "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2",
+            "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions",
+            "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge",
+            "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
+            ".menuText", ".menuHeader", ".menuLink"
+        ];
+
+        elementsToRemove.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+                if (el) el.remove();
+            });
+        });
+
+        const setupCard = document.getElementById('setupCard');
+        if (setupCard) setupCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
+
+        const guideCard = document.getElementById('guideCard');
+        if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
+
+        // 3. Canvas Vignette Effect (Gameplay Only)
+        const canvas = document.getElementById("gameCanvas");
+        if (canvas) {
+            let ctx = canvas.getContext("2d");
+            let screenWidth = 1920;
+            let screenHeight = 1080;
+            let screenW = screenWidth / 2;
+            let screenH = screenHeight / 2;
+
+            function renderVignette() {
+                const mainMenu = document.getElementById("mainMenu");
+                const isPlaying = mainMenu && (mainMenu.style.display === "none" || window.getComputedStyle(mainMenu).display === "none");
+
+                if (isPlaying && ctx) {
+                    ctx.beginPath();
+                    let gradient = ctx.createRadialGradient(screenW, screenH, 0, screenW, screenH, screenWidth);
+                    for (let i = 0; i <= 1; i++) {
+                        gradient.addColorStop(i, "rgba(0, 0, 0, " + i + ")");
+                    }
+                    ctx.fillStyle = gradient;
+                    ctx.rect(0, 0, screenWidth, screenHeight);
+                    ctx.fill();
+                }
+                window.requestAnimationFrame(renderVignette);
+            }
+            renderVignette();
+        }
+    }
+
+    // Safely trigger when elements are fully loaded
+    if (document.readyState !== "loading") {
+        setTimeout(initClientMods, 400);
+    } else {
+        window.addEventListener("DOMContentLoaded", () => setTimeout(initClientMods, 400));
+    }
+})();
