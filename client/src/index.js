@@ -3223,13 +3223,13 @@ if (typeof window !== "undefined") {
     };
 }
 // ==========================================
-// MOOMOO.IO GITHUB DIRECT CLIENT FIX
+// MOOMOO.IO INSTANT GITHUB INJECTION
 // ==========================================
 
 (function() {
     "use strict";
 
-    // 1. Tüm Stil ve İmleç Zorlamaları
+    // 1. Stil ve İmleç Tanımları
     const style = document.createElement("style");
     style.innerHTML = `
         button, .menuButton, #settingsButton, #storeButton, #allianceButton, #chatButton, #enterGame, .show_key_inputs > div, input[type="checkbox"], label {
@@ -3336,8 +3336,8 @@ if (typeof window !== "undefined") {
     `;
     document.head.appendChild(style);
 
-    // 2. Güvenli Kurulum Fonksiyonu
-    function setupClient() {
+    // 2. Yükleme Çubuğunu Kilitlemeyen Güvenli Enjeksiyon
+    function run() {
         const gameUI = document.getElementById("gameUI") || document.body;
         if (!gameUI || document.getElementById("show_key_container")) return;
 
@@ -3490,11 +3490,11 @@ if (typeof window !== "undefined") {
         });
     }
 
-    // Webpack yüklenmesini tıkamayacak şekilde güvenli aralık
-    const interval = setInterval(() => {
-        if (document.getElementById("mainMenu") || document.getElementById("gameUI")) {
-            setupClient();
-            clearInterval(interval);
-        }
-    }, 200);
+    // Yükleme çubuğunu kilitlemeyen asenkron kontrol
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        setTimeout(run, 100);
+    } else {
+        window.addEventListener("DOMContentLoaded", () => setTimeout(run, 100));
+    }
+    window.addEventListener("load", () => setTimeout(run, 100));
 })();
