@@ -3222,36 +3222,38 @@ if (typeof window !== "undefined") {
         }
     };
 }
-// Otomatik Vignette (Karartma) Efekti
-(function() {
-    'use strict';
+// --- Otomatik Vignette (Karartma) Sistemi ---
+console.log(">>> Vignette scripti index.js içinde başarıyla başlatıldı!");
 
-    function applyVignette() {
-        const mainMenu = document.getElementById('mainMenu');
-        const isPlaying = mainMenu && (mainMenu.style.display === 'none' || window.getComputedStyle(mainMenu).display === 'none');
+setInterval(() => {
+    const mainMenu = document.getElementById('mainMenu');
+    
+    // Eğer mainMenu yoksa veya display: none olduysa oyundayız demektir
+    const isPlaying = !mainMenu || mainMenu.style.display === 'none' || window.getComputedStyle(mainMenu).display === 'none';
 
-        if (isPlaying) {
-            if (!document.getElementById('customVignette')) {
-                const vignette = document.createElement('div');
-                vignette.id = 'customVignette';
-                vignette.style.position = 'fixed';
-                vignette.style.top = '0';
-                vignette.style.left = '0';
-                vignette.style.width = '100vw';
-                vignette.style.height = '100vh';
-                vignette.style.pointerEvents = 'none'; // Oyun içi vuruşları/tıklamaları engellemez
-                vignette.style.zIndex = '999999';
-                vignette.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)';
-                
-                if (document.body) {
-                    document.body.appendChild(vignette);
-                }
+    if (isPlaying) {
+        if (!document.getElementById('customVignette')) {
+            console.log(">>> Oyuna geçildi, vignette katmanı ekleniyor...");
+            const vignette = document.createElement('div');
+            vignette.id = 'customVignette';
+            vignette.style.position = 'fixed';
+            vignette.style.top = '0';
+            vignette.style.left = '0';
+            vignette.style.width = '100vw';
+            vignette.style.height = '100vh';
+            vignette.style.pointerEvents = 'none'; // Vuruşları ve tıklamaları asla engellemez
+            vignette.style.zIndex = '999999';
+            vignette.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)';
+            
+            if (document.body) {
+                document.body.appendChild(vignette);
             }
-        } else {
-            const existing = document.getElementById('customVignette');
-            if (existing) existing.remove();
+        }
+    } else {
+        // Menüye dönüldüyse kaldır
+        const existing = document.getElementById('customVignette');
+        if (existing) {
+            existing.remove();
         }
     }
-
-    setInterval(applyVignette, 300);
-})();
+}, 500);
