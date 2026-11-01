@@ -403,7 +403,7 @@
     // ==========================================
     // SECTION 3: SHOW KEYS & MOUSE OVERLAY
     // ==========================================
-    unsafeWindow.showKeys = true;
+    window.showKeys = true;
 
     let storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
     if (storage == null) {
@@ -571,7 +571,7 @@
             if (keysContainer) keysContainer.appendChild(element);
         });
 
-        unsafeWindow.changeShowKeyMouseProperty = (id, value) => {
+        window.changeShowKeyMouseProperty = (id, value) => {
             storage[id] = value;
             localStorage.setItem("showKeys&Mouse", JSON.stringify(storage));
             const mouseContainer = document.getElementById("mouseContainer");
@@ -606,7 +606,7 @@
             }
         };
 
-        unsafeWindow.addKey_ShowKeyMouse = () => {
+        window.addKey_ShowKeyMouse = () => {
             const input = document.getElementById("enter_key");
             if (!input || !input.value) return;
             const key = input.value.toUpperCase();
@@ -622,7 +622,7 @@
             }
         };
 
-        unsafeWindow.removeKey_ShowKeyMouse = async () => {
+        window.removeKey_ShowKeyMouse = async () => {
             const input = document.getElementById("enter_key");
             if (!input || !input.value) return;
             const key = input.value.toUpperCase();
@@ -719,124 +719,4 @@
     // ==========================================
     function toggleStoreMenu() {
         let storeKey = document.getElementById('storeMenu');
-        if (storeKey) {
-            const isOpening = storeKey.style.display !== "block";
-            storeKey.style.display = isOpening ? "block" : "none";
-            if (isOpening) {
-                filterStoreItems();
-            }
-        }
-    }
-
-    window.addEventListener('keydown', function(e) {
-        if (e.key === 'g' || e.key === 'G') {
-            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
-
-            e.preventDefault();
-            e.stopPropagation();
-            toggleStoreMenu();
-        }
-    }, true);
-
-    window.addEventListener('mousedown', function(e) {
-        if (e.button === 1) {
-            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
-
-            e.preventDefault();
-            e.stopPropagation();
-            toggleStoreMenu();
-        }
-    }, true);
-
-    // ==========================================
-    // SECTION 5: DARK VISUALS THEME
-    // ==========================================
-    function applyDarkVisuals() {
-        if (typeof CanvasRenderingContext2D !== "undefined" && CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() {
-                if (this.fillStyle === "#8ecc51") {
-                    this.fillStyle = "#8551f5";
-                }
-                return oldFunc.call(this, ...arguments);
-            })(CanvasRenderingContext2D.prototype.roundRect);
-        }
-
-        const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
-        const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
-
-        setHTML('enterGame', 'Play');
-        setHTML('loadingText', '');
-        setHTML('gameName', '');
-        setPlaceholder('nameInput', '');
-        setPlaceholder('chatBox', '');
-
-        const elementsToRemove = [
-            "#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText",
-            "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2",
-            "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions",
-            "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge",
-            "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
-            ".menuText", ".menuHeader", ".menuLink"
-        ];
-
-        elementsToRemove.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => el.remove());
-        });
-
-        const chatBtn = document.getElementById('chatButton');
-        if (chatBtn) chatBtn.style.display = 'none';
-
-        const mainMenu = document.getElementById("mainMenu");
-        if (mainMenu) {
-            mainMenu.style.backgroundImage = "url('https://wallpaperset.com/w/full/1/0/f/380248.jpg')";
-            mainMenu.style.backgroundSize = "cover";
-            mainMenu.style.width = "100%";
-            mainMenu.style.height = "100vh";
-        }
-
-        const purpleElements = [
-            "pingDisplay", "killCounter", "foodDisplay", "woodDisplay",
-            "stoneDisplay", "leaderboard", "chatBox", "chatButton",
-            "allianceButton", "storeButton"
-        ];
-
-        purpleElements.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.color = "#584487";
-                if (id !== "pingDisplay") {
-                    el.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-                }
-            }
-        });
-
-        const storeButton = document.getElementById("storeButton");
-        if (storeButton) {
-            storeButton.addEventListener("click", () => {
-                setTimeout(filterStoreItems, 50);
-            });
-        }
-
-        const ageText = document.getElementById("ageText");
-        if (ageText) ageText.style.color = "#584487";
-
-        const scoreDisplay = document.getElementById("scoreDisplay");
-        if (scoreDisplay) scoreDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const ageBar = document.getElementById("ageBar");
-        if (ageBar) ageBar.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const ageBarBody = document.getElementById("ageBarBody");
-        if (ageBarBody) ageBarBody.style.backgroundColor = "#584487";
-
-        const mapDisplay = document.getElementById("mapDisplay");
-        if (mapDisplay) mapDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
-
-        const shadowStyle = "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
-        const setupCard = document.getElementById('setupCard');
-        if (setupCard) setupCard.style.cssText += shadowStyle;
-
-        const guideCard = document.getElementById('guideCard');
-        if (guideCard) guideCard.style.cssText += shadowStyle;
-
-        const serverBrowser = document.getElementById('serverBrowser');
+        if (storeKey
