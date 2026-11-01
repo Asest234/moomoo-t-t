@@ -332,6 +332,78 @@
 (function() {
     'use strict';
 
+    // ==========================================
+    // SECTION 1: STORE HAT & ACCESSORY FILTERING
+    // ==========================================
+    const hatOrder = [
+        "soldier helmet",
+        "bull helmet",
+        "turret gear",
+        "tank gear",
+        "plague mask",
+        "booster hat",
+        "flipper hat",
+        "polar head"
+    ];
+
+    const accessoryOrder = [
+        "monkey tail",
+        "corrupt x wings"
+    ];
+
+    function filterStoreItems() {
+        const storeHolder = document.getElementById("storeHolder");
+        if (!storeHolder) return;
+
+        const storeItems = Array.from(storeHolder.querySelectorAll(".storeItem"));
+        if (!storeItems.length) return;
+
+        storeItems.forEach(item => {
+            const itemTitle = (item.innerText || item.textContent || "").toLowerCase();
+            const isHat = hatOrder.some(hat => itemTitle.includes(hat));
+            const isAcc = accessoryOrder.some(acc => itemTitle.includes(acc));
+
+            if (!isHat && !isAcc) {
+                item.style.display = "none";
+            } else {
+                item.style.display = "";
+            }
+        });
+
+        const combinedOrder = [...hatOrder, ...accessoryOrder];
+        combinedOrder.forEach(targetName => {
+            const matchedItem = storeItems.find(item => {
+                const title = (item.innerText || item.textContent || "").toLowerCase();
+                return title.includes(targetName);
+            });
+            if (matchedItem) {
+                storeHolder.appendChild(matchedItem);
+            }
+        });
+    }
+
+    // ==========================================
+    // SECTION 2: PROTOTYPE HOOKS & ENGINE SETUP
+    // ==========================================
+    try {
+        const symbol = Symbol("maxPlayers");
+        Object.defineProperty(Object.prototype, "maxPlayers", {
+            get() {
+                return this[symbol];
+            },
+            set(value) {
+                delete Object.prototype.maxPlayers;
+                this.maxPlayers = value + 12;
+            },
+            configurable: true
+        });
+    } catch (e) {
+        console.warn("MaxPlayers hook error:", e);
+    }
+
+    // ==========================================
+    // SECTION 3: SHOW KEYS & MOUSE OVERLAY
+    // ==========================================
     let storage = null;
     try {
         storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
@@ -652,6 +724,41 @@
         });
     }
 
+    // ==========================================
+    // SECTION 4: STORE TOGGLE (G KEY & MIDDLE CLICK)
+    // ==========================================
+    function toggleStoreMenu() {
+        let storeKey = document.getElementById('storeMenu');
+        if (storeKey) {
+            const isOpening = storeKey.style.display !== "block";
+            storeKey.style.display = isOpening ? "block" : "none";
+            if (isOpening) {
+                filterStoreItems();
+            }
+        }
+    }
+
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'g' || e.key === 'G') {
+            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
+            e.preventDefault();
+            e.stopPropagation();
+            toggleStoreMenu();
+        }
+    }, true);
+
+    window.addEventListener('mousedown', function(e) {
+        if (e.button === 1) {
+            if (document.activeElement.id === 'chatBox' || document.activeElement.id === 'allianceInput') return;
+            e.preventDefault();
+            e.stopPropagation();
+            toggleStoreMenu();
+        }
+    }, true);
+
+    // ==========================================
+    // SECTION 5: DARK VISUALS THEME
+    // ==========================================
     function applyDarkVisuals() {
         if (typeof CanvasRenderingContext2D !== "undefined" && CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() {
@@ -687,6 +794,14 @@
         const chatBtn = document.getElementById('chatButton');
         if (chatBtn) chatBtn.style.display = 'none';
 
+        const mainMenu = document.getElementById("mainMenu");
+        if (mainMenu) {
+            mainMenu.style.backgroundImage = "url('https://wallpaperset.com/w/full/1/0/f/380248.jpg')";
+            mainMenu.style.backgroundSize = "cover";
+            mainMenu.style.width = "100%";
+            mainMenu.style.height = "100vh";
+        }
+
         const purpleElements = [
             "pingDisplay", "killCounter", "foodDisplay", "woodDisplay",
             "stoneDisplay", "leaderboard", "chatBox", "chatButton",
@@ -702,6 +817,13 @@
                 }
             }
         });
+
+        const storeButton = document.getElementById("storeButton");
+        if (storeButton) {
+            storeButton.addEventListener("click", () => {
+                setTimeout(filterStoreItems, 50);
+            });
+        }
 
         const ageText = document.getElementById("ageText");
         if (ageText) ageText.style.color = "#584487";
@@ -791,19 +913,34 @@
         render();
     }
 
+    // ==========================================
+    // SECTION 6: INITIALIZATION LOADERS
+    // ==========================================
+    let isFiltering = false;
     const runAll = () => {
         applyDarkVisuals();
         startCanvasRender();
         initKeysAndMouse();
+
+        const storeHolder = document.getElementById("storeHolder");
+        if (storeHolder) {
+            const observer = new MutationObserver(() => {
+                if (!isFiltering) {
+                    isFiltering = true;
+                    filterStoreItems();
+                    setTimeout(() => { isFiltering = false; }, 50);
+                }
+            });
+            observer.observe(storeHolder, { childList: true, subtree: true });
+        }
     };
 
-    const checkInterval = setInterval(() => {
-        if (document.getElementById("gameUI") || document.body) {
-            runAll();
-            clearInterval(checkInterval);
-        }
-    }, 200);
-
     window.addEventListener("load", runAll);
+
+    if (document.readyState !== "loading") {
+        runAll();
+    } else {
+        window.addEventListener("DOMContentLoaded", runAll);
+    }
 })();
 </script>
