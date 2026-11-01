@@ -332,9 +332,6 @@
 (function() {
     'use strict';
 
-    // ==========================================
-    // SECTION 1: SHOW KEYS & MOUSE OVERLAY
-    // ==========================================
     let storage = null;
     try {
         storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
@@ -359,7 +356,7 @@
         const DIV = `
             <style>
                 #show_key_menu {
-                    background-color: rgba(0, 0, 0, 0.4);
+                    background-color: rgba(0, 0, 0, 0.8);
                     width: fit-content;
                     height: fit-content;
                     pointer-events: all;
@@ -391,7 +388,7 @@
                     border-radius: 4px;
                     text-transform: uppercase;
                 }
-                .show_key_inputs > input[type="checkbox"] { align-self: center; }
+                .show_key_inputs > input[type="checkbox"] { align-self: center; cursor: pointer; }
                 .show_key_inputs > label { margin-left: 10px; }
                 .show_key_inputs > div {
                     margin-left: 10px;
@@ -449,34 +446,34 @@
             </style>
             <div id="show_key_menu" style="display: none">
                 <div class="show_key_inputs">
-                    <input id="mouse_size" type="number" value="${storage.mouse}" min="0" onchange="changeShowKeyMouseProperty('mouse', parseFloat(this.value))">
+                    <input id="mouse_size" type="number" value="${storage.mouse}" min="0">
                     <label for="mouse_size">Mouse Size</label>
                 </div>
                 <div class="show_key_inputs">
-                    <input id="spacebar_size" type="number" value="${storage.space}" oninput="this.value = Math.round(this.value)" onchange="changeShowKeyMouseProperty('space', parseInt(this.value))" max="20" min="0">
+                    <input id="spacebar_size" type="number" value="${storage.space}" max="20" min="0">
                     <label for="spacebar_size">Spacebar Size</label>
                 </div>
                 <div class="show_key_inputs">
-                    <input id="container_size" type="number" value="${storage.container}" min="0" onchange="changeShowKeyMouseProperty('container', parseFloat(this.value))">
+                    <input id="container_size" type="number" value="${storage.container}" min="0">
                     <label for="container_size">Container Size</label>
                 </div>
                 <div class="show_key_inputs">
-                    <input id="show_cps" type="checkbox" ${storage.cps ? "checked" : ""} onchange="changeShowKeyMouseProperty('cps', this.checked)">
+                    <input id="show_cps" type="checkbox" ${storage.cps ? "checked" : ""}>
                     <label for="show_cps">CPS</label>
                 </div>
                 <div class="show_key_inputs">
-                    <input id="show_maxcps" type="checkbox" ${storage.maxCps ? "checked" : ""} onchange="changeShowKeyMouseProperty('maxCps', this.checked)">
+                    <input id="show_maxcps" type="checkbox" ${storage.maxCps ? "checked" : ""}>
                     <label for="show_maxcps">MAX CPS</label>
                 </div>
                 <div class="show_key_inputs">
                     <input id="enter_key" type="text" maxlength="1" placeholder="Enter Key" style="width: 200px; text-align: center;">
-                    <div id="add_key" onclick="addKey_ShowKeyMouse()"><span>Add</span></div>
-                    <div id="remove_key" onclick="removeKey_ShowKeyMouse()"><span>Remove</span></div>
+                    <div id="add_key"><span>Add</span></div>
+                    <div id="remove_key"><span>Remove</span></div>
                 </div>
             </div>
             <div id="show_key_container">
                 <div id="fast">
-                    <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height:${94 * (storage.mouse / 100)}px">
+                    <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
                         <div id="mouse" style="transform: scale(${storage.mouse}%)">
                             <div id="mouse_0"></div>
                             <div id="mouse_1"></div>
@@ -484,7 +481,328 @@
                             <div id="mouse_bottom"></div>
                         </div>
                     </div>
-                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content; display:${storage.space > 0 ? "block" : "none"}">_______</div>
+                    <div class="keys" id="key_Space" style="margin-left: ${storage.mouse > 0 ? 10 : 0}px; width: fit-content; display: ${storage.space > 0 ? "block" : "none"}">_______</div>
                 </div>
                 <div id="cpsDisplay" class="resourceDisplay" style="display: ${storage.cps ? "block" : "none"}">CPS: 0</div>
-                <div id="maxCpsDisplay" class="
+                <div id="maxCpsDisplay" class="resourceDisplay" style="display: ${storage.maxCps ? "block" : "none"}">MAX CPS: 0</div>
+                <div id="keys" style="display: ${storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex"}; width: ${storage.container}px"></div>
+            </div>
+        `;
+
+        const container = document.createElement("div");
+        container.innerHTML = DIV;
+        gameUI.appendChild(container);
+
+        storage.keys.forEach((key) => {
+            const element = document.createElement("div");
+            element.id = `key_${key}`;
+            element.className = "keys";
+            element.textContent = key;
+            const keysContainer = document.getElementById("keys");
+            if (keysContainer) keysContainer.appendChild(element);
+        });
+
+        // Olay Dinleyicileri (Event Listeners) - Ayarların çalışmasını sağlayan kısım
+        function updateProperty(id, value) {
+            storage[id] = value;
+            try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
+            
+            const mContainer = document.getElementById("mouseContainer");
+            const kSpace = document.getElementById("key_Space");
+            const mDiv = document.getElementById("mouse");
+            const cpsEl = document.getElementById("cpsDisplay");
+            const maxCpsEl = document.getElementById("maxCpsDisplay");
+            const keysEl = document.getElementById("keys");
+
+            if (mContainer) {
+                mContainer.style.width = `${65 * (storage.mouse / 100)}px`;
+                mContainer.style.height = `${94 * (storage.mouse / 100)}px`;
+                mContainer.style.display = storage.mouse > 0 ? "block" : "none";
+            }
+            if (kSpace) {
+                kSpace.style.marginLeft = `${storage.mouse > 0 ? 10 : 0}px`;
+                kSpace.textContent = "_".repeat(storage.space);
+                kSpace.style.display = storage.space > 0 ? "block" : "none";
+            }
+            if (mDiv) mDiv.style.transform = `scale(${storage.mouse}%)`;
+            if (cpsEl) cpsEl.style.display = storage.cps ? "block" : "none";
+            if (maxCpsEl) maxCpsEl.style.display = storage.maxCps ? "block" : "none";
+            if (keysEl) {
+                keysEl.style.display = storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex";
+                keysEl.style.width = `${storage.container}px`;
+            }
+        }
+
+        document.getElementById("mouse_size").addEventListener("input", (e) => updateProperty('mouse', parseFloat(e.target.value) || 0));
+        document.getElementById("spacebar_size").addEventListener("input", (e) => updateProperty('space', parseInt(e.target.value) || 0));
+        document.getElementById("container_size").addEventListener("input", (e) => updateProperty('container', parseFloat(e.target.value) || 0));
+        document.getElementById("show_cps").addEventListener("change", (e) => updateProperty('cps', e.target.checked));
+        document.getElementById("show_maxcps").addEventListener("change", (e) => updateProperty('maxCps', e.target.checked));
+
+        document.getElementById("add_key").addEventListener("click", () => {
+            const input = document.getElementById("enter_key");
+            if (!input || !input.value) return;
+            const key = input.value.toUpperCase();
+            let element = document.getElementById(`key_${key}`);
+            if (element == null) {
+                element = document.createElement("div");
+                element.id = `key_${key}`;
+                element.className = "keys";
+                element.textContent = key;
+                const keysContainer = document.getElementById("keys");
+                if (keysContainer) keysContainer.appendChild(element);
+                storage.keys.push(key);
+                try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
+            }
+            input.value = "";
+        });
+
+        document.getElementById("remove_key").addEventListener("click", () => {
+            const input = document.getElementById("enter_key");
+            if (!input || !input.value) return;
+            const key = input.value.toUpperCase();
+            const element = document.getElementById(`key_${key}`);
+            if (element != null) {
+                element.remove();
+                const index = storage.keys.indexOf(key);
+                if (index > -1) {
+                    storage.keys.splice(index, 1);
+                    try { localStorage.setItem("showKeys&Mouse", JSON.stringify(storage)); } catch (e) {}
+                }
+                const keysEl = document.getElementById("keys");
+                if (keysEl) keysEl.style.display = storage.container <= 0 || storage.keys.length == 0 ? "none" : "flex";
+            }
+            input.value = "";
+        });
+
+        var currentCps = 0;
+        var maxCps = 0;
+        var spaceDown = false;
+
+        function addCPS() {
+            currentCps++;
+            const cpsEl = document.getElementById("cpsDisplay");
+            if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            if (currentCps > maxCps) {
+                maxCps = currentCps;
+                const maxCpsEl = document.getElementById("maxCpsDisplay");
+                if (maxCpsEl) maxCpsEl.innerText = `MAX CPS: ${maxCps}`;
+            }
+            setTimeout(() => {
+                currentCps--;
+                if (cpsEl) cpsEl.innerText = `CPS: ${currentCps}`;
+            }, 1000);
+        }
+
+        function keysActive() {
+            const allianceMenu = document.getElementById("allianceMenu");
+            const chatHolder = document.getElementById("chatHolder");
+            const isAllianceOpen = allianceMenu && allianceMenu.style.display === "block";
+            const isChatOpen = chatHolder && chatHolder.style.display === "block";
+            return !isAllianceOpen && !isChatOpen;
+        }
+
+        window.addEventListener("keydown", (event) => {
+            if (keysActive()) {
+                if (event.code === "Backslash") {
+                    const menu = document.getElementById("show_key_menu");
+                    if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
+                } else if (event.code === "Space") {
+                    if (!spaceDown) {
+                        spaceDown = true;
+                        const keyDiv = document.getElementById(`key_Space`);
+                        if (keyDiv && !keyDiv.classList.contains("active")) keyDiv.classList.add("active");
+                        addCPS();
+                    }
+                } else if (event.key) {
+                    const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
+                    if (keyDiv && !keyDiv.classList.contains("active")) keyDiv.classList.add("active");
+                }
+            }
+        });
+
+        window.addEventListener("keyup", (event) => {
+            if (event.code === "Space") {
+                spaceDown = false;
+                const keyDiv = document.getElementById(`key_Space`);
+                if (keyDiv && keyDiv.classList.contains("active")) keyDiv.classList.remove("active");
+            } else if (event.key) {
+                const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
+                if (keyDiv && keyDiv.classList.contains("active")) keyDiv.classList.remove("active");
+            }
+        });
+
+        const touchControls = document.getElementById("touch-controls-fullscreen") || document;
+        touchControls.addEventListener("mousedown", (event) => {
+            if ([0, 1, 2].includes(event.button)) {
+                addCPS();
+            }
+            let mouseDiv = document.getElementById(`mouse_${event.button}`);
+            if (mouseDiv && !mouseDiv.classList.contains("active2")) {
+                mouseDiv.classList.add("active2");
+            }
+        });
+
+        touchControls.addEventListener("mouseup", (event) => {
+            let mouseDiv = document.getElementById(`mouse_${event.button}`);
+            if (mouseDiv && mouseDiv.classList.contains("active2")) {
+                mouseDiv.classList.remove("active2");
+            }
+        });
+    }
+
+    function applyDarkVisuals() {
+        if (typeof CanvasRenderingContext2D !== "undefined" && CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() {
+                if (this.fillStyle === "#8ecc51") {
+                    this.fillStyle = "#8551f5";
+                }
+                return oldFunc.call(this, ...arguments);
+            })(CanvasRenderingContext2D.prototype.roundRect);
+        }
+
+        const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+        const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
+
+        setHTML('enterGame', 'Play');
+        setHTML('loadingText', '');
+        setHTML('gameName', '');
+        setPlaceholder('nameInput', '');
+        setPlaceholder('chatBox', '');
+
+        const elementsToRemove = [
+            "#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText",
+            "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2",
+            "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions",
+            "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge",
+            "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
+            ".menuText", ".menuHeader", ".menuLink"
+        ];
+
+        elementsToRemove.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => el.remove());
+        });
+
+        const chatBtn = document.getElementById('chatButton');
+        if (chatBtn) chatBtn.style.display = 'none';
+
+        const purpleElements = [
+            "pingDisplay", "killCounter", "foodDisplay", "woodDisplay",
+            "stoneDisplay", "leaderboard", "chatBox", "chatButton",
+            "allianceButton", "storeButton"
+        ];
+
+        purpleElements.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.color = "#584487";
+                if (id !== "pingDisplay") {
+                    el.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
+                }
+            }
+        });
+
+        const ageText = document.getElementById("ageText");
+        if (ageText) ageText.style.color = "#584487";
+
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        if (scoreDisplay) scoreDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
+
+        const ageBar = document.getElementById("ageBar");
+        if (ageBar) ageBar.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
+
+        const ageBarBody = document.getElementById("ageBarBody");
+        if (ageBarBody) ageBarBody.style.backgroundColor = "#584487";
+
+        const mapDisplay = document.getElementById("mapDisplay");
+        if (mapDisplay) mapDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.10)";
+
+        const shadowStyle = "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
+        const setupCard = document.getElementById('setupCard');
+        if (setupCard) setupCard.style.cssText += shadowStyle;
+
+        const guideCard = document.getElementById('guideCard');
+        if (guideCard) guideCard.style.cssText += shadowStyle;
+
+        const serverBrowser = document.getElementById('serverBrowser');
+        if (serverBrowser) {
+            serverBrowser.style.color = '#333';
+            serverBrowser.style.backgroundColor = '#e5e3e4';
+        }
+
+        const enterGameBtn = document.getElementById('enterGame');
+        if (enterGameBtn) enterGameBtn.style.backgroundColor = '#333';
+
+        const nameInput = document.getElementById('nameInput');
+        if (nameInput) nameInput.style.color = '#333';
+
+        const pingDisplay = document.querySelector('#pingDisplay');
+        if (pingDisplay) {
+            pingDisplay.style.color = '#fff';
+            pingDisplay.style.textShadow = '3px 3px 3px black';
+            document.body.appendChild(pingDisplay);
+        }
+
+        const shutdownDisplay = document.querySelector('#shutdownDisplay');
+        if (shutdownDisplay) {
+            shutdownDisplay.style.position = 'absolute';
+            shutdownDisplay.style.top = '15px';
+            shutdownDisplay.style.left = '150px';
+            shutdownDisplay.style.color = '#820000';
+            shutdownDisplay.style.fontSize = '200%';
+            shutdownDisplay.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
+        }
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .menuLink { font-size: 20px; color: #333; }
+            a { color: #333; text-decoration: none; }
+        `;
+        document.head.appendChild(style);
+
+        if (typeof window.follmoo === "function") {
+            try { window.follmoo("moofoll", 1); } catch(e) {}
+        }
+    }
+
+    function startCanvasRender() {
+        let canvas = document.getElementById("gameCanvas");
+        if (!canvas) return;
+        let ctx = canvas.getContext("2d");
+        let screenWidth = 1920;
+        let screenHeight = 1080;
+        let screenW = screenWidth / 2;
+        let screenH = screenHeight / 2;
+
+        function render() {
+            if (ctx) {
+                ctx.beginPath();
+                let gradient = ctx.createRadialGradient(screenW, screenH, 0, screenW, screenH, screenWidth);
+                for (let i = 0; i <= 1; i++) {
+                    gradient.addColorStop(i, "rgba(0, 0, 0, " + i + ")");
+                }
+                ctx.fillStyle = gradient;
+                ctx.rect(0, 0, screenWidth, screenHeight);
+                ctx.fill();
+            }
+            window.requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    const runAll = () => {
+        applyDarkVisuals();
+        startCanvasRender();
+        initKeysAndMouse();
+    };
+
+    const checkInterval = setInterval(() => {
+        if (document.getElementById("gameUI") || document.body) {
+            runAll();
+            clearInterval(checkInterval);
+        }
+    }, 200);
+
+    window.addEventListener("load", runAll);
+})();
+</script>
