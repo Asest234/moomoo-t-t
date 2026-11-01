@@ -3222,23 +3222,19 @@ if (typeof window !== "undefined") {
         }
     };
 }
-
 // ==========================================
-// MOOMOO.IO LIGHTWEIGHT & STABLE CLIENT MOD
+// MOOMOO.IO ABSOLUTE SAFE CLIENT MOD
 // ==========================================
 
 (function() {
     "use strict";
 
-    // 1. CSS Stilleri (İmleç, Renkler ve Temalar)
+    // 1. CSS Stilleri ve İmleç Garantisi
     const style = document.createElement("style");
     style.innerHTML = `
-        /* Fare İmleci El Şekli Garantisi */
         button, .menuButton, #settingsButton, #storeButton, #allianceButton, #chatButton, #enterGame, .show_key_inputs > div, input[type="checkbox"], label {
             cursor: pointer !important;
         }
-
-        /* Çark (Settings), Mağaza ve Diğer Butonlar Mor Renk */
         #settingsButton, #storeButton, #allianceButton, #chatButton {
             color: #584487 !important;
             background-color: rgba(0, 0, 0, 0.15) !important;
@@ -3246,15 +3242,11 @@ if (typeof window !== "undefined") {
         #pingDisplay, #killCounter, #foodDisplay, #woodDisplay, #stoneDisplay, #leaderboard {
             color: #584487 !important;
         }
-
-        /* Menü Kartları Tasarımı */
         #setupCard, #guideCard {
             box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.6) !important;
             background-color: #181818 !important;
             color: #fff !important;
         }
-
-        /* Keys & Mouse Overlay Stilleri */
         #show_key_menu {
             background-color: rgba(0, 0, 0, 0.8);
             width: fit-content;
@@ -3344,8 +3336,8 @@ if (typeof window !== "undefined") {
     `;
     document.head.appendChild(style);
 
-    // 2. Güvenli ve Bloklamayan Başlatıcı Fonksiyon
-    function initClient() {
+    // 2. Arka Planda Asla Kilitleme Yapmayan Güvenli Enjeksiyon
+    setTimeout(() => {
         try {
             const gameUI = document.getElementById("gameUI") || document.body;
             if (!gameUI || document.getElementById("show_key_container")) return;
@@ -3509,11 +3501,6 @@ if (typeof window !== "undefined") {
 
             const chatBtn = document.getElementById('chatButton');
             if (chatBtn) chatBtn.style.display = 'none';
-        } catch (err) {}
-    }
-
-    // Oyun tam yüklendiğinde bir kez çalışır, asla asılı bırakmaz
-    window.addEventListener("load", () => {
-        setTimeout(init, 1000);
-    });
+        } catch (e) {}
+    }, 1500);
 })();
