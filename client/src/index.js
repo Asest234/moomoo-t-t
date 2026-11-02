@@ -3223,21 +3223,18 @@ if (typeof window !== "undefined") {
     };
 }
 // ==========================================
-// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD
+// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (FIXED)
 // ==========================================
 
 (function() {
     "use strict";
 
-    // Oyun arayüzü DOM'a gelene kadar sürekli kontrol eden güvenli döngü
     const injectorInterval = setInterval(() => {
         const gameUI = document.getElementById("gameUI") || document.body;
         if (!gameUI) return;
 
-        // Eğer daha önce enjekte edilmediyse çalıştır
         if (!document.getElementById("show_key_container")) {
             
-            // 1. Keys & Mouse Overlay Storage & Setup
             let storage = null;
             try {
                 storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
@@ -3258,7 +3255,7 @@ if (typeof window !== "undefined") {
             const DIV = `
                 <style>
                     #show_key_menu {
-                        background-color: rgba(0, 0, 0, 0.4);
+                        background-color: rgba(0, 0, 0, 0.85);
                         width: fit-content;
                         height: fit-content;
                         pointer-events: all;
@@ -3325,15 +3322,30 @@ if (typeof window !== "undefined") {
                         box-sizing: border-box;
                     }
                     .keys.active { color: black; background: white; }
-                    #keys { display: flex; flex-wrap: wrap; align-content: start; width: 300px; }
+                    #keys { display: flex; flex-wrap: wrap; align-content: start; width: ${storage.container}px; }
                     #fast { display: flex; margin-bottom: 10px; margin-left: 5px; align-items: center; }
-                    #mouseContainer { width: 65px; height: 94px; }
-                    #mouse { display: flex; width: 65px; justify-content: space-between; flex-wrap: wrap; transform-origin: 0 0; }
+                    
+                    /* MOUSE İMLECİ DÜZELTME KATMANI */
+                    #mouseContainer {
+                        width: 65px;
+                        height: 94px;
+                        display: ${storage.mouse > 0 ? "block" : "none"};
+                        position: relative;
+                    }
+                    #mouse {
+                        display: flex;
+                        width: 65px;
+                        justify-content: space-between;
+                        flex-wrap: wrap;
+                        transform-origin: top left;
+                        transform: scale(${storage.mouse / 100});
+                    }
                     #mouse_0 { flex-basis: 24px; height: 50px; border-radius: 100px 10px 10px 10px; border: 2px solid white; }
                     #mouse_1 { flex-basis: 4px; height: 50px; border-radius: 10px; border: 2px solid white; }
                     #mouse_2 { flex-basis: 24px; height: 50px; border-radius: 10px 100px 10px 10px; border: 2px solid white; }
                     #mouse_bottom { margin-top: 1px; flex-basis: 100%; height: 34px; border-radius: 10px 10px 100px 100px; border: 2px solid white; }
                     .active2 { background: white; }
+
                     #cpsDisplay, #maxCpsDisplay {
                         position: initial;
                         padding-right: 10px;
@@ -3352,7 +3364,7 @@ if (typeof window !== "undefined") {
                         <label for="mouse_size">Mouse Size</label>
                     </div>
                     <div class="show_key_inputs">
-                        <input id="spacebar_size" type="number" value="${storage.space}" oninput="this.value = Math.round(this.value)" onchange="window.changeShowKeyMouseProperty('space', parseInt(this.value))" max="20" min="0">
+                        <input id="spacebar_size" type="number" value="${storage.space}" onchange="window.changeShowKeyMouseProperty('space', parseInt(this.value))" max="20" min="0">
                         <label for="spacebar_size">Spacebar Size</label>
                     </div>
                     <div class="show_key_inputs">
@@ -3375,8 +3387,8 @@ if (typeof window !== "undefined") {
                 </div>
                 <div id="show_key_container">
                     <div id="fast">
-                        <div id="mouseContainer" style="display: ${storage.mouse > 0 ? "block" : "none"}; width: ${65 * (storage.mouse / 100)}px; height: ${94 * (storage.mouse / 100)}px">
-                            <div id="mouse" style="transform: scale(${storage.mouse}%)">
+                        <div id="mouseContainer">
+                            <div id="mouse">
                                 <div id="mouse_0"></div>
                                 <div id="mouse_1"></div>
                                 <div id="mouse_2"></div>
@@ -3414,17 +3426,13 @@ if (typeof window !== "undefined") {
                 const mcD = document.getElementById("maxCpsDisplay");
                 const kE = document.getElementById("keys");
 
-                if (mC) {
-                    mC.style.width = `${65 * (storage.mouse / 100)}px`;
-                    mC.style.height = `${94 * (storage.mouse / 100)}px`;
-                    mC.style.display = storage.mouse > 0 ? "block" : "none";
-                }
+                if (mC) mC.style.display = storage.mouse > 0 ? "block" : "none";
                 if (kS) {
                     kS.style.marginLeft = `${storage.mouse > 0 ? 10 : 0}px`;
                     kS.textContent = "_".repeat(storage.space);
                     kS.style.display = storage.space > 0 ? "block" : "none";
                 }
-                if (mE) mE.style.transform = `scale(${storage.mouse}%)`;
+                if (mE) mE.style.transform = `scale(${storage.mouse / 100})`;
                 if (cD) cD.style.display = storage.cps ? "block" : "none";
                 if (mcD) mcD.style.display = storage.maxCps ? "block" : "none";
                 if (kE) {
@@ -3498,7 +3506,7 @@ if (typeof window !== "undefined") {
                         addCPS();
                     }
                 } else {
-                    if (event.key) {
+                    if (event.key && document.activeElement.tagName !== "INPUT") {
                         const keyDiv = document.getElementById(`key_${event.key.toUpperCase()}`);
                         if (keyDiv && !keyDiv.classList.contains("active")) keyDiv.classList.add("active");
                     }
@@ -3533,7 +3541,7 @@ if (typeof window !== "undefined") {
                 }
             });
 
-            // 2. Dark Visuals Theme
+            // Dark Visuals Theme
             const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
             const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
 
@@ -3551,7 +3559,6 @@ if (typeof window !== "undefined") {
                 "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
                 ".menuText", ".menuHeader", ".menuLink"
             ];
-
             elementsToRemove.forEach(selector => {
                 document.querySelectorAll(selector).forEach(el => el.remove());
             });
@@ -3565,14 +3572,18 @@ if (typeof window !== "undefined") {
             const guideCard = document.getElementById('guideCard');
             if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
 
-            // 3. Canvas Vignette
-            let canvas = document.getElementById("gameCanvas");
-            if (canvas) {
-                let ctx = canvas.getContext("2d");
-                let screenWidth = 1920;
-                let screenHeight = 1080;
-                let screenW = screenWidth / 2;
-                let screenH = screenHeight / 2;
+            // KESİN ÇÖZÜM: Canvas Karartma (Vignette) Döngüsü
+            function startVignetteLoop() {
+                const canvas = document.getElementById("gameCanvas");
+                if (!canvas) {
+                    requestAnimationFrame(startVignetteLoop);
+                    return;
+                }
+                const ctx = canvas.getContext("2d");
+                const screenWidth = 1920;
+                const screenHeight = 1080;
+                const screenW = screenWidth / 2;
+                const screenH = screenHeight / 2;
 
                 function renderVignette() {
                     const mainMenu = document.getElementById("mainMenu");
@@ -3592,8 +3603,8 @@ if (typeof window !== "undefined") {
                 }
                 renderVignette();
             }
+            startVignetteLoop();
 
-            // Başarıyla enjekte edildiği için döngüyü durdur
             clearInterval(injectorInterval);
         }
     }, 300);
