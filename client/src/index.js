@@ -3617,18 +3617,4 @@ window.addEventListener('load', () => {
         }
     }, 100);
 })();
-// Sayfa yüklenme sırasını takılmadan yakalayan MutationObserver tetikleyicisi
-const observer = new MutationObserver((mutations, obs) => {
-    const gameUI = document.getElementById("gameUI") || document.body;
-    if (gameUI && !document.getElementById("show_key_container")) {
-        obs.disconnect(); // Gözlemciyi durdur ve modu çalıştır
-        
-        // --- BURADAN SONRASI SENİN MODUNUN KODLARI ---
-        // (Yazdığımız tüm karartma, tuşlar ve imlec kodları buranın içine gelecek)
-    }
-});
 
-observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true
-});
