@@ -3223,7 +3223,7 @@ if (typeof window !== "undefined") {
     };
 }
 // ==========================================
-// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (FINAL FIX)
+// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (FULL FIX)
 // ==========================================
 
 (function() {
@@ -3354,7 +3354,7 @@ if (typeof window !== "undefined") {
                     text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
                 }
 
-                /* KESİN ÇÖZÜM: CSS tabanlı kusursuz karartma katmanı */
+                /* Həm menüde hem oyunda kusursuz çalışan karartma katmanı */
                 #customVignette {
                     position: fixed;
                     top: 0;
@@ -3362,8 +3362,8 @@ if (typeof window !== "undefined") {
                     width: 100vw;
                     height: 100vh;
                     pointer-events: none;
-                    z-index: 98;
-                    background: radial-gradient(circle, rgba(0,0,0,0) 35%, rgba(0,0,0,0.85) 100%);
+                    z-index: 97;
+                    background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.9) 100%);
                 }
             </style>
             
@@ -3585,21 +3585,21 @@ if (typeof window !== "undefined") {
         if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
     }
 
-    // Webpack derlemesinde DOM ve window tam hazır olduğunda tetiklenmesini garanti eden yapı
+    // Webpack derlemesinde DOM yüklenme durumunu garantiye alan tetikleyici
     if (document.readyState === "complete" || document.readyState === "interactive") {
-        setTimeout(initMod, 100);
+        setTimeout(initMod, 50);
     } else {
         window.addEventListener("DOMContentLoaded", initMod);
         window.addEventListener("load", initMod);
     }
 
-    // Ek güvenlik katmanı olarak kısa aralıklı başlatıcı
-    const fallbackInterval = setInterval(() => {
+    // Elementler DOM'a düştüğü an yakalamayı garantileyen hızlı döngü
+    const safeInterval = setInterval(() => {
         if (document.body) {
             initMod();
             if (document.getElementById("show_key_container")) {
-                clearInterval(fallbackInterval);
+                clearInterval(safeInterval);
             }
         }
-    }, 200);
+    }, 100);
 })();
