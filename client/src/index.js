@@ -3222,6 +3222,15 @@ if (typeof window !== "undefined") {
         }
     };
 }
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // ==========================================
+        // BÜTÜN MOD KODUN BURAYA GELECEK
+        // (Karartma, tuşlar, mouse imleci ve tema ayarları)
+        // ==========================================
+        
+    }, 500); // Sayfa tamamen yüklendikten yarım saniye sonra F12'deki gibi otomatik tetiklenir
+});
 // ==========================================
 // MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (VIGNETTE FIX)
 // ==========================================
