@@ -3223,13 +3223,34 @@ if (typeof window !== "undefined") {
     };
 }
 // ==========================================
-// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (FULL FIX)
+// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (VIGNETTE FIX)
 // ==========================================
 
 (function() {
     "use strict";
 
     function initMod() {
+        // Karartma katmanını body'ye bağımsız olarak ekleyelim ki menüde de kalsın
+        if (!document.getElementById("customVignette")) {
+            const vignette = document.createElement("div");
+            vignette.id = "customVignette";
+            vignette.innerHTML = `
+                <style>
+                    #customVignette {
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        width: 100vw !important;
+                        height: 100vh !important;
+                        pointer-events: none !important;
+                        z-index: 999998 !important;
+                        background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.9) 100%) !important;
+                    }
+                </style>
+            `;
+            document.body.appendChild(vignette);
+        }
+
         if (document.getElementById("show_key_container")) return;
 
         let storage = null;
@@ -3262,7 +3283,7 @@ if (typeof window !== "undefined") {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    z-index: 99999;
+                    z-index: 999999;
                     border-radius: 8px;
                 }
                 .show_key_inputs {
@@ -3353,22 +3374,8 @@ if (typeof window !== "undefined") {
                     color: white;
                     text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
                 }
-
-                /* Həm menüde hem oyunda kusursuz çalışan karartma katmanı */
-                #customVignette {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100vw;
-                    height: 100vh;
-                    pointer-events: none;
-                    z-index: 97;
-                    background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.9) 100%);
-                }
             </style>
             
-            <div id="customVignette"></div>
-
             <div id="show_key_menu" style="display: none">
                 <div class="show_key_inputs">
                     <input id="mouse_size" type="number" value="${storage.mouse}" min="0" onchange="window.changeShowKeyMouseProperty('mouse', parseFloat(this.value))">
@@ -3585,7 +3592,6 @@ if (typeof window !== "undefined") {
         if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
     }
 
-    // Webpack derlemesinde DOM yüklenme durumunu garantiye alan tetikleyici
     if (document.readyState === "complete" || document.readyState === "interactive") {
         setTimeout(initMod, 50);
     } else {
@@ -3593,7 +3599,6 @@ if (typeof window !== "undefined") {
         window.addEventListener("load", initMod);
     }
 
-    // Elementler DOM'a düştüğü an yakalamayı garantileyen hızlı döngü
     const safeInterval = setInterval(() => {
         if (document.body) {
             initMod();
