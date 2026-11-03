@@ -3222,13 +3222,12 @@ if (typeof window !== "undefined") {
         }
     };
 }
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        // ==========================================
-        // BÜTÜN MOD KODUN BURAYA GELECEK
-        // (Karartma, tuşlar, mouse imleci ve tema ayarları)
-        // ==========================================
-        
+// Webpack'in erken derleme/çalışma sorununu ezen ve F12 gereksinimini bitiren oto-başlatıcı
+(function () {
+    const observer = new MutationObserver((mutations, obs) => {
+        const gameUI = document.getElementById("gameUI") || document.body;
+        if (gameUI) {
+            obs.disconnect(); // Element yakalandığı an gözlemciyi durdur ve kodu çalıştır  
     }, 500); // Sayfa tamamen yüklendikten yarım saniye sonra F12'deki gibi otomatik tetiklenir
 });
 // ==========================================
@@ -3607,14 +3606,18 @@ window.addEventListener('load', () => {
         window.addEventListener("DOMContentLoaded", initMod);
         window.addEventListener("load", initMod);
     }
-
-    const safeInterval = setInterval(() => {
-        if (document.body) {
+const observer = new MutationObserver((mutations, obs) => {
+        if (document.getElementById("gameUI") || document.body) {
+            obs.disconnect();
             initMod();
-            if (document.getElementById("show_key_container")) {
-                clearInterval(safeInterval);
-            }
         }
-    }, 100);
-})();
+    });
 
+    if (document.documentElement) {
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    } else {
+        window.addEventListener("DOMContentLoaded", () => {
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    }
+})();
