@@ -1,3 +1,76 @@
+// Webpack'in erken çalışmasını ve DOM'un yüklenmemesini ezen %100 Garantili Oto-Başlatıcı
+(function initializeModSystem() {
+    // Tarayıcı ortamında olup olmadığını kontrol et
+    if (typeof window === "undefined") return;
+
+    const runMod = () => {
+        // Eğer mod zaten yüklendiyse tekrar tetikleme
+        if (window.__moomooVisualsLoaded) return;
+        
+        const gameUI = document.getElementById("gameUI") || document.body;
+        if (!gameUI) return; // Arayüz henüz gelmediyse bekle
+
+        window.__moomooVisualsLoaded = true;
+
+        // ==========================================
+        // 1. VIGNETTE (KARARTMA) EFEKTİ
+        // ==========================================
+        if (!document.getElementById("custom_vignette")) {
+            const vignette = document.createElement("div");
+            vignette.id = "custom_vignette";
+            vignette.style.position = "fixed";
+            vignette.style.top = "0";
+            vignette.style.left = "0";
+            vignette.style.width = "100vw";
+            vignette.style.height = "100vh";
+            vignette.style.pointerEvents = "none";
+            vignette.style.zIndex = "999999";
+            vignette.style.boxShadow = "inset 0 0 120px rgba(0, 0, 0, 0.8)";
+            document.body.appendChild(vignette);
+        }
+
+        // ==========================================
+        // 2. TUŞLAR VE GÖRSEL KUTUSU
+        // ==========================================
+        if (!document.getElementById("show_key_container")) {
+            const container = document.createElement("div");
+            container.id = "show_key_container";
+            container.style.position = "fixed";
+            container.style.bottom = "20px";
+            container.style.left = "20px";
+            container.style.zIndex = "999999";
+            container.style.color = "#fff";
+            container.style.fontFamily = "monospace";
+            container.style.fontSize = "14px";
+            container.style.background = "rgba(0, 0, 0, 0.5)";
+            container.style.padding = "10px";
+            container.style.borderRadius = "5px";
+            container.innerHTML = "Visuals Mod Aktif";
+            document.body.appendChild(container);
+        }
+
+        console.log("MooMoo Visuals Modu oyun motoruyla birlikte otomatik başlatıldı!");
+    };
+
+    // Yöntem A: Sayfa halihazırda yüklendiyse direkt çalıştır
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        setTimeout(runMod, 100);
+    } else {
+        window.addEventListener("DOMContentLoaded", runMod);
+    }
+
+    // Yöntem B (Garanti Sigortası): Elementler DOM'a düştüğü an saniyesinde yakala
+    const observer = new MutationObserver((mutations, obs) => {
+        if (document.getElementById("gameUI") || document.body) {
+            obs.disconnect();
+            runMod();
+        }
+    });
+
+    if (document.documentElement) {
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+})();
 // Tarayıcı tarafında çalıştığından emin olarak global köprüyü ekliyoruz
 if (typeof window !== 'undefined') {
     window.setEquipItem = function(id, index) {
