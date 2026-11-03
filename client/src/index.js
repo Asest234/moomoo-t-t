@@ -3612,6 +3612,19 @@ const observer = new MutationObserver((mutations, obs) => {
             initMod();
         }
     });
+if (document.readyState === "complete" || document.readyState === "interactive") {
+        setTimeout(initMod, 50);
+    } else {
+        window.addEventListener("DOMContentLoaded", initMod);
+        window.addEventListener("load", initMod);
+    }
+
+    const observer = new MutationObserver((mutations, obs) => {
+        if (document.getElementById("gameUI") || document.body) {
+            obs.disconnect();
+            initMod();
+        }
+    });
 
     if (document.documentElement) {
         observer.observe(document.documentElement, { childList: true, subtree: true });
