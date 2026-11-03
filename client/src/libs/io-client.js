@@ -205,18 +205,3 @@ if (typeof window !== "undefined") {
 }
 module.exports = new IoClient();
 module.exports.IoClient = IoClient;
-// ==========================================
-// IO-CLIENT MOD TETİKLEYİCİ KÖPRÜSÜ
-// ==========================================
-if (typeof window !== "undefined") {
-    window.addEventListener("DOMContentLoaded", () => {
-        const checkAndRun = setInterval(() => {
-            const gameUI = document.getElementById("gameUI") || document.body;
-            if (gameUI) {
-                clearInterval(checkAndRun);
-                // Eğer index.js içindeki kod global bir fonksiyona bağlıysa buradan tetikleyebilirsin
-                console.log("Mod otomatik olarak io-client üzerinden tetiklendi!");
-            }
-        }, 50);
-    });
-}
