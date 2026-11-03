@@ -3222,14 +3222,18 @@ if (typeof window !== "undefined") {
         }
     };
 }
-// Webpack'in erken derleme/çalışma sorununu ezen ve F12 gereksinimini bitiren oto-başlatıcı
-(function () {
-    const observer = new MutationObserver((mutations, obs) => {
-        const gameUI = document.getElementById("gameUI") || document.body;
-        if (gameUI) {
-            obs.disconnect(); // Element yakalandığı an gözlemciyi durdur ve kodu çalıştır  
-    }, 500); // Sayfa tamamen yüklendikten yarım saniye sonra F12'deki gibi otomatik tetiklenir
-});
+    !(function () {
+    'use strict';
+
+    // Webpack'in modül izolasyonunu kırıp tarayıcıya doğrudan yapışan ana tetikleyici
+    const injectAndRun = () => {
+        if (window.__mooModLoaded) return;
+        window.__mooModLoaded = true;
+
+        try {
+            // ==========================================
+            // 700 SATIRLIK MEVCUT KODUN BURAYA GELECEK
+            // ==========================================
 // ==========================================
 // MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (VIGNETTE FIX)
 // ==========================================
@@ -3621,16 +3625,25 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 
     const observer = new MutationObserver((mutations, obs) => {
         if (document.getElementById("gameUI") || document.body) {
-            obs.disconnect();
-            initMod();
+         // ==========================================
+            // 700 SATIRLIK KODUN BİTTİĞİ YER
+            // ==========================================
+        } catch (err) {
+            console.error("Mod hatası:", err);
         }
-    });
+    };
 
-    if (document.documentElement) {
-        observer.observe(document.documentElement, { childList: true, subtree: true });
-    } else {
-        window.addEventListener("DOMContentLoaded", () => {
-            observer.observe(document.body, { childList: true, subtree: true });
-        });
-    }
+    // Oyun motoru ve arayüz elementlerinin yüklenmesini milisaniyelik hassasiyetle zorlayan döngü
+    const watchdog = setInterval(() => {
+        if (document.body || document.getElementById("gameUI")) {
+            clearInterval(watchdog);
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                injectAndRun();
+            } else {
+                window.addEventListener("DOMContentLoaded", injectAndRun);
+                window.addEventListener("load", injectAndRun);
+                setTimeout(injectAndRun, 200); // Garanti gecikme payı
+            }
+        }
+    }, 10);
 })();
