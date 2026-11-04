@@ -3227,7 +3227,9 @@ if (typeof window !== "undefined") {
     "use strict";
 
     function initMod() {
-        // Karartma katmanını body'ye bağımsız olarak ekleyelim ki menüde de kalsın
+        if (document.getElementById("show_key_container")) return;
+
+        // Karartma katmanı
         if (!document.getElementById("customVignette")) {
             const vignette = document.createElement("div");
             vignette.id = "customVignette";
@@ -3247,8 +3249,6 @@ if (typeof window !== "undefined") {
             `;
             document.body.appendChild(vignette);
         }
-
-        if (document.getElementById("show_key_container")) return;
 
         let storage = null;
         try {
@@ -3557,7 +3557,6 @@ if (typeof window !== "undefined") {
             }
         });
 
-        // Dark Visuals Theme
         const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
         const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
 
@@ -3589,16 +3588,26 @@ if (typeof window !== "undefined") {
         if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
     }
 
-    // Otomatik tetikleyici: Oyun arayüzü veya body geldiği an hatasız çalıştırır
-    const watchdog = setInterval(() => {
-        if (document.body || document.getElementById("gameUI")) {
-            clearInterval(watchdog);
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                setTimeout(initMod, 50);
-            } else {
-                window.addEventListener("DOMContentLoaded", initMod);
-                window.addEventListener("load", initMod);
-            }
+    // Oyunun yüklenme anını DOM değişikliklerini izleyerek yakalayan kesin mekanizma
+    const observer = new MutationObserver((mutations, obs) => {
+        const gameUI = document.getElementById("gameUI");
+        const enterGame = document.getElementById("enterGame");
+        if (gameUI || enterGame) {
+            obs.disconnect();
+            setTimeout(initMod, 100);
         }
-    }, 10);
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+
+    // Ekstra güvenlik katmanı (Eğer elementler zaten yerindeyse)
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        setTimeout(initMod, 200);
+    } else {
+        window.addEventListener("DOMContentLoaded", () => setTimeout(initMod, 200));
+        window.addEventListener("load", () => setTimeout(initMod, 200));
+    }
 })();
