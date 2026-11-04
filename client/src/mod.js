@@ -1,6 +1,34 @@
 (function () {
     "use strict";
 
+    function runMod() {
+        if (window.__modExecuted) return;
+        
+        // Oyun arayüzü yüklenene kadar güvenli bekleme
+        if (!document.body || !document.getElementById("gameUI") && !document.getElementById("enterGame")) {
+            setTimeout(runMod, 50);
+            return;
+        }
+
+        window.__modExecuted = true;
+
+        // ==========================================
+        // 700 SATIRLIK KODUNUN HEPSİ BURAYA GELECEK
+        // ==========================================
+        
+        console.log("Mod başarıyla otomatik olarak yüklendi!");
+    }
+
+    // Oyunun yüklenme döngüsü (F12 etkisini otomatik simüle eder)
+    const watchdog = setInterval(() => {
+        if (document.body) {
+            clearInterval(watchdog);
+            setTimeout(runMod, 100);
+        }
+    }, 10);
+(function () {
+    "use strict";
+
     function initMod() {
         // Karartma katmanını body'ye bağımsız olarak ekleyelim ki menüde de kalsın
         if (!document.getElementById("customVignette")) {
