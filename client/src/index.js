@@ -1,3 +1,4 @@
+window.addEventListener('load', () => { console.log("OYUN YÜKLENDİ VE INDEX.JS ÇALIŞIYOR!"); });
 // Tarayıcı tarafında çalıştığından emin olarak global köprüyü ekliyoruz
 if (typeof window !== 'undefined') {
     window.setEquipItem = function(id, index) {
