@@ -3222,11 +3222,16 @@ if (typeof window !== "undefined") {
             window.io.send("c", [0, id, index]);
         }
     };
-}
 (function () {
     "use strict";
 
     function initMod() {
+        // Eğer body henüz oluşmadıysa bekle ve tekrar dene (Çökmeyi engelleyen ana kilit)
+        if (!document.body) {
+            setTimeout(initMod, 20);
+            return;
+        }
+
         if (document.getElementById("show_key_container")) return;
 
         // Karartma katmanı
@@ -3588,26 +3593,11 @@ if (typeof window !== "undefined") {
         if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
     }
 
-    // Oyunun yüklenme anını DOM değişikliklerini izleyerek yakalayan kesin mekanizma
-    const observer = new MutationObserver((mutations, obs) => {
-        const gameUI = document.getElementById("gameUI");
-        const enterGame = document.getElementById("enterGame");
-        if (gameUI || enterGame) {
-            obs.disconnect();
-            setTimeout(initMod, 100);
+    // Sayfa hazır olana kadar 10 milisaniyede bir zorla denetleyen yok edici döngü
+    const startLoop = setInterval(() => {
+        if (document.body || document.readyState === "complete" || document.readyState === "interactive") {
+            clearInterval(startLoop);
+            initMod();
         }
-    });
-
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
-
-    // Ekstra güvenlik katmanı (Eğer elementler zaten yerindeyse)
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        setTimeout(initMod, 200);
-    } else {
-        window.addEventListener("DOMContentLoaded", () => setTimeout(initMod, 200));
-        window.addEventListener("load", () => setTimeout(initMod, 200));
-    }
+    }, 10);
 })();
