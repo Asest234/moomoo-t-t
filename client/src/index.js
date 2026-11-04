@@ -3222,18 +3222,11 @@ if (typeof window !== "undefined") {
         }
     };
 }
-    !(function () {
-    'use strict';
-
-    // Webpack'in modül izolasyonunu kırıp tarayıcıya doğrudan yapışan ana tetikleyici
-    const injectAndRun = () => {
-        if (window.__mooModLoaded) return;
-        window.__mooModLoaded = true;
-
-        try {
-            // ==========================================
-            // 700 SATIRLIK MEVCUT KODUN BURAYA GELECEK
-            // ==========================================
+    (function () {
+    const autoRun = setInterval(() => {
+        if (document.getElementById("gameUI") || document.body) {
+            clearInterval(autoRun);
+            try {
 // ==========================================
 // MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (VIGNETTE FIX)
 // ==========================================
@@ -3643,6 +3636,12 @@ if (document.readyState === "complete" || document.readyState === "interactive")
                 window.addEventListener("DOMContentLoaded", injectAndRun);
                 window.addEventListener("load", injectAndRun);
                 setTimeout(injectAndRun, 200); // Garanti gecikme payı
+            }
+        }
+    }, 10);
+})();
+            } catch (err) {
+                console.error("Mod hatası:", err);
             }
         }
     }, 10);
