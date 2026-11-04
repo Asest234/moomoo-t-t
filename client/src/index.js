@@ -3223,16 +3223,7 @@ if (typeof window !== "undefined") {
         }
     };
 }
-    (function () {
-    const autoRun = setInterval(() => {
-        if (document.getElementById("gameUI") || document.body) {
-            clearInterval(autoRun);
-            try {
-// ==========================================
-// MOOMOO.IO WEBPACK PERMANENT CLIENT MOD (VIGNETTE FIX)
-// ==========================================
-
-(function() {
+(function () {
     "use strict";
 
     function initMod() {
@@ -3598,51 +3589,15 @@ if (typeof window !== "undefined") {
         if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
     }
 
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        setTimeout(initMod, 50);
-    } else {
-        window.addEventListener("DOMContentLoaded", initMod);
-        window.addEventListener("load", initMod);
-    }
-const observer = new MutationObserver((mutations, obs) => {
-        if (document.getElementById("gameUI") || document.body) {
-            obs.disconnect();
-            initMod();
-        }
-    });
-if (document.readyState === "complete" || document.readyState === "interactive") {
-        setTimeout(initMod, 50);
-    } else {
-        window.addEventListener("DOMContentLoaded", initMod);
-        window.addEventListener("load", initMod);
-    }
-
-    const observer = new MutationObserver((mutations, obs) => {
-        if (document.getElementById("gameUI") || document.body) {
-         // ==========================================
-            // 700 SATIRLIK KODUN BİTTİĞİ YER
-            // ==========================================
-        } catch (err) {
-            console.error("Mod hatası:", err);
-        }
-    };
-
-    // Oyun motoru ve arayüz elementlerinin yüklenmesini milisaniyelik hassasiyetle zorlayan döngü
+    // Otomatik tetikleyici: Oyun arayüzü veya body geldiği an hatasız çalıştırır
     const watchdog = setInterval(() => {
         if (document.body || document.getElementById("gameUI")) {
             clearInterval(watchdog);
             if (document.readyState === "complete" || document.readyState === "interactive") {
-                injectAndRun();
+                setTimeout(initMod, 50);
             } else {
-                window.addEventListener("DOMContentLoaded", injectAndRun);
-                window.addEventListener("load", injectAndRun);
-                setTimeout(injectAndRun, 200); // Garanti gecikme payı
-            }
-        }
-    }, 10);
-})();
-            } catch (err) {
-                console.error("Mod hatası:", err);
+                window.addEventListener("DOMContentLoaded", initMod);
+                window.addEventListener("load", initMod);
             }
         }
     }, 10);
