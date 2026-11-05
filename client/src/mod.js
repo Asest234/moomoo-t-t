@@ -1,3 +1,4 @@
+console.log("MOD DOSYASI YÜKLENDİ VE ÇALIŞIYOR!");
 (function () {
     "use strict";
 
