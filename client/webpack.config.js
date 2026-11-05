@@ -5,10 +5,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
-  entry: [
-    path.resolve(__dirname, "src/index.js"),
-    path.resolve(__dirname, "src/mod.js")
-  ],
+  entry: path.resolve(__dirname, "src/index.js"),
   mode: isProd ? "production" : "development",
   output: {
     path: path.resolve(__dirname, "../dist/client/assets"),
@@ -21,6 +18,10 @@ module.exports = {
       )
     }),
     new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, "src/mod.js"),
+        to: path.resolve(__dirname, "../dist/client/assets/mod.js")
+      },
       {
         from: path.resolve(__dirname, "public"),
         to: path.resolve(__dirname, "../dist/client")
