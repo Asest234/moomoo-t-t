@@ -1,5 +1,5 @@
-console.log("MOD DOĞRUDAN BAŞLATILIYOR...");
-
+window.__modExecuted = true;
+console.log("MOD DOSYASI BASARIYLA CALISTI!");
 (function () {
     "use strict";
 
