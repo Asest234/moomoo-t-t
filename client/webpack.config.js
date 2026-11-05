@@ -20,7 +20,7 @@ module.exports = {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, "src/mod.js"),
-        to: path.resolve(__dirname, "../dist/client/assets/mod.js")
+        to: path.resolve(__dirname, "../dist/client/mod.js")
       },
       {
         from: path.resolve(__dirname, "public"),
