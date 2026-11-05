@@ -5,14 +5,13 @@ console.log("MOD DOSYASI YÜKLENDİ VE ÇALIŞIYOR!");
     function runMod() {
         if (window.__modExecuted) return;
         
-        // Isuzuma ry'aho umukino ugeze kugira ngo utegereze ko ufunguka neza
         if (!document.body || (!document.getElementById("gameUI") && !document.getElementById("enterGame"))) {
             setTimeout(runMod, 50);
             return;
         }
 
         window.__modExecuted = true;
- // Karartma katmanını body'ye bağımsız olarak ekleyelim ki menüde de kalsın
+
         if (!document.getElementById("customVignette")) {
             const vignette = document.createElement("div");
             vignette.id = "customVignette";
@@ -326,75 +325,3 @@ console.log("MOD DOSYASI YÜKLENDİ VE ÇALIŞIYOR!");
                 }
             }
         });
-
-        window.addEventListener("mousedown", (event) => {
-            if ([0, 1, 2].includes(event.button)) addCPS();
-            let mouseDiv = document.getElementById(`mouse_${event.button}`);
-            if (mouseDiv && !mouseDiv.classList.contains("active2")) {
-                mouseDiv.classList.add("active2");
-            }
-        });
-
-        window.addEventListener("mouseup", (event) => {
-            let mouseDiv = document.getElementById(`mouse_${event.button}`);
-            if (mouseDiv && mouseDiv.classList.contains("active2")) {
-                mouseDiv.classList.remove("active2");
-            }
-        });
-
-        // Dark Visuals Theme
-        const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
-        const setPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
-
-        setHTML('enterGame', 'Play');
-        setHTML('loadingText', '');
-        setHTML('gameName', '');
-        setPlaceholder('nameInput', '');
-        setPlaceholder('chatBox', '');
-
-        const elementsToRemove = [
-            "#adCard", "#errorNotification", "#promoImg", "#youtuberOf", "#followText",
-            "#promoImgHolder", "#twitterFollow", "#joinPartyButton", "#linksContainer2",
-            "#partyButton", "#youtubeFollow", "#adBlock", "#mobileInstructions",
-            "#downloadButtonContainer", "#mobileDownloadButtonContainer", ".downloadBadge",
-            "#ot-sdk-btn-floating", "#pre-content-container", "#diedText", "#desktopInstructions",
-            ".menuText", ".menuHeader", ".menuLink"
-        ];
-        elementsToRemove.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => el.remove());
-        });
-
-        const chatBtn = document.getElementById('chatButton');
-        if (chatBtn) chatBtn.style.display = 'none';
-
-        const setupCard = document.getElementById('setupCard');
-        if (setupCard) setupCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
-
-        const guideCard = document.getElementById('guideCard');
-        if (guideCard) guideCard.style.cssText += "box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.4); background-color: #181818;";
-    }
-
-    // Otomatik tetikleyici: Oyun arayüzü veya body geldiği an hatasız çalıştırır
-    const watchdog = setInterval(() => {
-        if (document.body || document.getElementById("gameUI")) {
-            clearInterval(watchdog);
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                setTimeout(initMod, 50);
-            } else {
-                window.addEventListener("DOMContentLoaded", initMod);
-                window.addEventListener("load", initMod);
-            }
-        }
-    }, 10);
-})();
-
-    }
-
-    // Uburyo bwo gukurikirana niba umukino wamaze kwikingura (bituma ikora itiriwe isaba F12)
-    const watchdog = setInterval(() => {
-        if (document.body) {
-            clearInterval(watchdog);
-            setTimeout(runMod, 100);
-        }
-    }, 10);
-})();
