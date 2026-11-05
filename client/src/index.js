@@ -1,4 +1,5 @@
 import "./mod.js";
+console.log("INDEX.JS DERLENDI VE BUNDLE ICINE GIRDI!");
 // Tarayıcı tarafında çalıştığından emin olarak global köprüyü ekliyoruz
 if (typeof window !== 'undefined') {
     window.setEquipItem = function(id, index) {
