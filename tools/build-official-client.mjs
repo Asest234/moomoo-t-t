@@ -209,7 +209,7 @@ function buildHtml(page, files) {
     const body = [
         '<script src="/assets/shim.js"></script>',
         '<script defer src="/assets/howler.core.min.js"></script>',
-        '<script src="/assets/mod.js"></script>' // <--- Modunu buraya ekledik
+        '<script src="/assets/mod.js"></script>'
     ].join("");
     html = html.replace(/(<body[^>]*>)/, `$1${body}`);
 
@@ -238,7 +238,6 @@ function main() {
     fs.copyFileSync(path.join(SRC, "howler.core.min.js"), path.join(ASSETS, "howler.core.min.js"));
     fs.copyFileSync(path.join(ROOT, "client-official/shim.js"), path.join(ASSETS, "shim.js"));
 
-    // mod.js dosyasını dist/official/assets altına kopyalayan kısım
     if (fs.existsSync(path.join(ROOT, "src/mod.js"))) {
         fs.copyFileSync(path.join(ROOT, "src/mod.js"), path.join(ASSETS, "mod.js"));
         console.log("  mod.js kopyalandı ve başarıyla eklendi.");
