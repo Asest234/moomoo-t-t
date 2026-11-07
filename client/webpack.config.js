@@ -12,7 +12,7 @@ module.exports = {
     filename: "bundle.js"
   },
   plugins: [
-    new DefinePlugin({
+    DefinePlugin({
       VERSION: JSON.stringify(
         require("./package.json").version + (isProd ? "" : "-dev")
       )
@@ -20,7 +20,7 @@ module.exports = {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, "src/mod.js"),
-        to: path.resolve(__dirname, "../dist/client/mod.js")
+        to: path.resolve(__dirname, "../dist/client/assets/mod.js")
       },
       {
         from: path.resolve(__dirname, "public"),
