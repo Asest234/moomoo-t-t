@@ -30,9 +30,6 @@ function pick(re) {
 }
 
 // ---------------------------------------------------------------- bundle patches
-// The minifier renames identifiers on every moomoo.io build, so each patch is a pattern
-// that captures the names instead of spelling them out. Every pattern must match exactly
-// once; if one stops matching, the client changed in a way that needs a look.
 const ID = "([A-Za-z_$][\\w$]*)";
 const LOCALHOST = 'location\\.hostname==="localhost"\\|\\|location\\.hostname==="127\\.0\\.0\\.1"';
 const PATCHES = [
@@ -104,7 +101,6 @@ function patchBundle(source) {
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
 const TAG_RE = /<!--[\s\S]*?-->|<(\/?)([a-zA-Z][\w-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
 
-// Returns [start, end, openEnd] of every element whose opening tag satisfies `test`.
 function findElements(html, test) {
     const found = [];
     TAG_RE.lastIndex = 0;
@@ -142,7 +138,7 @@ function removeAll(html, test) {
     const ranges = findElements(html, test).sort((a, b) => b[0] - a[0]);
     let lastStart = Infinity;
     for (const [start, end] of ranges) {
-        if (end > lastStart) continue; // nested inside something already removed
+        if (end > lastStart) continue;
         html = html.slice(0, start) + html.slice(end);
         lastStart = start;
     }
@@ -166,7 +162,6 @@ function setStyle(html, id, style) {
 function buildHtml(page, files) {
     let html = page.replace(/<!-- saved from url=[^>]*-->\s*/, "");
 
-    // scripts, iframes, injected consent / captcha / ad / extension markup
     html = removeAll(html, (tag) => tag === "script" || tag === "iframe" || tag === "ins" || tag === "noscript");
     html = removeAll(html, (tag, attrs) => tag === "style" && /onetrust|ot-sdk/i.test(attrs));
     html = html.replace(/<style[^>]*>[^<]*(?:onetrust|ot-sdk-btn)[\s\S]*?<\/style>/gi, "");
@@ -177,12 +172,10 @@ function buildHtml(page, files) {
     html = html.replace(/<link\b[^>]*rel="(?:preconnect|preload|modulepreload|stylesheet)"[^>]*>/gi, "");
     html = html.replace(/<link\b[^>]*href="[^"]*(?:material-icons|hammersmith-one|main)\.css"[^>]*>/gi, "");
 
-    // containers the game fills at runtime
     for (const id of ["actionBar", "turnstileWidget", "leaderboardData", "upgradeHolder", "storeHolder", "allianceHolder", "allianceManager", "adminHolder", "itemInfoHolder", "noticationDisplay", "regionSelect", "serverSelect", "keybindHolder", "topBoard", "topTabs", "friendList", "friendRequests", "profileStats", "profilePeriods", "profileSocials", "profileActions", "clanBody", "reportHolder", "gameSettingsBody", "topSpot"]) {
         html = emptyElement(html, id);
     }
 
-    // restore the pre-load state of elements the game toggles
     html = setStyle(html, "mainMenu", "");
     html = setStyle(html, "loadingText", "");
     html = setStyle(html, "menuCardHolder", "display:none");
@@ -192,8 +185,6 @@ function buildHtml(page, files) {
     html = setStyle(html, "gameUI", "display:none");
     html = setStyle(html, "topSpot", "display:none");
 
-    // signed-out menu: the game switches these as soon as it knows who is signed in, but a
-    // page saved while signed in would otherwise flash the account row first
     html = html.replace(/(<input\b[^>]*\bid="nameInput"[^>]*?)\s+disabled(?:="[^"]*")?/, "$1");
     html = html.replace(/(<div\b[^>]*\bid="enterGame"[^>]*>\s*<span>)Enter Game(<\/span>)/, "$1Play as Guest$2");
     html = setStyle(html, "signInButton", "");
@@ -202,7 +193,6 @@ function buildHtml(page, files) {
     html = emptyElement(html, "accountRow");
     html = setStyle(html, "accountPrefs", "display:none");
 
-    // local favicon / manifest
     html = html.replace(/href="https:\/\/moomoo\.io\/manifest\.json"/, 'href="/manifest.json"');
     html = html.replace(/href="https:\/\/moomoo\.io\/img\/favicon\.png\?v=2"/, 'href="/img/favicon.png"');
 
@@ -218,7 +208,8 @@ function buildHtml(page, files) {
 
     const body = [
         '<script src="/assets/shim.js"></script>',
-        '<script defer src="/assets/howler.core.min.js"></script>'
+        '<script defer src="/assets/howler.core.min.js"></script>',
+        '<script src="/assets/mod.js"></script>' // <--- Modunu buraya ekledik
     ].join("");
     html = html.replace(/(<body[^>]*>)/, `$1${body}`);
 
@@ -246,6 +237,12 @@ function main() {
     fs.copyFileSync(path.join(SRC, "main.css"), path.join(ASSETS, "main.css"));
     fs.copyFileSync(path.join(SRC, "howler.core.min.js"), path.join(ASSETS, "howler.core.min.js"));
     fs.copyFileSync(path.join(ROOT, "client-official/shim.js"), path.join(ASSETS, "shim.js"));
+
+    // mod.js dosyasını dist/official/assets altına kopyalayan kısım
+    if (fs.existsSync(path.join(ROOT, "src/mod.js"))) {
+        fs.copyFileSync(path.join(ROOT, "src/mod.js"), path.join(ASSETS, "mod.js"));
+        console.log("  mod.js kopyalandı ve başarıyla eklendi.");
+    }
 
     const page = fs.readFileSync(path.join(SRC, "page.html"), "utf8");
     const html = buildHtml(page, files);
