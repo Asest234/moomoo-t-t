@@ -5,23 +5,20 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
-  entry: path.resolve(__dirname, "src/index.js"),
+  // Giriş noktasını doğrudan mod.js yapıyoruz
+  entry: path.resolve(__dirname, "src/mod.js"),
   mode: isProd ? "production" : "development",
   output: {
     path: path.resolve(__dirname, "../dist/client/assets"),
-    filename: "bundle.js"
+    filename: "bundle.js" // Oyun bunu ana script olarak çağırıyor, böylece mod doğrudan ana dosya oluyor
   },
   plugins: [
-    DefinePlugin({
+    new DefinePlugin({
       VERSION: JSON.stringify(
         require("./package.json").version + (isProd ? "" : "-dev")
       )
     }),
     new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, "src/mod.js"),
-        to: path.resolve(__dirname, "../dist/client/assets/mod.js")
-      },
       {
         from: path.resolve(__dirname, "public"),
         to: path.resolve(__dirname, "../dist/client")
