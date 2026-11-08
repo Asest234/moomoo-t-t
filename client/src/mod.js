@@ -1,3 +1,4 @@
+console.log("Mod yuklendi");)
 window.__modExecuted = true;
 console.log("MOD DOSYASI BASARIYLA CALISTI!");
 (function () {
