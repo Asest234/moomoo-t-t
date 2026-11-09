@@ -96,7 +96,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 #add_key:hover { background-color: #6a983f; }
                 #remove_key:hover { background-color: #983f3f; }
 
-                /* NORMAL BEYAZ/GRİ STİL */
+                /* INCE GRI ÇIZGILER (2px) */
                 #show_key_container {
                     position: absolute;
                     left: 15px;
@@ -135,7 +135,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     align-items: center;
                 }
 
-                /* MOUSE ÇİZGİLERİ */
+                /* MOUSE ÇİZGİLERİ (2px) */
                 #mouseContainer {
                     width: 65px;
                     height: 94px;
