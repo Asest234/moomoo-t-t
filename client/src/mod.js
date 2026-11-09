@@ -4,7 +4,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 (function () {
     "use strict";
 
-    // 1. Karartma katmanı (GPU hızlandırmalı saf CSS)
+    // 1. Karartma katmanı (GPU hızlandırmalı saf CSS - MS / ping artırmaz)
     if (!document.getElementById("customVignette")) {
         const vignette = document.createElement("div");
         vignette.id = "customVignette";
@@ -96,7 +96,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 #add_key:hover { background-color: #6a983f; }
                 #remove_key:hover { background-color: #983f3f; }
 
-                /* INCE GRI ÇIZGILER (2px) */
+                /* İSTEDİĞİN KALINLIKTA ÇİZGİLER (4px) */
                 #show_key_container {
                     position: absolute;
                     left: 15px;
@@ -109,11 +109,11 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     height: 45px;
                     margin: 5px;
                     padding: 2px 10px;
-                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    border: 4px solid rgba(255, 255, 255, 0.85);
                     color: white;
                     text-align: center;
                     font-size: 25px;
-                    line-height: 45px;
+                    line-height: 41px;
                     box-sizing: border-box;
                     text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
                 }
@@ -135,7 +135,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     align-items: center;
                 }
 
-                /* MOUSE ÇİZGİLERİ (2px) */
+                /* MOUSE ÇİZGİLERİ (4px) */
                 #mouseContainer {
                     width: 65px;
                     height: 94px;
@@ -151,26 +151,26 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     flex-basis: 24px;
                     height: 50px;
                     border-radius: 100px 10px 10px 10px;
-                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    border: 4px solid rgba(255, 255, 255, 0.85);
                 }
                 #mouse_1 {
-                    flex-basis: 4px;
+                    flex-basis: 6px;
                     height: 50px;
                     border-radius: 10px;
-                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    border: 4px solid rgba(255, 255, 255, 0.85);
                 }
                 #mouse_2 {
                     flex-basis: 24px;
                     height: 50px;
                     border-radius: 10px 100px 10px 10px;
-                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    border: 4px solid rgba(255, 255, 255, 0.85);
                 }
                 #mouse_bottom {
                     margin-top: 1px;
                     flex-basis: 100%;
                     height: 34px;
                     border-radius: 10px 10px 100px 100px;
-                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    border: 4px solid rgba(255, 255, 255, 0.85);
                 }
                 .active2 {
                     background: white;
