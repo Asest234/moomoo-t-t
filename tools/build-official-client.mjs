@@ -238,8 +238,8 @@ function main() {
     fs.copyFileSync(path.join(SRC, "howler.core.min.js"), path.join(ASSETS, "howler.core.min.js"));
     fs.copyFileSync(path.join(ROOT, "client-official/shim.js"), path.join(ASSETS, "shim.js"));
 
-    if (fs.existsSync(path.join(ROOT, "src/mod.js"))) {
-        fs.copyFileSync(path.join(ROOT, "src/mod.js"), path.join(ASSETS, "mod.js"));
+    if (fs.existsSync(path.join(ROOT, "client/src/mod.js"))) {
+        fs.copyFileSync(path.join(ROOT, "client/src/mod.js"), path.join(ASSETS, "mod.js"));
         console.log("  mod.js kopyalandı ve başarıyla eklendi.");
     }
 
