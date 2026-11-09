@@ -96,7 +96,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 #add_key:hover { background-color: #6a983f; }
                 #remove_key:hover { background-color: #983f3f; }
 
-                /* MOR TEMA - SHOP ILE AYNI RENK */
+                /* NORMAL BEYAZ/GRİ STİL */
                 #show_key_container {
                     position: absolute;
                     left: 15px;
@@ -109,17 +109,18 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     height: 45px;
                     margin: 5px;
                     padding: 2px 10px;
-                    border: 2px solid #584487;
-                    color: #584487;
+                    border: 2px solid rgba(255, 255, 255, 0.7);
+                    color: white;
                     text-align: center;
                     font-size: 25px;
                     line-height: 45px;
                     box-sizing: border-box;
+                    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
                 }
                 .keys.active {
-                    color: white;
-                    background: #584487;
-                    border-color: #584487;
+                    color: black;
+                    background: white;
+                    border-color: white;
                 }
                 #keys {
                     display: flex;
@@ -134,7 +135,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     align-items: center;
                 }
 
-                /* MOUSE CIZGILERI */
+                /* MOUSE ÇİZGİLERİ */
                 #mouseContainer {
                     width: 65px;
                     height: 94px;
@@ -150,29 +151,29 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     flex-basis: 24px;
                     height: 50px;
                     border-radius: 100px 10px 10px 10px;
-                    border: 2px solid #584487;
+                    border: 2px solid rgba(255, 255, 255, 0.7);
                 }
                 #mouse_1 {
                     flex-basis: 4px;
                     height: 50px;
                     border-radius: 10px;
-                    border: 2px solid #584487;
+                    border: 2px solid rgba(255, 255, 255, 0.7);
                 }
                 #mouse_2 {
                     flex-basis: 24px;
                     height: 50px;
                     border-radius: 10px 100px 10px 10px;
-                    border: 2px solid #584487;
+                    border: 2px solid rgba(255, 255, 255, 0.7);
                 }
                 #mouse_bottom {
                     margin-top: 1px;
                     flex-basis: 100%;
                     height: 34px;
                     border-radius: 10px 10px 100px 100px;
-                    border: 2px solid #584487;
+                    border: 2px solid rgba(255, 255, 255, 0.7);
                 }
                 .active2 {
-                    background: #584487;
+                    background: white;
                 }
 
                 /* CPS VE MAX CPS */
@@ -184,9 +185,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     text-align: left;
                     margin-bottom: 10px;
                     margin-left: 5px;
-                    color: #584487;
-                    background-color: rgba(88, 68, 135, 0.35);
-                    text-shadow: 2px 2px 2px rgba(0,0,0,0.35);
+                    color: white;
+                    background-color: rgba(0, 0, 0, 0.35);
+                    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
                 }
             </style>
             <div id="show_key_menu" style="display: none">
