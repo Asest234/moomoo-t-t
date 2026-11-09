@@ -4,7 +4,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 (function () {
     "use strict";
 
-    // 1. Karartma katmanı (GPU hızlandırmalı saf CSS - MS / ping artırmaz)
+    // 1. Karartma katmanı (GPU hızlandırmalı saf CSS)
     if (!document.getElementById("customVignette")) {
         const vignette = document.createElement("div");
         vignette.id = "customVignette";
@@ -26,7 +26,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
     }
 
     // 2. Tuş ve Mouse CPS Overlay & Ayarlar Menüsü
-    unsafeWindow.showKeys = true;
+    window.showKeys = true;
 
     let storage = JSON.parse(localStorage.getItem("showKeys&Mouse"));
     if (storage == null) {
@@ -247,7 +247,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
             if (keysContainer) keysContainer.appendChild(element);
         });
 
-        unsafeWindow.changeShowKeyMouseProperty = (id, value) => {
+        window.changeShowKeyMouseProperty = (id, value) => {
             storage[id] = value;
             localStorage.setItem("showKeys&Mouse", JSON.stringify(storage));
             document.getElementById("mouseContainer").style.width = `${65 * (storage.mouse / 100)}px`;
@@ -263,7 +263,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
             document.getElementById("keys").style.width = `${storage.container}px`;
         };
 
-        unsafeWindow.addKey_ShowKeyMouse = () => {
+        window.addKey_ShowKeyMouse = () => {
             const input = document.getElementById("enter_key");
             if (!input || !input.value) return;
             const key = input.value.toUpperCase();
@@ -279,7 +279,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
             }
         };
 
-        unsafeWindow.removeKey_ShowKeyMouse = async () => {
+        window.removeKey_ShowKeyMouse = async () => {
             const input = document.getElementById("enter_key");
             if (!input || !input.value) return;
             const key = input.value.toUpperCase();
