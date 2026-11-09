@@ -96,7 +96,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 #add_key:hover { background-color: #6a983f; }
                 #remove_key:hover { background-color: #983f3f; }
 
-                /* İSTEDİĞİN KALINLIKTA ÇİZGİLER (4px) */
+                /* 4px KALINLIĞINDA TUŞLAR */
                 #show_key_container {
                     position: absolute;
                     left: 15px;
@@ -135,7 +135,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     align-items: center;
                 }
 
-                /* MOUSE ÇİZGİLERİ (4px) */
+                /* MOUSE ÇİZGİLERİ (DÜZELTİLMİŞ ORANLAR & 4px KALINLIK) */
                 #mouseContainer {
                     width: 65px;
                     height: 94px;
@@ -148,22 +148,25 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     transform-origin: 0 0;
                 }
                 #mouse_0 {
-                    flex-basis: 24px;
+                    flex-basis: 27px;
                     height: 50px;
                     border-radius: 100px 10px 10px 10px;
                     border: 4px solid rgba(255, 255, 255, 0.85);
+                    box-sizing: border-box;
                 }
                 #mouse_1 {
-                    flex-basis: 6px;
+                    flex-basis: 11px;
                     height: 50px;
                     border-radius: 10px;
                     border: 4px solid rgba(255, 255, 255, 0.85);
+                    box-sizing: border-box;
                 }
                 #mouse_2 {
-                    flex-basis: 24px;
+                    flex-basis: 27px;
                     height: 50px;
                     border-radius: 10px 100px 10px 10px;
                     border: 4px solid rgba(255, 255, 255, 0.85);
+                    box-sizing: border-box;
                 }
                 #mouse_bottom {
                     margin-top: 1px;
@@ -171,6 +174,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                     height: 34px;
                     border-radius: 10px 10px 100px 100px;
                     border: 4px solid rgba(255, 255, 255, 0.85);
+                    box-sizing: border-box;
                 }
                 .active2 {
                     background: white;
