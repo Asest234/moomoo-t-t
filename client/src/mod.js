@@ -1,10 +1,8 @@
-console.log("Mod yuklendi");)
 window.__modExecuted = true;
 console.log("MOD DOSYASI BASARIYLA CALISTI!");
+
 (function () {
     "use strict";
-
-    window.__modExecuted = true;
 
     // Karartma katmanını hemen ekleyelim
     if (!document.getElementById("customVignette")) {
@@ -27,31 +25,19 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         document.body.appendChild(vignette);
     }
 
-    let storage = {
-        keys: ["Q", "F", "V", "1", "2", "3"],
-        cps: true,
-        maxCps: true,
-        mouse: 100,
-        space: 7,
-        container: 270
-    };
-
-    const DIV = `
-        <div id="show_key_container" style="position: absolute; left: 15px; bottom: 210px; z-index: 99; pointer-events: none;">
-            <div id="cpsDisplay" style="color: white; text-shadow: 2px 2px 2px rgba(0,0,0,0.5); margin-bottom: 5px;">CPS: 0</div>
-            <div id="maxCpsDisplay" style="color: white; text-shadow: 2px 2px 2px rgba(0,0,0,0.5);">MAX CPS: 0</div>
-        </div>
-    `;
-
     // Elementlerin yüklenmesi için küçük bir gecikme verip ekrana basalım
     setTimeout(() => {
         if (!document.getElementById("show_key_container")) {
             const container = document.createElement("div");
-            container.innerHTML = DIV;
+            container.id = "show_key_container";
+            container.style.cssText = "position: absolute; left: 15px; bottom: 210px; z-index: 99; pointer-events: none;";
+            container.innerHTML = `
+                <div id="cpsDisplay" style="color: white; text-shadow: 2px 2px 2px rgba(0,0,0,0.5); margin-bottom: 5px;">CPS: 0</div>
+                <div id="maxCpsDisplay" style="color: white; text-shadow: 2px 2px 2px rgba(0,0,0,0.5);">MAX CPS: 0</div>
+            `;
             document.body.appendChild(container);
         }
 
-        // Metinleri ve gereksiz elementleri temizleme
         const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
         setHTML('enterGame', 'Play');
 
