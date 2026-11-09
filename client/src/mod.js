@@ -4,7 +4,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 (function () {
     "use strict";
 
-    // Karartma katmanını hemen ekleyelim
+    // Karartma katmanını canvas yerine saf CSS (GPU hızlandırmalı) ile yapıyoruz, böylece MS/ping artmaz.
     if (!document.getElementById("customVignette")) {
         const vignette = document.createElement("div");
         vignette.id = "customVignette";
