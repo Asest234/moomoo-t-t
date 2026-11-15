@@ -507,7 +507,6 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 				this.addEventListener("message", (e) => {
 					try {
 						const [packet, data] = msgpack.decode(new Uint8Array(e.data))
-						// v1.9.3 paket kodları ve eski paket kodları birleştirildi
 						switch (packet) {
 							case "us":
 							case 14:
@@ -822,7 +821,8 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 
 					childtmp = document.createElement("img")
 					childtmp.className = "hatPreview"
-					childtmp.src = "../img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png"
+					// DÜZELTME: Görsel yolu kök dizine (img/) sabitlendi, böylece 404 hatası alınmayacak
+					childtmp.src = "/img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png"
 					tmp.appendChild(childtmp)
 
 					childtmp = document.createElement("span")
