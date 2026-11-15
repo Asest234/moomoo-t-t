@@ -392,3 +392,87 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
     }, 500);
 
 })();
+(function() {
+    const textureReplacements = [
+        { test: "shield_1_r.png", replaceWith: "https://i.imgur.com/SNFV2dc.png" },
+        { test: "crossbow_1_r.png", replaceWith: "https://i.imgur.com/EVesBtw.png" },
+        { test: "bow_1_r.png", replaceWith: "https://i.imgur.com/Oneg3oF.png" },
+        { test: "musket_1_r.png", replaceWith: "https://i.imgur.com/jPE54IT.png" },
+        { test: "crossbow_2_r.png", replaceWith: "https://i.imgur.com/z4CyaXk.png" },
+        { test: "dagger_1_r.png", replaceWith: "https://i.imgur.com/CDAmjux.png" },
+        { test: "spear_1_r.png", replaceWith: "https://i.imgur.com/UY7SV7j.png" },
+        { test: "great_hammer_1_r.png", replaceWith: "https://i.imgur.com/tmUzurk.png" },
+        { test: "hammer_1_r.png", replaceWith: "https://i.imgur.com/oRXUfW8.png" },
+        { test: "bat_1_r.png", replaceWith: "https://i.imgur.com/6ayjbIz.png" },
+        { test: "great_axe_1_r.png", replaceWith: "https://i.imgur.com/UZ2HcQw.png" },
+        { test: "axe_1_r.png", replaceWith: "https://i.imgur.com/kr8H9g7.png" },
+        { test: "sword_1_r.png", replaceWith: "https://i.imgur.com/V9dzAbF.png" },
+        { test: "stick_1_r.png", replaceWith: "https://i.imgur.com/uTDGDDy.png" },
+        { test: "grab_1_g.png", replaceWith: "https://i.imgur.com/DRzBdFX.png" },
+        { test: "grab_1_d.png", replaceWith: "https://i.imgur.com/7kbtWfk.png" },
+        { test: "grab_1_r.png", replaceWith: "https://i.imgur.com/wV42LEE.png" },
+        { test: "crossbow_2_d.png", replaceWith: "https://i.imgur.com/DVjCdwI.png" },
+        { test: "musket_1_d.png", replaceWith: "https://i.imgur.com/jwH99zm.png" },
+        { test: "bow_1_d.png", replaceWith: "https://i.imgur.com/qu7HHT5.png" },
+        { test: "spear_1_d.png", replaceWith: "https://i.imgur.com/HSWcyku.png" },
+        { test: "crossbow_1_d.png", replaceWith: "https://i.imgur.com/TRqDlgX.png" },
+        { test: "axe_1_d.png", replaceWith: "https://i.imgur.com/OU5os0h.png" },
+        { test: "great_axe_1_d.png", replaceWith: "https://i.imgur.com/aAJyHBB.png" },
+        { test: "hammer_1_d.png", replaceWith: "https://i.imgur.com/WPWU8zC.png" },
+        { test: "great_hammer_1_d.png", replaceWith: "https://i.imgur.com/Fg93gj3.png" },
+        { test: "shield_1_d.png", replaceWith: "https://i.imgur.com/hSqLP3t.png" },
+        { test: "sword_1_d.png", replaceWith: "https://i.imgur.com/h5jqSRp.png" },
+        { test: "sword_1_g.png", replaceWith: "https://i.imgur.com/wOTr8TG.png" },
+        { test: "spear_1_g.png", replaceWith: "https://i.imgur.com/jKDdyvc.png" },
+        { test: "stick_1_g.png", replaceWith: "https://i.imgur.com/NOaBBRd.png" },
+        { test: "stick_1_d.png", replaceWith: "https://i.imgur.com/H5wGqQR.png" },
+        { test: "dagger_1_d.png", replaceWith: "https://i.imgur.com/ROTb7Ks.png" },
+        { test: "bat_1_g.png", replaceWith: "https://i.imgur.com/ivLPh10.png" },
+        { test: "bat_1_d.png", replaceWith: "https://i.imgur.com/phXTNsa.png" },
+        { test: "hat_40.png", replaceWith: "https://i.imgur.com/pe3Yx3F.png" },
+        { test: "hat_12.png", replaceWith: "https://i.imgur.com/VSUId2s.png" },
+        { test: "hat_6.png", replaceWith: "https://i.imgur.com/vM9Ri8g.png" },
+        { test: "hat_18.png", replaceWith: "https://i.imgur.com/in5H6vw.png" },
+        { test: "access_21.png", replaceWith: "https://i.imgur.com/4ddZert.png" },
+        { test: "access_18.png", replaceWith: "https://i.imgur.com/0rmN7L9.png" },
+        { test: "access_19.png", replaceWith: "https://i.imgur.com/sULkUZT.png" },
+        { test: "hat_9.png", replaceWith: "https://i.imgur.com/gJY7sM6.png" },
+        { test: "hat_16.png", replaceWith: "https://i.imgur.com/uYgDtcZ.png" },
+        { test: "hat_31.png", replaceWith: "https://i.imgur.com/JPMqgSc.png" },
+        { test: "hat_7.png", replaceWith: "https://i.imgur.com/vAOzlyY.png" },
+        { test: "hat_15.png", replaceWith: "https://i.imgur.com/YRQ8Ybq.png" },
+        { test: "hat_13.png", replaceWith: "https://i.imgur.com/EwkbsHN.png" },
+        { test: "hat_11.png", replaceWith: "https://i.imgur.com/yfqME8H.png" },
+        { test: "hat_20.png", replaceWith: "https://i.imgur.com/JbUPrtp.png" },
+        { test: "hat_11_p.png", replaceWith: "https://i.imgur.com/yfqME8H.png" },
+        { test: "hat_14_p.png", replaceWith: "https://i.imgur.com/V8JrIwv.png" },
+        { test: "hat_14.png", replaceWith: "https://i.imgur.com/V8JrIwv.png" },
+        { test: "hat_14_top.png", replaceWith: "https://i.imgur.com/s7Cxc9y.png" },
+        { test: "hat_11_top.png", replaceWith: "https://i.imgur.com/s7Cxc9y.png" },
+        { test: "hat_26.png", replaceWith: "https://i.imgur.com/2PsUgEL.png" },
+        { test: "hat_52.png", replaceWith: "https://i.imgur.com/hmJrVQz.png" },
+        { test: "bull_2.png", replaceWith: "https://i.imgur.com/Qq0ysR4.png" },
+        { test: "bull_1.png", replaceWith: "https://i.imgur.com/3tsGyzZ.png" },
+        { test: "wolf_1.png", replaceWith: "https://i.imgur.com/zLAZWOH.png" },
+        { test: "wolf_2.png", replaceWith: "https://i.imgur.com/hKlpCVS.png" },
+        { test: "cow_1.png", replaceWith: "https://i.imgur.com/FycnCNU.png" },
+        { test: "pig_1.png", replaceWith: "https://i.imgur.com/QHtrTlY.png" },
+        { test: "chicken_1.png", replaceWith: "https://i.imgur.com/UtBEmai.png" },
+        { test: "enemy.png", replaceWith: "https://i.imgur.com/Ib6nqTa.png" }
+    ];
+
+    const orig = Object.getOwnPropertyDescriptor(Image.prototype, "src");
+    Object.defineProperty(Image.prototype, "src", {
+        set(l) {
+            for (const { test, replaceWith } of textureReplacements) {
+                if (l.includes(test)) {
+                    l = replaceWith;
+                    break;
+                }
+            }
+            orig.set.call(this, l);
+        },
+        get: orig.get,
+        configurable: true
+    });
+})();
