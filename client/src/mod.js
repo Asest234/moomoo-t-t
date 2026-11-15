@@ -476,7 +476,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         configurable: true
     });
 })();
-// MooMoo.io Custom Store v1.9.3 Full Fixed & CORS Bypass
+// MooMoo.io Custom Store v1.9.3 Full Final Fix
 ;(async () => {
 	const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 	win.customStore = true;
@@ -496,7 +496,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	var currentAllianceEle = 0;
 	let init = false;
 
-	// CORS (cross-origin) hatasını önlemek için Image nesnesini güvenli hale getiriyoruz
+	// CORS Engelini kaldıran resim kancası
 	const OrigImage = win.Image;
 	win.Image = function() {
 		const img = new OrigImage();
@@ -507,89 +507,46 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 
 	await new Promise(async (resolve) => {
 		let { send } = WebSocket.prototype;
-		WebSocket.prototype.send = function (...x) {
-			send.apply(this, x);
-			this.send = send;
-			if (!init) {
-				init = true;
-				this.addEventListener("message", (e) => {
-					try {
-						const [packet, data] = msgpack.decode(new Uint8Array(e.data));
-						switch (packet) {
-							case "us":
-							case 14:
-								if (data[2]) {
-									if (!data[0]) { myPlayer.tails[data[1]] = 1; } 
-									else { myPlayer.tailIndex = data[1]; }
-								} else {
-									if (!data[0]) { myPlayer.skins[data[1]] = 1; } 
-									else { myPlayer.skinIndex = data[1]; }
-								}
-								if (elementID("storeMenu") && elementID("storeMenu").style.display == "block") {
-									generateStoreList();
-								}
-								break;
-							case "is":
-							case 1:
-								myPlayer.sid = data[0];
-								inGame = true;
-								break;
-							case "pp":
-							case 2:
-								inGame = false;
-								break;
-							case "ac":
-							case 5:
-								alliances.push(data[0]);
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu();
-								}
-								break;
-							case "st":
-							case 6:
-								myPlayer.team = data[0];
-								myPlayer.isOwner = data[1];
-								currentAllianceEle = 0;
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu();
-								}
-								break;
-							case "sp":
-							case 7:
-								alliancePlayers = data[0];
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu();
-								}
-								break;
-							case "dc":
-							case 8:
-								for (var i = alliances.length - 1; i >= 0; i--) {
-									if (alliances[i].sid == data[0]) {
-										alliances.splice(i, 1);
-										break;
+		if (send) {
+			WebSocket.prototype.send = function (...x) {
+				send.apply(this, x);
+				this.send = send;
+				if (!init) {
+					init = true;
+					this.addEventListener("message", (e) => {
+						try {
+							const [packet, data] = msgpack.decode(new Uint8Array(e.data));
+							switch (packet) {
+								case "us":
+								case 14:
+									if (data[2]) {
+										if (!data[0]) { myPlayer.tails[data[1]] = 1; } 
+										else { myPlayer.tailIndex = data[1]; }
+									} else {
+										if (!data[0]) { myPlayer.skins[data[1]] = 1; } 
+										else { myPlayer.skinIndex = data[1]; }
 									}
-								}
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu();
-								}
-								break;
-							case "id":
-								alliances = data[0].teams || [];
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
-								break;
-						}
-					} catch (err) {}
-				});
-			}
-			resolve(this);
-		};
+									if (elementID("storeMenu") && elementID("storeMenu").style.display == "block") {
+										generateStoreList();
+									}
+									break;
+								case "is":
+								case 1:
+									myPlayer.sid = data[0];
+									inGame = true;
+									break;
+								case "pp":
+								case 2:
+									inGame = false;
+									break;
+							}
+						} catch (err) {}
+					});
+				}
+				return this;
+			};
+		}
+		resolve(this);
 	});
 
 	function waitForElm(selector) {
@@ -619,10 +576,10 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 color: #fff; padding: 10px; height: 200px; max-height: calc(100vh - 200px);
                 overflow-y: scroll; -webkit-overflow-scrolling: touch;
             }
-			.storeItem { font-size: 24px; }
+			.storeItem { font-size: 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
 			.hatPreview { width: 45px; height: 45px; }
-			.joinAlBtn { font-size: 24px; }
-			.itemPrice { font-size: 24px; }
+			.joinAlBtn { font-size: 20px; cursor: pointer; background: #5c82ff; padding: 2px 8px; border-radius: 4px; }
+			.itemPrice { font-size: 20px; color: #ffd700; }
 			#customStoreScrollBar {
 				display: none; position: absolute; width: 3px; background: white;
 				left: calc(50% + 210px - 3px); border-radius: 10px;
@@ -708,41 +665,24 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		]
 	};
 
-	for (let i = 0; i < store.hats.length; ++i) {
-		if (store.hats[i].price <= 0) myPlayer.skins[store.hats[i].id] = 1;
-	}
-	for (let i = 0; i < store.accessories.length; ++i) {
-		if (store.accessories[i].price <= 0) myPlayer.tails[store.accessories[i].id] = 1;
-	}
+	for (let i = 0; i < store.hats.length; ++i) { if (store.hats[i].price <= 0) myPlayer.skins[store.hats[i].id] = 1; }
+	for (let i = 0; i < store.accessories.length; ++i) { if (store.accessories[i].price <= 0) myPlayer.tails[store.accessories[i].id] = 1; }
 
-	var checkRealStore = JSON.parse(localStorage.getItem("realStore"));
-	if (checkRealStore == null) localStorage.setItem("realStore", JSON.stringify(store));
-	
-	var customStore = JSON.parse(localStorage.getItem("customStore"));
-	if (customStore == null) {
-		customStore = store;
-		localStorage.setItem("customStore", JSON.stringify(store));
-	}
+	var customStore = JSON.parse(localStorage.getItem("customStore")) || store;
 
 	var totalShopEle = customStore.hats.length;
 	var currentShopEle = 0;
+	var tmpArray = customStore.hats;
 
 	function updateScroll() {
-		if (customStoreButton.style.background == "red") return;
 		const elements = document.querySelectorAll("#customStoreHolder > .storeItem");
-		const storeArray = [];
 		for (let i = 0; i < elements.length; i++) {
 			if (currentShopEle <= i && i < currentShopEle + 4) {
 				elements[i].style.display = null;
-				storeArray.push(tmpArray[i].blank ? "blank" : tmpArray[i].id);
 			} else {
 				elements[i].style.display = "none";
 			}
 		}
-		const elementHeight = 220 / (elements.length || 1);
-		customStoreScrollBar.style.height = `${elementHeight * 4}px`;
-		customStoreScrollBar.style.marginTop = `${elementHeight * currentShopEle}px`;
-		customStoreScrollBar.style.display = elements.length <= 4 ? "none" : "block";
 	}
 
 	customStoreHolder.addEventListener("wheel", (event) => {
@@ -754,91 +694,44 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		updateScroll();
 	});
 
-	var sortable = null, tmpArray;
 	function generateStoreList() {
-		if (inGame) {
-			while (customStoreHolder.hasChildNodes()) {
-				customStoreHolder.removeChild(customStoreHolder.lastChild);
-			}
-			var index = currentStoreIndex;
-			tmpArray = index ? customStore.accessories : customStore.hats;
-			totalShopEle = tmpArray.length;
-			if(elementID("addEdit")) addEdit.style.display = customStoreButton.style.background == "red" ? null : "none";
-			if(elementID("reloadEdit")) reloadEdit.style.display = customStoreButton.style.background == "red" ? null : "none";
-			if(elementID("importBut")) importBut.style.display = customStoreButton.style.background == "red" ? null : "none";
-			if(elementID("exportBut")) exportBut.style.display = customStoreButton.style.background == "red" ? null : "none";
-			customStoreHolder.style.overflowY = customStoreButton.style.background == "red" ? null : "hidden";
-			
-			Array.from(tmpArray).forEach((ele) => {
-				let tmp = document.createElement("div");
-				tmp.id = "storeDisplay" + ele.id;
-				tmp.className = "storeItem";
-				customStoreHolder.appendChild(tmp);
-
-				let childtmp;
-				if (!ele.blank) {
-					tmp.onmouseout = () => { if(win.showItemInfo) win.showItemInfo(); };
-					tmp.onmouseover = () => { if(win.showItemInfo) win.showItemInfo(ele, false, true); };
-
-					childtmp = document.createElement("img");
-					childtmp.className = "hatPreview";
-					childtmp.src = "/img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png";
-					tmp.appendChild(childtmp);
-
-					childtmp = document.createElement("span");
-					childtmp.textContent = ele.name;
-					tmp.appendChild(childtmp);
-				} else {
-					childtmp = document.createElement("div");
-					childtmp.className = "hatPreview";
-					tmp.appendChild(childtmp);
-				}
-
-				if (customStoreButton.style.background == "red") {
-					childtmp = document.createElement("div");
-					childtmp.className = "joinAlBtn";
-					childtmp.style = "margin-top: 5px";
-					childtmp.textContent = "Delete";
-					tmp.appendChild(childtmp);
-					childtmp.onclick = () => {
-						let arr = index ? customStore.accessories : customStore.hats;
-						const objWithIdIndex = arr.findIndex((obj) => obj.id === ele.id);
-						if (objWithIdIndex > -1) arr.splice(objWithIdIndex, 1);
-						localStorage.setItem("customStore", JSON.stringify(customStore));
-						generateStoreList();
-					};
-				} else if (!ele.blank) {
-					if (index ? !myPlayer.tails[ele.id] : !myPlayer.skins[ele.id]) {
-						childtmp = document.createElement("div");
-						childtmp.className = "joinAlBtn";
-						childtmp.style = "margin-top: 5px";
-						childtmp.textContent = "Buy";
-						childtmp.onclick = () => { if(win.storeBuy) win.storeBuy(ele.id, index); };
-						tmp.appendChild(childtmp);
-
-						childtmp = document.createElement("span");
-						childtmp.className = "itemPrice";
-						childtmp.textContent = ele.price;
-						tmp.appendChild(childtmp);
-					} else if ((index ? myPlayer.tailIndex : myPlayer.skinIndex) == ele.id) {
-						childtmp = document.createElement("div");
-						childtmp.className = "joinAlBtn";
-						childtmp.style = "margin-top: 5px";
-						childtmp.textContent = "Unequip";
-						childtmp.onclick = () => { if(win.storeEquip) win.storeEquip(0, index); };
-						tmp.appendChild(childtmp);
-					} else {
-						childtmp = document.createElement("div");
-						childtmp.className = "joinAlBtn";
-						childtmp.style = "margin-top: 5px";
-						childtmp.textContent = "Equip";
-						childtmp.onclick = () => { if(win.storeEquip) win.storeEquip(ele.id, index); };
-						tmp.appendChild(childtmp);
-					}
-				}
-			});
-			updateScroll();
+		while (customStoreHolder.hasChildNodes()) {
+			customStoreHolder.removeChild(customStoreHolder.lastChild);
 		}
+		tmpArray = currentStoreIndex ? customStore.accessories : customStore.hats;
+		totalShopEle = tmpArray.length;
+
+		Array.from(tmpArray).forEach((ele) => {
+			let tmp = document.createElement("div");
+			tmp.id = "storeDisplay" + ele.id;
+			tmp.className = "storeItem";
+			customStoreHolder.appendChild(tmp);
+
+			let childtmp;
+			if (!ele.blank) {
+				childtmp = document.createElement("img");
+				childtmp.className = "hatPreview";
+				childtmp.src = "/img/" + (currentStoreIndex ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png";
+				tmp.appendChild(childtmp);
+
+				childtmp = document.createElement("span");
+				childtmp.textContent = ele.name;
+				tmp.appendChild(childtmp);
+
+				childtmp = document.createElement("div");
+				childtmp.className = "joinAlBtn";
+				childtmp.textContent = (currentStoreIndex ? myPlayer.tails[ele.id] : myPlayer.skins[ele.id]) ? "Equip" : "Buy";
+				childtmp.onclick = () => {
+					if (currentStoreIndex ? myPlayer.tails[ele.id] : myPlayer.skins[ele.id]) {
+						if(win.storeEquip) win.storeEquip(ele.id, currentStoreIndex);
+					} else {
+						if(win.storeBuy) win.storeBuy(ele.id, currentStoreIndex);
+					}
+				};
+				tmp.appendChild(childtmp);
+			}
+		});
+		updateScroll();
 	}
 
 	const customStoreButton = document.createElement("div");
@@ -847,28 +740,13 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle">store</i>`;
 	customStoreButton.onclick = () => {
 		const storeMenu = elementID("storeMenu");
-		if (storeMenu && storeMenu.style.display != "block") {
-			storeMenu.style.display = "block";
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
-			generateStoreList();
-		} else if (storeMenu) {
-			storeMenu.style.display = "none";
-			customStoreButton.style.background = null;
-		}
-	};
-	customStoreButton.oncontextmenu = (event) => {
-		event.preventDefault();
-		const storeMenu = elementID("storeMenu");
-		if (storeMenu && storeMenu.style.display != "block") {
-			storeMenu.style.display = "block";
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
-			if (customStoreButton.style.background != "red") {
-				customStoreButton.style.background = "red";
+		if (storeMenu) {
+			const isVisible = storeMenu.style.display == "block";
+			storeMenu.style.display = isVisible ? "none" : "block";
+			if (!isVisible) {
+				inGame = true;
+				generateStoreList();
 			}
-			generateStoreList();
-		} else if (storeMenu) {
-			storeMenu.style.display = "none";
-			customStoreButton.style.background = null;
 		}
 	};
 
@@ -888,100 +766,24 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		});
 	});
 
-	const addEdit = document.createElement("div");
-	addEdit.id = "addEdit";
-	addEdit.className = "storeTab";
-	addEdit.textContent = "Add Blank";
-	addEdit.style.display = "none";
-	addEdit.style.marginLeft = "10px";
-
-	const reloadEdit = document.createElement("div");
-	reloadEdit.id = "reloadEdit";
-	reloadEdit.className = "storeTab";
-	reloadEdit.textContent = "Reload";
-	reloadEdit.style.display = "none";
-	reloadEdit.style.marginLeft = "10px";
-
-	const importBut = document.createElement("div");
-	importBut.id = "importBut";
-	importBut.className = "storeTab";
-	importBut.textContent = "Import";
-	importBut.style.marginLeft = "10px";
-
-	const exportBut = document.createElement("div");
-	exportBut.id = "exportBut";
-	exportBut.className = "storeTab";
-	exportBut.textContent = "Export";
-	exportBut.style.marginLeft = "10px";
-
 	waitForElm("#storeMenu > div:nth-child(1) > div:nth-child(2)").then((storeTab2) => {
 		storeTab2.addEventListener("click", () => {
 			currentStoreIndex = 1;
 			currentShopEle = 0;
 			generateStoreList();
 		});
-
-		storeTab2.parentNode.appendChild(addEdit);
-		addEdit.onclick = () => {
-			let arr = currentStoreIndex ? customStore.accessories : customStore.hats;
-			let id = Math.max(...arr.map((el) => el.id)) + 1001;
-			arr.splice(0, 0, { id: id, blank: true });
-			localStorage.setItem("customStore", JSON.stringify(customStore));
-			generateStoreList();
-		};
-
-		storeTab2.parentNode.appendChild(reloadEdit);
-		reloadEdit.onclick = () => {
-			let realStore = JSON.parse(localStorage.getItem("realStore"));
-			if(realStore) {
-				currentStoreIndex ? (customStore.accessories = realStore.accessories) : (customStore.hats = realStore.hats);
-				localStorage.setItem("customStore", JSON.stringify(customStore));
-			}
-			currentShopEle = 0;
-			generateStoreList();
-		};
-
-		storeTab2.parentNode.appendChild(importBut);
-		importBut.onclick = () => {
-			const tmpEle = document.createElement("input");
-			tmpEle.type = "file";
-			tmpEle.style.display = "none";
-			document.body.appendChild(tmpEle);
-			tmpEle.addEventListener("change", async () => {
-				let data = await new Response(tmpEle.files[0]).json();
-				customStore = data;
-				localStorage.setItem("customStore", JSON.stringify(data));
-				tmpEle.remove();
-				currentShopEle = 0;
-				generateStoreList();
-			});
-			tmpEle.click();
-		};
-
-		storeTab2.parentNode.appendChild(exportBut);
-		exportBut.onclick = () => {
-			let dataStr = JSON.stringify(customStore);
-			let dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-			let exportFileDefaultName = `customStore_${Date.now()}.json`;
-			let linkElement = document.createElement("a");
-			linkElement.setAttribute("href", dataUri);
-			linkElement.setAttribute("download", exportFileDefaultName);
-			linkElement.click();
-		};
 	});
 
 	win.addEventListener("keydown", (event) => {
-		if (event.code == "Escape") {
-			customStoreButton.style.background = null;
-		} else if (event.code == "KeyB" && document.activeElement && document.activeElement.tagName != "INPUT" && inGame) {
+		if (event.code == "KeyB" && document.activeElement && document.activeElement.tagName != "INPUT") {
 			const storeMenu = elementID("storeMenu");
-			if (storeMenu && storeMenu.style.display != "block") {
-				storeMenu.style.display = "block";
-				if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
-				generateStoreList();
-			} else if (storeMenu) {
-				storeMenu.style.display = "none";
-				customStoreButton.style.background = null;
+			if (storeMenu) {
+				const isVisible = storeMenu.style.display == "block";
+				storeMenu.style.display = isVisible ? "none" : "block";
+				if (!isVisible) {
+					inGame = true;
+					generateStoreList();
+				}
 			}
 		}
 	});
