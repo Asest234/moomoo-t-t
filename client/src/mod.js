@@ -476,12 +476,11 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         configurable: true
     });
 })();
+// MooMoo.io Custom Store v1.9.3 Full Fixed & CORS Bypass
 ;(async () => {
 	const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
-	win.customStore = true
-	const elementID = (id) => {
-		return document.getElementById(id)
-	}
+	win.customStore = true;
+	const elementID = (id) => document.getElementById(id);
 	const myPlayer = {
 		sid: null,
 		tails: {},
@@ -489,178 +488,153 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		tailIndex: 0,
 		skinIndex: 0,
 		team: null
-	}
-	var inGame = false
-	var alliances = []
-	var alliancePlayers = []
-	var totalAllianceEle = 0
-	var currentAllianceEle = 0
-	let init = false
-	await new Promise(async (resolve) => {
-		let { send } = WebSocket.prototype
+	};
+	var inGame = false;
+	var alliances = [];
+	var alliancePlayers = [];
+	var totalAllianceEle = 0;
+	var currentAllianceEle = 0;
+	let init = false;
 
+	// CORS (cross-origin) hatasını önlemek için Image nesnesini güvenli hale getiriyoruz
+	const OrigImage = win.Image;
+	win.Image = function() {
+		const img = new OrigImage();
+		img.crossOrigin = "Anonymous";
+		return img;
+	};
+	win.Image.prototype = OrigImage.prototype;
+
+	await new Promise(async (resolve) => {
+		let { send } = WebSocket.prototype;
 		WebSocket.prototype.send = function (...x) {
-			send.apply(this, x)
-			this.send = send
+			send.apply(this, x);
+			this.send = send;
 			if (!init) {
-				init = true
+				init = true;
 				this.addEventListener("message", (e) => {
 					try {
-						const [packet, data] = msgpack.decode(new Uint8Array(e.data))
+						const [packet, data] = msgpack.decode(new Uint8Array(e.data));
 						switch (packet) {
 							case "us":
 							case 14:
 								if (data[2]) {
-									if (!data[0]) {
-										myPlayer.tails[data[1]] = 1
-									} else {
-										myPlayer.tailIndex = data[1]
-									}
+									if (!data[0]) { myPlayer.tails[data[1]] = 1; } 
+									else { myPlayer.tailIndex = data[1]; }
 								} else {
-									if (!data[0]) {
-										myPlayer.skins[data[1]] = 1
-									} else {
-										myPlayer.skinIndex = data[1]
-									}
+									if (!data[0]) { myPlayer.skins[data[1]] = 1; } 
+									else { myPlayer.skinIndex = data[1]; }
 								}
 								if (elementID("storeMenu") && elementID("storeMenu").style.display == "block") {
-									generateStoreList()
+									generateStoreList();
 								}
-								break
+								break;
 							case "is":
 							case 1:
-								myPlayer.sid = data[0]
-								inGame = true
-								break
+								myPlayer.sid = data[0];
+								inGame = true;
+								break;
 							case "pp":
 							case 2:
-								inGame = false
-								break
+								inGame = false;
+								break;
 							case "ac":
 							case 5:
-								alliances.push(data[0])
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+								alliances.push(data[0]);
+								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
+								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
 								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
+									showAllianceMenu();
 								}
-								break
+								break;
 							case "st":
 							case 6:
-								myPlayer.team = data[0]
-								myPlayer.isOwner = data[1]
-								currentAllianceEle = 0
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+								myPlayer.team = data[0];
+								myPlayer.isOwner = data[1];
+								currentAllianceEle = 0;
+								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
 								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
+									showAllianceMenu();
 								}
-								break
+								break;
 							case "sp":
 							case 7:
-								alliancePlayers = data[0]
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+								alliancePlayers = data[0];
+								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
+								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
 								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
+									showAllianceMenu();
 								}
-								break
+								break;
 							case "dc":
 							case 8:
 								for (var i = alliances.length - 1; i >= 0; i--) {
 									if (alliances[i].sid == data[0]) {
-										alliances.splice(i, 1)
-										break
+										alliances.splice(i, 1);
+										break;
 									}
 								}
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
+								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5);
 								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
+									showAllianceMenu();
 								}
-								break
+								break;
 							case "id":
-								alliances = data[0].teams || []
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								break
+								alliances = data[0].teams || [];
+								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length;
+								break;
 						}
 					} catch (err) {}
-				})
+				});
 			}
-			resolve(this)
-		}
-	})
+			resolve(this);
+		};
+	});
 
 	function waitForElm(selector) {
 		return new Promise((resolve) => {
-			if (document.querySelector(selector)) {
-				return resolve(document.querySelector(selector))
-			}
-
+			if (document.querySelector(selector)) return resolve(document.querySelector(selector));
 			const observer = new MutationObserver((mutations) => {
 				if (document.querySelector(selector)) {
-					resolve(document.querySelector(selector))
-					observer.disconnect()
+					resolve(document.querySelector(selector));
+					observer.disconnect();
 				}
-			})
-
-			observer.observe(document.body, {
-				childList: true,
-				subtree: true
-			})
-		})
+			});
+			observer.observe(document.body, { childList: true, subtree: true });
+		});
 	}
 
-	const customStoreHolder = document.createElement("div")
-	customStoreHolder.id = "customStoreHolder"
-	const customStoreScrollBar = document.createElement("div")
-	customStoreScrollBar.id = "customStoreScrollBar"
+	const customStoreHolder = document.createElement("div");
+	customStoreHolder.id = "customStoreHolder";
+	const customStoreScrollBar = document.createElement("div");
+	customStoreScrollBar.id = "customStoreScrollBar";
+
 	waitForElm("#storeHolder").then((storeHolder) => {
-		const style = document.createElement("style")
+		const style = document.createElement("style");
 		style.innerHTML = `
             #customStoreHolder {
-                pointer-events: all;
-                width: 400px;
-                display: inline-block;
-                background-color: rgba(0, 0, 0, 0.25);
-                -webkit-border-radius: 4px;
-                -moz-border-radius: 4px;
-                border-radius: 4px;
-                color: #fff;
-                padding: 10px;
-                height: 200px;
-                max-height: calc(100vh - 200px);
-                overflow-y: scroll;
-                -webkit-overflow-scrolling: touch;
+                pointer-events: all; width: 400px; display: inline-block;
+                background-color: rgba(0, 0, 0, 0.25); border-radius: 4px;
+                color: #fff; padding: 10px; height: 200px; max-height: calc(100vh - 200px);
+                overflow-y: scroll; -webkit-overflow-scrolling: touch;
             }
-			.storeItem {
-				font-size: 24px;
-			}
-			.hatPreview {
-				width: 45px;
-				height: 45px;
-			}
-			.joinAlBtn {
-				font-size: 24px;
-			}
-			.itemPrice {
-				font-size: 24px;
-			}
+			.storeItem { font-size: 24px; }
+			.hatPreview { width: 45px; height: 45px; }
+			.joinAlBtn { font-size: 24px; }
+			.itemPrice { font-size: 24px; }
 			#customStoreScrollBar {
-				display: none;
-				position: absolute;
-				width: 3px;
-				background: white;
-				left: calc(50% + 210px - 3px);
-				border-radius: 10px;
+				display: none; position: absolute; width: 3px; background: white;
+				left: calc(50% + 210px - 3px); border-radius: 10px;
 			}
-        `
-		document.head.appendChild(style)
-		storeHolder.parentNode.insertBefore(customStoreHolder, storeHolder.nextSibling)
-		storeHolder.parentNode.insertBefore(customStoreScrollBar, storeHolder.nextSibling)
-		storeHolder.style.display = "none"
-	})
+        `;
+		document.head.appendChild(style);
+		storeHolder.parentNode.insertBefore(customStoreHolder, storeHolder.nextSibling);
+		storeHolder.parentNode.insertBefore(customStoreScrollBar, storeHolder.nextSibling);
+		storeHolder.style.display = "none";
+	});
 
-	var currentStoreIndex = 0
+	var currentStoreIndex = 0;
 	var store = {
 		hats: [
 			{ id: 51, name: "Moo Cap", price: 0, scale: 120, desc: "coolest mooer around" },
@@ -732,508 +706,283 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			{ id: 18, name: "Blood Wings", price: 20000, scale: 178, xOff: 26, desc: "restores health when you deal damage", healD: 0.2 },
 			{ id: 21, name: "Corrupt X Wings", price: 20000, scale: 178, xOff: 26, desc: "deal damage to players that damage you", dmg: 0.25 }
 		]
-	}
+	};
+
 	for (let i = 0; i < store.hats.length; ++i) {
-		if (store.hats[i].price <= 0) {
-			myPlayer.skins[store.hats[i].id] = 1
-		}
+		if (store.hats[i].price <= 0) myPlayer.skins[store.hats[i].id] = 1;
 	}
 	for (let i = 0; i < store.accessories.length; ++i) {
-		if (store.accessories[i].price <= 0) {
-			myPlayer.tails[store.accessories[i].id] = 1
-		}
-	}
-	var checkRealStore = JSON.parse(localStorage.getItem("realStore"))
-	if (checkRealStore == null) {
-		localStorage.setItem("realStore", JSON.stringify(store))
-	}
-	var customStore = JSON.parse(localStorage.getItem("customStore"))
-	if (customStore == null) {
-		customStore = store
-		localStorage.setItem("customStore", JSON.stringify(store))
+		if (store.accessories[i].price <= 0) myPlayer.tails[store.accessories[i].id] = 1;
 	}
 
-	var totalShopEle = customStore.hats.length
-	var currentShopEle = 0
+	var checkRealStore = JSON.parse(localStorage.getItem("realStore"));
+	if (checkRealStore == null) localStorage.setItem("realStore", JSON.stringify(store));
+	
+	var customStore = JSON.parse(localStorage.getItem("customStore"));
+	if (customStore == null) {
+		customStore = store;
+		localStorage.setItem("customStore", JSON.stringify(store));
+	}
+
+	var totalShopEle = customStore.hats.length;
+	var currentShopEle = 0;
+
 	function updateScroll() {
-		if (customStoreButton.style.background == "red") return
-		const elements = document.querySelectorAll("#customStoreHolder > .storeItem")
-		const storeArray = []
+		if (customStoreButton.style.background == "red") return;
+		const elements = document.querySelectorAll("#customStoreHolder > .storeItem");
+		const storeArray = [];
 		for (let i = 0; i < elements.length; i++) {
 			if (currentShopEle <= i && i < currentShopEle + 4) {
-				elements[i].style.display = null
-				storeArray.push(tmpArray[i].blank ? "blank" : tmpArray[i].id)
+				elements[i].style.display = null;
+				storeArray.push(tmpArray[i].blank ? "blank" : tmpArray[i].id);
 			} else {
-				elements[i].style.display = "none"
+				elements[i].style.display = "none";
 			}
 		}
-
-		const elementHeight = 220 / (elements.length || 1)
-		customStoreScrollBar.style.height = `${elementHeight * 4}px`
-		customStoreScrollBar.style.marginTop = `${elementHeight * currentShopEle}px`
-		customStoreScrollBar.style.display = elements.length <= 4 ? "none" : "block"
-		if (win.recorder) {
-			win.updateStoreData = [currentStoreIndex, storeArray, elements.length, currentShopEle]
-			win.sendToLocal("addData", [
-				Date.now().toString(),
-				{ type: "updateStore", data: [currentStoreIndex, storeArray, elements.length, currentShopEle] }
-			])
-		}
+		const elementHeight = 220 / (elements.length || 1);
+		customStoreScrollBar.style.height = `${elementHeight * 4}px`;
+		customStoreScrollBar.style.marginTop = `${elementHeight * currentShopEle}px`;
+		customStoreScrollBar.style.display = elements.length <= 4 ? "none" : "block";
 	}
+
 	customStoreHolder.addEventListener("wheel", (event) => {
 		if (event.wheelDelta > 0) {
-			currentShopEle = Math.max(0, currentShopEle - 4)
+			currentShopEle = Math.max(0, currentShopEle - 4);
 		} else {
-			currentShopEle = Math.min(Math.max(0, totalShopEle - 4), currentShopEle + 4)
+			currentShopEle = Math.min(Math.max(0, totalShopEle - 4), currentShopEle + 4);
 		}
-		updateScroll()
-	})
+		updateScroll();
+	});
 
-	var sortable = null,
-		tmpArray
+	var sortable = null, tmpArray;
 	function generateStoreList() {
 		if (inGame) {
 			while (customStoreHolder.hasChildNodes()) {
-				customStoreHolder.removeChild(customStoreHolder.lastChild)
+				customStoreHolder.removeChild(customStoreHolder.lastChild);
 			}
-			var index = currentStoreIndex
-			tmpArray = index ? customStore.accessories : customStore.hats
-			totalShopEle = tmpArray.length
-			if(elementID("addEdit")) addEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("reloadEdit")) reloadEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("importBut")) importBut.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("exportBut")) exportBut.style.display = customStoreButton.style.background == "red" ? null : "none"
-			customStoreHolder.style.overflowY = customStoreButton.style.background == "red" ? null : "hidden"
+			var index = currentStoreIndex;
+			tmpArray = index ? customStore.accessories : customStore.hats;
+			totalShopEle = tmpArray.length;
+			if(elementID("addEdit")) addEdit.style.display = customStoreButton.style.background == "red" ? null : "none";
+			if(elementID("reloadEdit")) reloadEdit.style.display = customStoreButton.style.background == "red" ? null : "none";
+			if(elementID("importBut")) importBut.style.display = customStoreButton.style.background == "red" ? null : "none";
+			if(elementID("exportBut")) exportBut.style.display = customStoreButton.style.background == "red" ? null : "none";
+			customStoreHolder.style.overflowY = customStoreButton.style.background == "red" ? null : "hidden";
+			
 			Array.from(tmpArray).forEach((ele) => {
-				let tmp = document.createElement("div")
-				tmp.id = "storeDisplay" + ele.id
-				tmp.className = "storeItem"
-				customStoreHolder.appendChild(tmp)
+				let tmp = document.createElement("div");
+				tmp.id = "storeDisplay" + ele.id;
+				tmp.className = "storeItem";
+				customStoreHolder.appendChild(tmp);
 
-				let childtmp
+				let childtmp;
 				if (!ele.blank) {
-					tmp.onmouseout = () => {
-						if(win.showItemInfo) win.showItemInfo()
-					}
-					tmp.onmouseover = () => {
-						if(win.showItemInfo) win.showItemInfo(ele, false, true)
-					}
+					tmp.onmouseout = () => { if(win.showItemInfo) win.showItemInfo(); };
+					tmp.onmouseover = () => { if(win.showItemInfo) win.showItemInfo(ele, false, true); };
 
-					childtmp = document.createElement("img")
-					childtmp.className = "hatPreview"
-					// DÜZELTME: Görsel yolu kök dizine (img/) sabitlendi, böylece 404 hatası alınmayacak
-					childtmp.src = "/img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png"
-					tmp.appendChild(childtmp)
+					childtmp = document.createElement("img");
+					childtmp.className = "hatPreview";
+					childtmp.src = "/img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png";
+					tmp.appendChild(childtmp);
 
-					childtmp = document.createElement("span")
-					childtmp.textContent = ele.name
-					tmp.appendChild(childtmp)
+					childtmp = document.createElement("span");
+					childtmp.textContent = ele.name;
+					tmp.appendChild(childtmp);
 				} else {
-					childtmp = document.createElement("div")
-					childtmp.className = "hatPreview"
-					tmp.appendChild(childtmp)
+					childtmp = document.createElement("div");
+					childtmp.className = "hatPreview";
+					tmp.appendChild(childtmp);
 				}
 
 				if (customStoreButton.style.background == "red") {
-					childtmp = document.createElement("div")
-					childtmp.className = "joinAlBtn"
-					childtmp.style = "margin-top: 5px"
-					childtmp.textContent = "Delete"
-					tmp.appendChild(childtmp)
+					childtmp = document.createElement("div");
+					childtmp.className = "joinAlBtn";
+					childtmp.style = "margin-top: 5px";
+					childtmp.textContent = "Delete";
+					tmp.appendChild(childtmp);
 					childtmp.onclick = () => {
-						let arr = index ? customStore.accessories : customStore.hats
-						const objWithIdIndex = arr.findIndex((obj) => obj.id === ele.id)
-						if (objWithIdIndex > -1) {
-							arr.splice(objWithIdIndex, 1)
-						}
-						localStorage.setItem("customStore", JSON.stringify(customStore))
-						generateStoreList()
-					}
+						let arr = index ? customStore.accessories : customStore.hats;
+						const objWithIdIndex = arr.findIndex((obj) => obj.id === ele.id);
+						if (objWithIdIndex > -1) arr.splice(objWithIdIndex, 1);
+						localStorage.setItem("customStore", JSON.stringify(customStore));
+						generateStoreList();
+					};
 				} else if (!ele.blank) {
 					if (index ? !myPlayer.tails[ele.id] : !myPlayer.skins[ele.id]) {
-						childtmp = document.createElement("div")
-						childtmp.className = "joinAlBtn"
-						childtmp.style = "margin-top: 5px"
-						childtmp.textContent = "Buy"
-						childtmp.onclick = () => {
-							if(win.storeBuy) win.storeBuy(ele.id, index)
-						}
-						tmp.appendChild(childtmp)
+						childtmp = document.createElement("div");
+						childtmp.className = "joinAlBtn";
+						childtmp.style = "margin-top: 5px";
+						childtmp.textContent = "Buy";
+						childtmp.onclick = () => { if(win.storeBuy) win.storeBuy(ele.id, index); };
+						tmp.appendChild(childtmp);
 
-						childtmp = document.createElement("span")
-						childtmp.className = "itemPrice"
-						childtmp.textContent = ele.price
-						tmp.appendChild(childtmp)
+						childtmp = document.createElement("span");
+						childtmp.className = "itemPrice";
+						childtmp.textContent = ele.price;
+						tmp.appendChild(childtmp);
 					} else if ((index ? myPlayer.tailIndex : myPlayer.skinIndex) == ele.id) {
-						childtmp = document.createElement("div")
-						childtmp.className = "joinAlBtn"
-						childtmp.style = "margin-top: 5px"
-						childtmp.textContent = "Unequip"
-						childtmp.onclick = () => {
-							if(win.storeEquip) win.storeEquip(0, index)
-						}
-						tmp.appendChild(childtmp)
+						childtmp = document.createElement("div");
+						childtmp.className = "joinAlBtn";
+						childtmp.style = "margin-top: 5px";
+						childtmp.textContent = "Unequip";
+						childtmp.onclick = () => { if(win.storeEquip) win.storeEquip(0, index); };
+						tmp.appendChild(childtmp);
 					} else {
-						childtmp = document.createElement("div")
-						childtmp.className = "joinAlBtn"
-						childtmp.style = "margin-top: 5px"
-						childtmp.textContent = "Equip"
-						childtmp.onclick = () => {
-							if(win.storeEquip) win.storeEquip(ele.id, index)
-						}
-						tmp.appendChild(childtmp)
+						childtmp = document.createElement("div");
+						childtmp.className = "joinAlBtn";
+						childtmp.style = "margin-top: 5px";
+						childtmp.textContent = "Equip";
+						childtmp.onclick = () => { if(win.storeEquip) win.storeEquip(ele.id, index); };
+						tmp.appendChild(childtmp);
 					}
 				}
-			})
-			updateScroll()
-			if (customStoreButton.style.background == "red") {
-				if (sortable != null) {
-					sortable.destroy()
-				}
-				if (typeof Sortable !== 'undefined') {
-					sortable = new Sortable.create(customStoreHolder, {
-						animation: 150,
-						onUpdate: (event) => {
-							let arr = index ? customStore.accessories : customStore.hats
-							if (event.newIndex >= arr.length) {
-								var k = event.newIndex - arr.length + 1
-								while (k--) {
-									arr.push(undefined)
-								}
-							}
-							arr.splice(event.newIndex, 0, arr.splice(event.oldIndex, 1)[0])
-							localStorage.setItem("customStore", JSON.stringify(customStore))
-						}
-					})
-				}
-			} else {
-				if (sortable != null) {
-					sortable.destroy()
-					sortable = null
-				}
-			}
+			});
+			updateScroll();
 		}
 	}
 
-	const customStoreButton = document.createElement("div")
-	customStoreButton.id = "customStoreButton"
-	customStoreButton.className = "uiElement gameButton"
-	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle">store</i>`
+	const customStoreButton = document.createElement("div");
+	customStoreButton.id = "customStoreButton";
+	customStoreButton.className = "uiElement gameButton";
+	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle">store</i>`;
 	customStoreButton.onclick = () => {
-		if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
-			elementID("storeMenu").style.display = "block"
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-			if(elementID("chatBox")) elementID("chatBox").value = ""
-			if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
-			generateStoreList()
-		} else if(elementID("storeMenu")) {
-			elementID("storeMenu").style.display = "none"
-			customStoreButton.style.background = null
+		const storeMenu = elementID("storeMenu");
+		if (storeMenu && storeMenu.style.display != "block") {
+			storeMenu.style.display = "block";
+			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
+			generateStoreList();
+		} else if (storeMenu) {
+			storeMenu.style.display = "none";
+			customStoreButton.style.background = null;
 		}
-	}
+	};
 	customStoreButton.oncontextmenu = (event) => {
-		event.preventDefault()
-		if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
-			elementID("storeMenu").style.display = "block"
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-			if(elementID("chatBox")) elementID("chatBox").value = ""
-			if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
+		event.preventDefault();
+		const storeMenu = elementID("storeMenu");
+		if (storeMenu && storeMenu.style.display != "block") {
+			storeMenu.style.display = "block";
+			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
 			if (customStoreButton.style.background != "red") {
-				customStoreButton.style.background = "red"
+				customStoreButton.style.background = "red";
 			}
-			generateStoreList()
-		} else if(elementID("storeMenu")) {
-			elementID("storeMenu").style.display = "none"
-			customStoreButton.style.background = null
+			generateStoreList();
+		} else if (storeMenu) {
+			storeMenu.style.display = "none";
+			customStoreButton.style.background = null;
 		}
-	}
+	};
 
 	waitForElm("#storeButton").then((storeButton) => {
-		const style = document.createElement("style")
-		style.innerHTML = `
-            #customStoreButton {
-                right: 330px;
-            }
-            @media only screen and (max-width: 896px) {
-                #customStoreButton {
-                    top: inherit;
-                    right: 60px;
-                }
-            }
-        `
-		document.head.appendChild(style)
-		storeButton.parentNode.insertBefore(customStoreButton, storeButton.nextSibling)
-		storeButton.hidden = true
-	})
+		const style = document.createElement("style");
+		style.innerHTML = `#customStoreButton { right: 330px; } @media only screen and (max-width: 896px) { #customStoreButton { top: inherit; right: 60px; } }`;
+		document.head.appendChild(style);
+		storeButton.parentNode.insertBefore(customStoreButton, storeButton.nextSibling);
+		storeButton.hidden = true;
+	});
 
 	waitForElm("#storeMenu > div:nth-child(1) > div:nth-child(1)").then((storeTab1) => {
 		storeTab1.addEventListener("click", () => {
-			currentStoreIndex = 0
-			currentShopEle = 0
-			generateStoreList()
-		})
-	})
-	const addEdit = document.createElement("div")
-	addEdit.id = "addEdit"
-	addEdit.className = "storeTab"
-	addEdit.textContent = "Add Blank"
-	addEdit.style.display = "none"
-	addEdit.style.marginLeft = "10px"
-	const reloadEdit = document.createElement("div")
-	reloadEdit.id = "reloadEdit"
-	reloadEdit.className = "storeTab"
-	reloadEdit.textContent = "Reload"
-	reloadEdit.style.display = "none"
-	reloadEdit.style.marginLeft = "10px"
-	const importBut = document.createElement("div")
-	importBut.id = "importBut"
-	importBut.className = "storeTab"
-	importBut.textContent = "Import"
-	importBut.style.marginLeft = "10px"
-	const exportBut = document.createElement("div")
-	exportBut.id = "exportBut"
-	exportBut.className = "storeTab"
-	exportBut.textContent = "Export"
-	exportBut.style.marginLeft = "10px"
+			currentStoreIndex = 0;
+			currentShopEle = 0;
+			generateStoreList();
+		});
+	});
+
+	const addEdit = document.createElement("div");
+	addEdit.id = "addEdit";
+	addEdit.className = "storeTab";
+	addEdit.textContent = "Add Blank";
+	addEdit.style.display = "none";
+	addEdit.style.marginLeft = "10px";
+
+	const reloadEdit = document.createElement("div");
+	reloadEdit.id = "reloadEdit";
+	reloadEdit.className = "storeTab";
+	reloadEdit.textContent = "Reload";
+	reloadEdit.style.display = "none";
+	reloadEdit.style.marginLeft = "10px";
+
+	const importBut = document.createElement("div");
+	importBut.id = "importBut";
+	importBut.className = "storeTab";
+	importBut.textContent = "Import";
+	importBut.style.marginLeft = "10px";
+
+	const exportBut = document.createElement("div");
+	exportBut.id = "exportBut";
+	exportBut.className = "storeTab";
+	exportBut.textContent = "Export";
+	exportBut.style.marginLeft = "10px";
+
 	waitForElm("#storeMenu > div:nth-child(1) > div:nth-child(2)").then((storeTab2) => {
 		storeTab2.addEventListener("click", () => {
-			currentStoreIndex = 1
-			currentShopEle = 0
-			generateStoreList()
-		})
+			currentStoreIndex = 1;
+			currentShopEle = 0;
+			generateStoreList();
+		});
 
-		storeTab2.parentNode.appendChild(addEdit)
+		storeTab2.parentNode.appendChild(addEdit);
 		addEdit.onclick = () => {
-			let arr = currentStoreIndex ? customStore.accessories : customStore.hats
-			let id = Math.max(...arr.map((el) => el.id)) + 1001
+			let arr = currentStoreIndex ? customStore.accessories : customStore.hats;
+			let id = Math.max(...arr.map((el) => el.id)) + 1001;
+			arr.splice(0, 0, { id: id, blank: true });
+			localStorage.setItem("customStore", JSON.stringify(customStore));
+			generateStoreList();
+		};
 
-			let min = customStoreHolder.getBoundingClientRect().top + 10
-			let top,
-				index = 0
-			let childrens = customStoreHolder.childNodes
-			for (var i = 0; i < childrens.length; i++) {
-				top = Math.abs(childrens[i].getBoundingClientRect().top)
-				if (top <= min) {
-					index = i + 1
-				}
-			}
-			arr.splice(index, 0, { id: id, blank: true })
-			localStorage.setItem("customStore", JSON.stringify(customStore))
-			generateStoreList()
-		}
-
-		storeTab2.parentNode.appendChild(reloadEdit)
+		storeTab2.parentNode.appendChild(reloadEdit);
 		reloadEdit.onclick = () => {
-			let realStore = JSON.parse(localStorage.getItem("realStore"))
+			let realStore = JSON.parse(localStorage.getItem("realStore"));
 			if(realStore) {
-				currentStoreIndex ? (customStore.accessories = realStore.accessories) : (customStore.hats = realStore.hats)
-				localStorage.setItem("customStore", JSON.stringify(customStore))
+				currentStoreIndex ? (customStore.accessories = realStore.accessories) : (customStore.hats = realStore.hats);
+				localStorage.setItem("customStore", JSON.stringify(customStore));
 			}
-			currentShopEle = 0
-			generateStoreList()
-		}
+			currentShopEle = 0;
+			generateStoreList();
+		};
 
-		storeTab2.parentNode.appendChild(importBut)
+		storeTab2.parentNode.appendChild(importBut);
 		importBut.onclick = () => {
-			const tmpEle = document.createElement("input")
-			tmpEle.type = "file"
-			tmpEle.style.display = "none"
-			document.body.appendChild(tmpEle)
+			const tmpEle = document.createElement("input");
+			tmpEle.type = "file";
+			tmpEle.style.display = "none";
+			document.body.appendChild(tmpEle);
 			tmpEle.addEventListener("change", async () => {
-				let data = await new Response(tmpEle.files[0]).json()
-				customStore = data
-				localStorage.setItem("customStore", JSON.stringify(data))
-				tmpEle.remove()
-				currentShopEle = 0
-				generateStoreList()
-			})
-			tmpEle.click()
-		}
+				let data = await new Response(tmpEle.files[0]).json();
+				customStore = data;
+				localStorage.setItem("customStore", JSON.stringify(data));
+				tmpEle.remove();
+				currentShopEle = 0;
+				generateStoreList();
+			});
+			tmpEle.click();
+		};
 
-		storeTab2.parentNode.appendChild(exportBut)
+		storeTab2.parentNode.appendChild(exportBut);
 		exportBut.onclick = () => {
-			let dataStr = JSON.stringify(customStore)
-			let dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr)
-
-			let exportFileDefaultName = `customStore_${Date.now()}.json`
-
-			let linkElement = document.createElement("a")
-			linkElement.setAttribute("href", dataUri)
-			linkElement.setAttribute("download", exportFileDefaultName)
-			linkElement.click()
-		}
-	})
+			let dataStr = JSON.stringify(customStore);
+			let dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+			let exportFileDefaultName = `customStore_${Date.now()}.json`;
+			let linkElement = document.createElement("a");
+			linkElement.setAttribute("href", dataUri);
+			linkElement.setAttribute("download", exportFileDefaultName);
+			linkElement.click();
+		};
+	});
 
 	win.addEventListener("keydown", (event) => {
 		if (event.code == "Escape") {
-			customStoreButton.style.background = null
+			customStoreButton.style.background = null;
 		} else if (event.code == "KeyB" && document.activeElement && document.activeElement.tagName != "INPUT" && inGame) {
-			if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
-				elementID("storeMenu").style.display = "block"
-				if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-				if(elementID("chatBox")) elementID("chatBox").value = ""
-				if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
-				generateStoreList()
-			} else if(elementID("storeMenu")) {
-				elementID("storeMenu").style.display = "none"
-				customStoreButton.style.background = null
+			const storeMenu = elementID("storeMenu");
+			if (storeMenu && storeMenu.style.display != "block") {
+				storeMenu.style.display = "block";
+				if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none";
+				generateStoreList();
+			} else if (storeMenu) {
+				storeMenu.style.display = "none";
+				customStoreButton.style.background = null;
 			}
 		}
-	})
-
-	const customAllianceHolder = document.createElement("div")
-	customAllianceHolder.id = "customAllianceHolder"
-	const customAllianceScrollBar = document.createElement("div")
-	customAllianceScrollBar.id = "customAllianceScrollBar"
-	waitForElm("#allianceHolder").then((allianceHolder) => {
-		const style = document.createElement("style")
-		style.innerHTML = `
-            #customAllianceHolder {
-                pointer-events: all;
-				height: 200px;
-				max-height: calc(100vh - 260px);
-				overflow-y: hidden;
-				-webkit-overflow-scrolling: touch;
-				width: 350px;
-				display: inline-block;
-				text-align: left;
-				padding: 10px;
-				background-color: rgba(0, 0, 0, 0.25);
-				-webkit-border-radius: 4px;
-				-moz-border-radius: 4px;
-				border-radius: 4px;
-            }
-			.allianceItem {
-				height: 30px;
-				font-size: 24px;
-			}
-			#allianceNoTribe {
-				height: 30px;
-				font-size: 24px;
-				padding: 5px;
-				color: #fff;
-			}
-			#customAllianceScrollBar {
-				display: none;
-				position: absolute;
-				width: 3px;
-				background: white;
-				left: calc(50% + 185px - 3px);
-				border-radius: 10px;
-			}
-        `
-		document.head.appendChild(style)
-		allianceHolder.parentNode.insertBefore(customAllianceHolder, allianceHolder.nextSibling)
-		allianceHolder.parentNode.insertBefore(customAllianceScrollBar, allianceHolder.nextSibling)
-		allianceHolder.style.display = "none"
-	})
-
-	customAllianceHolder.addEventListener("wheel", (event) => {
-		if (event.wheelDelta > 0) {
-			currentAllianceEle = Math.max(0, currentAllianceEle - 5)
-		} else {
-			currentAllianceEle = Math.min(Math.max(0, totalAllianceEle - 5), currentAllianceEle + 5)
-		}
-		updateAllianceScroll()
-	})
-	function updateAllianceScroll() {
-		const elements = document.querySelectorAll("#customAllianceHolder > .allianceItem")
-		const allianceArray = []
-		var tmpi = 0
-		for (let i = 0; i < elements.length; i++) {
-			if (currentAllianceEle <= i && i < currentAllianceEle + 5) {
-				elements[i].style.display = null
-				allianceArray.push({
-					sid: myPlayer.team ? alliancePlayers[tmpi] : null,
-					text: myPlayer.team ? alliancePlayers[tmpi + 1] : alliances[i]
-				})
-			} else {
-				elements[i].style.display = "none"
-			}
-
-			tmpi += 2
-		}
-
-		if (allianceArray.length <= 0 && document.getElementById("allianceNoTribe") == null) {
-			let tmp = document.createElement("div")
-			tmp.id = "allianceNoTribe"
-			tmp.textContent = "No Tribes Yet"
-			customAllianceHolder.appendChild(tmp)
-		}
-
-		const elementHeight = 220 / (elements.length || 1)
-		customAllianceScrollBar.style.height = `${elementHeight * 5}px`
-		customAllianceScrollBar.style.marginTop = `${elementHeight * currentAllianceEle}px`
-		customAllianceScrollBar.style.display = elements.length <= 5 ? "none" : "block"
-
-		if (win.recorder) {
-			win.updateAllianceData = [myPlayer.team, allianceArray, elements.length, currentAllianceEle]
-			win.sendToLocal("addData", [
-				Date.now().toString(),
-				{ type: "updateAlliance", data: [myPlayer.team, allianceArray, elements.length, currentAllianceEle] }
-			])
-		}
-	}
-
-	waitForElm("#allianceButton").then((ele) => {
-		ele.addEventListener("click", () => {
-			showAllianceMenu()
-		})
-	})
-
-	function showAllianceMenu() {
-		if (inGame) {
-			if (win.recorder) {
-				win.sendToLocal("addData", [Date.now().toString(), { type: "changeInputText", data: ["allianceInput", ""] }])
-			}
-			while (customAllianceHolder.hasChildNodes()) {
-				customAllianceHolder.removeChild(customAllianceHolder.lastChild)
-			}
-			if (myPlayer.team) {
-				for (let i = 0; i < alliancePlayers.length; i += 2) {
-					let tmp = document.createElement("div")
-					tmp.id = "allianceItem" + alliancePlayers[i]
-					tmp.className = "allianceItem"
-					tmp.style = "color:" + (alliancePlayers[i] == myPlayer.sid ? "#fff" : "rgba(255,255,255,0.6)")
-					let tmp2 = document.createElement("span")
-					tmp2.innerText = alliancePlayers[i + 1]
-					tmp2.style.position = "absolute"
-					tmp.appendChild(tmp2)
-					customAllianceHolder.appendChild(tmp)
-
-					if (myPlayer.isOwner && alliancePlayers[i] != myPlayer.sid) {
-						let alliancePlayersArray = alliancePlayers
-						let childtmp = document.createElement("div")
-						childtmp.className = "joinAlBtn"
-						childtmp.textContent = "Kick"
-						childtmp.onclick = function () {
-							if(win.kickFromClan) win.kickFromClan(alliancePlayersArray[i])
-						}
-						tmp.appendChild(childtmp)
-					}
-				}
-			} else if (alliances.length) {
-				for (let i = 0; i < alliances.length; ++i) {
-					let tmp = document.createElement("div")
-					tmp.id = "allianceItem" + alliances[i].owner
-					tmp.className = "allianceItem"
-					tmp.style = "color:" + (alliances[i].sid == myPlayer.team ? "#fff" : "rgba(255,255,255,0.6)")
-					let tmp2 = document.createElement("span")
-					tmp2.innerText = alliances[i].sid
-					tmp2.style.position = "absolute"
-					tmp.appendChild(tmp2)
-					customAllianceHolder.appendChild(tmp)
-
-					let childtmp = document.createElement("div")
-					childtmp.className = "joinAlBtn"
-					childtmp.textContent = "Join"
-					childtmp.onclick = function () {
-						if(win.sendJoin) win.sendJoin(i)
-					}
-					tmp.appendChild(childtmp)
-				}
-			}
-			updateAllianceScroll()
-		}
-	}
-})()
+	});
+})();
