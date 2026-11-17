@@ -489,7 +489,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		skinIndex: 0,
 		team: null
 	};
-	var inGame = true; // Mağazanın ve hatlerin her zaman açılabilmesi için aktif edildi
+	var inGame = true;
 	var alliances = [];
 	var alliancePlayers = [];
 	var totalAllianceEle = 0;
@@ -536,7 +536,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 								break;
 							case "pp":
 							case 2:
-								inGame = true;
+								inGame = false;
 								break;
 							case "ac":
 							case 5:
@@ -619,10 +619,10 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
                 color: #fff; padding: 10px; height: 200px; max-height: calc(100vh - 200px);
                 overflow-y: scroll; -webkit-overflow-scrolling: touch;
             }
-			.storeItem { font-size: 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+			.storeItem { font-size: 24px; }
 			.hatPreview { width: 45px; height: 45px; }
-			.joinAlBtn { font-size: 20px; cursor: pointer; background: #5c82ff; padding: 2px 8px; border-radius: 4px; }
-			.itemPrice { font-size: 20px; color: #ffd700; }
+			.joinAlBtn { font-size: 24px; }
+			.itemPrice { font-size: 24px; }
 			#customStoreScrollBar {
 				display: none; position: absolute; width: 3px; background: white;
 				left: calc(50% + 210px - 3px); border-radius: 10px;
