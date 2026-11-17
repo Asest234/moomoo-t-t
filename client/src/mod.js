@@ -489,7 +489,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		skinIndex: 0,
 		team: null
 	};
-	var inGame = true; // HATA ÇÖZÜMÜ: Mağazanın boş kalmaması için doğrudan true yapıldı
+	var inGame = true; // Mağazanın ve hatlerin her zaman görünmesi için aktif edildi[cite: 11]
 	var alliances = [];
 	var alliancePlayers = [];
 	var totalAllianceEle = 0;
