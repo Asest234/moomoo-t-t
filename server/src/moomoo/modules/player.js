@@ -422,9 +422,10 @@ export class Player {
             }
         };
 
-        // SERVER: Turret Gear shot (nearest visible enemy in range, ignores Emp Helmet).
+       // SERVER: Turret Gear shot (nearest visible enemy in range, ignores Emp Helmet).
         this.shootTurret = function () {
-            const turret = this.skin.turret;
+            const turret = this.skin && this.skin.turret;
+            if (!turret) return;
             let target = null;
             let best = Infinity;
             for (const other of players) {
@@ -437,7 +438,7 @@ export class Player {
                 }
             }
             if (!target) {
-                this.shootCount = 250;
+                this.shootCount = Math.min(this.shootCount || 0, 250);
                 return;
             }
             const dir = UTILS.getDirection(target.x, target.y, this.x, this.y);
