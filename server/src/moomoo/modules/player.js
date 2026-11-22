@@ -386,10 +386,11 @@ export class Player {
             this.hits = 0;
 
             // SERVER: Turret Gear
-            if (this.skin && this.skin.turret) {
-                this.shootCount -= delta;
-                if (this.shootCount <= 0) this.shootTurret();
-            }
+        this.shootCount -= delta;
+        if (this.shootCount < 0) this.shootCount = 0;
+        if (this.skin && this.skin.turret && this.shootCount <= 0) {
+            this.shootTurret();
+           }
         };
 
         // SERVER: world bounds, including the secret area west of x = 0.
