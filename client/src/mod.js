@@ -476,6 +476,31 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         configurable: true
     });
 })();
+// ==UserScript==
+// @name         MooMoo.io Custom Store
+// @description  Customize store
+// @author       KOOKY WARRIOR
+// @match        *://*.moomoo.io/*
+// @icon         https://moomoo.io/img/favicon.png?v=1
+// @require      https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/msgpack-lite/0.1.26/msgpack.min.js
+// @require 	 https://greasyfork.org/scripts/478839-moomoo-io-packet-code/code/MooMooio%20Packet%20Code.js
+// @run-at       document-start
+// @grant        unsafeWindow
+// @license      MIT
+// @version      1.9.3
+// @namespace    https://greasyfork.org/users/999838
+// @downloadURL https://update.greasyfork.org/scripts/461745/MooMooio%20Custom%20Store.user.js
+// @updateURL https://update.greasyfork.org/scripts/461745/MooMooio%20Custom%20Store.meta.js
+// ==/UserScript==
+/*
+- Right-click the Store Button to access the editing options
+- Press "B" to toggle store menu
+- To change the order of your hats and accessories, simply drag and drop them to the desired position
+- Add a blank space to give your collection some extra style
+- Don't need a particular hat or accessory? Delete it with just a click
+- Export your changes or import customizations
+*/
 
 ;(async () => {
 	unsafeWindow.customStore = true
@@ -497,7 +522,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	var currentAllianceEle = 0
 	let init = false
 
-	// CORS hatasını ve resimlerin görünmeme sorununu önleyen güvenli Image sarmalayıcısı
+	// CORS (cross-origin) hatasını ve resimlerin görünmeme sorununu önleyen güvenli Image sarmalayıcısı
 	const OrigImage = unsafeWindow.Image;
 	unsafeWindow.Image = function() {
 		const img = new OrigImage();
