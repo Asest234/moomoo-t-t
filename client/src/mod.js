@@ -476,7 +476,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         configurable: true
     });
 })();
-// ==UserScript==
+/ ==UserScript==
 // @name         MooMoo.io Custom Store
 // @description  Customize store
 // @author       KOOKY WARRIOR
@@ -488,7 +488,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 // @run-at       document-start
 // @grant        unsafeWindow
 // @license      MIT
-// @version      1.9.3
+// @version      1.1.1
 // @namespace    https://greasyfork.org/users/999838
 // @downloadURL https://update.greasyfork.org/scripts/461745/MooMooio%20Custom%20Store.user.js
 // @updateURL https://update.greasyfork.org/scripts/461745/MooMooio%20Custom%20Store.meta.js
@@ -515,22 +515,12 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		skinIndex: 0,
 		team: null
 	}
-	var inGame = true
+	var inGame = false
 	var alliances = []
 	var alliancePlayers = []
 	var totalAllianceEle = 0
 	var currentAllianceEle = 0
 	let init = false
-
-	// CORS (cross-origin) hatasını ve resimlerin görünmeme sorununu önleyen güvenli Image sarmalayıcısı
-	const OrigImage = unsafeWindow.Image;
-	unsafeWindow.Image = function() {
-		const img = new OrigImage();
-		img.crossOrigin = "Anonymous";
-		return img;
-	};
-	unsafeWindow.Image.prototype = OrigImage.prototype;
-
 	await new Promise(async (resolve) => {
 		let { send } = WebSocket.prototype
 
@@ -566,7 +556,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 							inGame = true
 							break
 						case PACKETCODE.RECEIVE.killPlayer:
-							inGame = true
+							inGame = false
 							break
 						case PACKETCODE.RECEIVE.addAlliance:
 							alliances.push(data[0])
@@ -661,24 +651,16 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
             }
 			.storeItem {
 				font-size: 24px;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				margin-bottom: 5px;
 			}
 			.hatPreview {
 				width: 45px;
 				height: 45px;
 			}
 			.joinAlBtn {
-				font-size: 20px;
-				cursor: pointer;
-				padding: 2px 8px;
-				border-radius: 4px;
+				font-size: 24px;
 			}
 			.itemPrice {
-				font-size: 20px;
-				color: #ffd700;
+				font-size: 24px;
 			}
 			#customStoreScrollBar {
 				display: none;
@@ -1260,7 +1242,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			}
 		}
 
-		const elementHeight = 220 / (elements.length || 1)
+		const elementHeight = 220 / elements.length
 		customStoreScrollBar.style.height = `${elementHeight * 4}px`
 		customStoreScrollBar.style.marginTop = `${elementHeight * currentShopEle}px`
 		customStoreScrollBar.style.display = elements.length <= 4 ? "none" : "block"
@@ -1276,7 +1258,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		if (event.wheelDelta > 0) {
 			currentShopEle = Math.max(0, currentShopEle - 4)
 		} else {
-			currentShopEle = Math.min(Math.max(0, totalShopEle - 4), currentShopEle + 4)
+			currentShopEle = Math.min(totalShopEle - 4, currentShopEle + 4)
 		}
 		updateScroll()
 	})
@@ -1305,15 +1287,15 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 				let childtmp
 				if (!ele.blank) {
 					tmp.onmouseout = () => {
-						if(unsafeWindow.showItemInfo) unsafeWindow.showItemInfo()
+						unsafeWindow.showItemInfo()
 					}
 					tmp.onmouseover = () => {
-						if(unsafeWindow.showItemInfo) unsafeWindow.showItemInfo(ele, false, true)
+						unsafeWindow.showItemInfo(ele, false, true)
 					}
 
 					childtmp = document.createElement("img")
 					childtmp.className = "hatPreview"
-					childtmp.src = "/img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png"
+					childtmp.src = "../img/" + (index ? "accessories/access_" : "hats/hat_") + ele.id + (ele.topSprite ? "_p" : "") + ".png"
 					tmp.appendChild(childtmp)
 
 					childtmp = document.createElement("span")
@@ -1347,7 +1329,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Buy"
 						childtmp.onclick = () => {
-							if(unsafeWindow.storeBuy) unsafeWindow.storeBuy(ele.id, index)
+							unsafeWindow.storeBuy(ele.id, index)
 						}
 						tmp.appendChild(childtmp)
 
@@ -1361,7 +1343,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Unequip"
 						childtmp.onclick = () => {
-							if(unsafeWindow.storeEquip) unsafeWindow.storeEquip(0, index)
+							unsafeWindow.storeEquip(0, index)
 						}
 						tmp.appendChild(childtmp)
 					} else {
@@ -1370,7 +1352,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Equip"
 						childtmp.onclick = () => {
-							if(unsafeWindow.storeEquip) unsafeWindow.storeEquip(ele.id, index)
+							unsafeWindow.storeEquip(ele.id, index)
 						}
 						tmp.appendChild(childtmp)
 					}
@@ -1407,13 +1389,13 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	const customStoreButton = document.createElement("div")
 	customStoreButton.id = "customStoreButton"
 	customStoreButton.className = "uiElement gameButton"
-	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle">store</i>`
+	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle"></i>`
 	customStoreButton.onclick = () => {
 		if (elementID("storeMenu").style.display != "block") {
 			elementID("storeMenu").style.display = "block"
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-			if(elementID("chatBox")) elementID("chatBox").value = ""
-			if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
+			elementID("allianceMenu").style.display = "none"
+			elementID("chatBox").value = ""
+			elementID("chatHolder").style.display = "none"
 			generateStoreList()
 		} else {
 			elementID("storeMenu").style.display = "none"
@@ -1424,9 +1406,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		event.preventDefault()
 		if (elementID("storeMenu").style.display != "block") {
 			elementID("storeMenu").style.display = "block"
-			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-			if(elementID("chatBox")) elementID("chatBox").value = ""
-			if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
+			elementID("allianceMenu").style.display = "none"
+			elementID("chatBox").value = ""
+			elementID("chatHolder").style.display = "none"
 			if (customStoreButton.style.background != "red") {
 				customStoreButton.style.background = "red"
 			}
@@ -1536,7 +1518,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		storeTab2.parentNode.appendChild(exportBut)
 		exportBut.onclick = () => {
 			let dataStr = JSON.stringify(customStore)
-			let dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr)
+			let dataUri = "data:application/jsoncharset=utf-8," + encodeURIComponent(dataStr)
 
 			let exportFileDefaultName = `customStore_${Date.now()}.json`
 
@@ -1553,9 +1535,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		} else if (event.code == "KeyB" && document.activeElement.tagName != "INPUT" && inGame) {
 			if (elementID("storeMenu").style.display != "block") {
 				elementID("storeMenu").style.display = "block"
-				if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
-				if(elementID("chatBox")) elementID("chatBox").value = ""
-				if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
+				elementID("allianceMenu").style.display = "none"
+				elementID("chatBox").value = ""
+				elementID("chatHolder").style.display = "none"
 				generateStoreList()
 			} else {
 				elementID("storeMenu").style.display = "none"
@@ -1644,7 +1626,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			customAllianceHolder.appendChild(tmp)
 		}
 
-		const elementHeight = 220 / (elements.length || 1)
+		const elementHeight = 220 / elements.length
 		customAllianceScrollBar.style.height = `${elementHeight * 5}px`
 		customAllianceScrollBar.style.marginTop = `${elementHeight * currentAllianceEle}px`
 		customAllianceScrollBar.style.display = elements.length <= 5 ? "none" : "block"
@@ -1719,4 +1701,3 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			updateAllianceScroll()
 		}
 	}
-})()
