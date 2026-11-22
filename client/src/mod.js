@@ -476,21 +476,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
         configurable: true
     });
 })();
-// ==UserScript==
-// @name         MooMoo.io Custom Store v1.9.3 Full
-// @description  Customize store for v1.9.3 private server
-// @author       KOOKY WARRIOR
-// @match        *://*.moomoo.io/*
-// @icon         https://moomoo.io/img/favicon.png?v=1
-// @run-at       document-start
-// @grant        unsafeWindow
-// @license      MIT
-// @version      1.1.1
-// ==/UserScript==
 
 ;(async () => {
-	const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
-	win.customStore = true
+	unsafeWindow.customStore = true
 	const elementID = (id) => {
 		return document.getElementById(id)
 	}
@@ -509,14 +497,14 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	var currentAllianceEle = 0
 	let init = false
 
-	// CORS hatasını önlemek ve resimlerin düzgün yüklenmesini sağlamak için Image nesnesini güvenli hale getiriyoruz
-	const OrigImage = win.Image;
-	win.Image = function() {
+	// CORS hatasını ve resimlerin görünmeme sorununu önleyen güvenli Image sarmalayıcısı
+	const OrigImage = unsafeWindow.Image;
+	unsafeWindow.Image = function() {
 		const img = new OrigImage();
 		img.crossOrigin = "Anonymous";
 		return img;
 	};
-	win.Image.prototype = OrigImage.prototype;
+	unsafeWindow.Image.prototype = OrigImage.prototype;
 
 	await new Promise(async (resolve) => {
 		let { send } = WebSocket.prototype
@@ -527,85 +515,77 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			if (!init) {
 				init = true
 				this.addEventListener("message", (e) => {
-					try {
-						const [packet, data] = msgpack.decode(new Uint8Array(e.data))
-						switch (packet) {
-							case "us":
-							case 14:
-								if (data[2]) {
-									if (!data[0]) {
-										myPlayer.tails[data[1]] = 1
-									} else {
-										myPlayer.tailIndex = data[1]
-									}
+					if (!e.origin.includes("moomoo.io") && !unsafeWindow.privateServer) return
+					const [packet, data] = msgpack.decode(new Uint8Array(e.data))
+					switch (packet) {
+						case PACKETCODE.RECEIVE.updateStoreItems:
+							if (data[2]) {
+								if (!data[0]) {
+									myPlayer.tails[data[1]] = 1
 								} else {
-									if (!data[0]) {
-										myPlayer.skins[data[1]] = 1
-									} else {
-										myPlayer.skinIndex = data[1]
-									}
+									myPlayer.tailIndex = data[1]
 								}
-								if (elementID("storeMenu") && elementID("storeMenu").style.display == "block") {
-									generateStoreList()
+							} else {
+								if (!data[0]) {
+									myPlayer.skins[data[1]] = 1
+								} else {
+									myPlayer.skinIndex = data[1]
 								}
-								break
-							case "is":
-							case 1:
-								myPlayer.sid = data[0]
-								inGame = true
-								break
-							case "pp":
-							case 2:
-								inGame = true
-								break
-							case "ac":
-							case 5:
-								alliances.push(data[0])
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
+							}
+							if (elementID("storeMenu").style.display == "block") {
+								generateStoreList()
+							}
+							break
+						case PACKETCODE.RECEIVE.setupGame:
+							myPlayer.sid = data[0]
+							inGame = true
+							break
+						case PACKETCODE.RECEIVE.killPlayer:
+							inGame = true
+							break
+						case PACKETCODE.RECEIVE.addAlliance:
+							alliances.push(data[0])
+							totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+							currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+							if (elementID("allianceMenu").style.display == "block") {
+								showAllianceMenu()
+							}
+							break
+						case PACKETCODE.RECEIVE.setPlayerTeam:
+							myPlayer.team = data[0]
+							myPlayer.isOwner = data[1]
+							currentAllianceEle = 0
+							totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+							if (elementID("allianceMenu").style.display == "block") {
+								showAllianceMenu()
+							}
+							break
+						case PACKETCODE.RECEIVE.setAlliancePlayers:
+							alliancePlayers = data[0]
+							totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+							currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+							if (elementID("allianceMenu").style.display == "block") {
+								showAllianceMenu()
+							}
+							break
+						case PACKETCODE.RECEIVE.deleteAlliance:
+							for (var i = alliances.length - 1; i >= 0; i--) {
+								if (alliances[i].sid == data[0]) {
+									alliances.splice(i, 1)
+									break
 								}
-								break
-							case "st":
-							case 6:
-								myPlayer.team = data[0]
-								myPlayer.isOwner = data[1]
-								currentAllianceEle = 0
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
-								}
-								break
-							case "sp":
-							case 7:
-								alliancePlayers = data[0]
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
-								}
-								break
-							case "dc":
-							case 8:
-								for (var i = alliances.length - 1; i >= 0; i--) {
-									if (alliances[i].sid == data[0]) {
-										alliances.splice(i, 1)
-										break
-									}
-								}
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
-								if (elementID("allianceMenu") && elementID("allianceMenu").style.display == "block") {
-									showAllianceMenu()
-								}
-								break
-							case "id":
-								alliances = data[0].teams || []
-								totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
-								break
-						}
-					} catch (err) {}
+							}
+							totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+							currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
+							if (elementID("allianceMenu").style.display == "block") {
+								showAllianceMenu()
+							}
+							break
+						case PACKETCODE.RECEIVE.setInitData:
+							alliances = data[0].teams
+							totalAllianceEle = myPlayer.team != null ? alliancePlayers.length / 2 : alliances.length
+							break
+					}
 				})
 			}
 			resolve(this)
@@ -693,74 +673,531 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	var currentStoreIndex = 0
 	var store = {
 		hats: [
-			{ id: 51, name: "Moo Cap", price: 0, scale: 120, desc: "coolest mooer around" },
-			{ id: 50, name: "Apple Cap", price: 0, scale: 120, desc: "apple farms remembers" },
-			{ id: 28, name: "Moo Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 29, name: "Pig Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 30, name: "Fluff Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 36, name: "Pandou Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 37, name: "Bear Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 38, name: "Monkey Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 44, name: "Polar Head", price: 0, scale: 120, desc: "no effect" },
-			{ id: 35, name: "Fez Hat", price: 0, scale: 120, desc: "no effect" },
-			{ id: 42, name: "Enigma Hat", price: 0, scale: 120, desc: "join the enigma army" },
-			{ id: 43, name: "Blitz Hat", price: 0, scale: 120, desc: "hey everybody i'm blitz" },
-			{ id: 49, name: "Bob XIII Hat", price: 0, scale: 120, desc: "like and subscribe" },
-			{ id: 57, name: "Pumpkin", price: 50, scale: 120, desc: "Spooooky" },
-			{ id: 8, name: "Bummle Hat", price: 100, scale: 120, desc: "no effect" },
-			{ id: 2, name: "Straw Hat", price: 500, scale: 120, desc: "no effect" },
-			{ id: 15, name: "Winter Cap", price: 600, scale: 120, desc: "allows you to move at normal speed in snow", coldM: 1 },
-			{ id: 5, name: "Cowboy Hat", price: 1000, scale: 120, desc: "no effect" },
-			{ id: 4, name: "Ranger Hat", price: 2000, scale: 120, desc: "no effect" },
-			{ id: 18, name: "Explorer Hat", price: 2000, scale: 120, desc: "no effect" },
-			{ id: 31, name: "Flipper Hat", price: 2500, scale: 120, desc: "have more control while in water", watrImm: true },
-			{ id: 1, name: "Marksman Cap", price: 3000, scale: 120, desc: "increases arrow speed and range", aMlt: 1.3 },
-			{ id: 10, name: "Bush Gear", price: 3000, scale: 160, desc: "allows you to disguise yourself as a bush" },
-			{ id: 48, name: "Halo", price: 3000, scale: 120, desc: "no effect" },
-			{ id: 6, name: "Soldier Helmet", price: 4000, scale: 120, desc: "reduces damage taken but slows movement", spdMult: 0.94, dmgMult: 0.75 },
-			{ id: 23, name: "Anti Venom Gear", price: 4000, scale: 120, desc: "makes you immune to poison", poisonRes: 1 },
-			{ id: 13, name: "Medic Gear", price: 5000, scale: 110, desc: "slowly regenerates health over time", healthRegen: 3 },
-			{ id: 9, name: "Miners Helmet", price: 5000, scale: 120, desc: "earn 1 extra gold per resource", extraGold: 1 },
-			{ id: 32, name: "Musketeer Hat", price: 5000, scale: 120, desc: "reduces cost of projectiles", projCost: 0.5 },
-			{ id: 7, name: "Bull Helmet", price: 6000, scale: 120, desc: "increases damage done but drains health", healthRegen: -5, dmgMultO: 1.5, spdMult: 0.96 },
-			{ id: 22, name: "Emp Helmet", price: 6000, scale: 120, desc: "turrets won't attack but you move slower", antiTurret: 1, spdMult: 0.7 },
-			{ id: 12, name: "Booster Hat", price: 6000, scale: 120, desc: "increases your movement speed", spdMult: 1.16 },
-			{ id: 26, name: "Barbarian Armor", price: 8000, scale: 120, desc: "knocks back enemies that attack you", dmgK: 0.6 },
-			{ id: 21, name: "Plague Mask", price: 10000, scale: 120, desc: "melee attacks deal poison damage", poisonDmg: 5, poisonTime: 6 },
-			{ id: 46, name: "Bull Mask", price: 10000, scale: 120, desc: "bulls won't target you unless you attack them", bullRepel: 1 },
-			{ id: 14, name: "Windmill Hat", topSprite: true, price: 10000, scale: 120, desc: "generates points while worn", pps: 1.5 },
-			{ id: 11, name: "Spike Gear", topSprite: true, price: 10000, scale: 120, desc: "deal damage to players that damage you", dmg: 0.45 },
-			{ id: 53, name: "Turret Gear", topSprite: true, price: 10000, scale: 120, desc: "you become a walking turret", turret: { proj: 1, range: 700, rate: 2500 }, spdMult: 0.7 },
-			{ id: 20, name: "Samurai Armor", price: 12000, scale: 120, desc: "increased attack speed and fire rate", atkSpd: 0.78 },
-			{ id: 58, name: "Dark Knight", price: 12000, scale: 120, desc: "restores health when you deal damage", healD: 0.4 },
-			{ id: 27, name: "Scavenger Gear", price: 15000, scale: 120, desc: "earn double points for each kill", kScrM: 2 },
-			{ id: 40, name: "Tank Gear", price: 15000, scale: 120, desc: "increased damage to buildings but slower movement", spdMult: 0.3, bDmg: 3.3 },
-			{ id: 52, name: "Thief Gear", price: 15000, scale: 120, desc: "steal half of a players gold when you kill them", goldSteal: 0.5 },
-			{ id: 55, name: "Bloodthirster", price: 20000, scale: 120, desc: "Restore Health when dealing damage. And increased damage", healD: 0.25, dmgMultO: 1.2 },
-			{ id: 56, name: "Assassin Gear", price: 20000, scale: 120, desc: "Go invisible when not moving. Can't eat. Increased speed", noEat: true, spdMult: 1.1, invisTimer: 1000 }
+			{
+				id: 51,
+				name: "Moo Cap",
+				price: 0,
+				scale: 120,
+				desc: "coolest mooer around"
+			},
+			{
+				id: 50,
+				name: "Apple Cap",
+				price: 0,
+				scale: 120,
+				desc: "apple farms remembers"
+			},
+			{
+				id: 28,
+				name: "Moo Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 29,
+				name: "Pig Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 30,
+				name: "Fluff Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 36,
+				name: "Pandou Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 37,
+				name: "Bear Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 38,
+				name: "Monkey Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 44,
+				name: "Polar Head",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 35,
+				name: "Fez Hat",
+				price: 0,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 42,
+				name: "Enigma Hat",
+				price: 0,
+				scale: 120,
+				desc: "join the enigma army"
+			},
+			{
+				id: 43,
+				name: "Blitz Hat",
+				price: 0,
+				scale: 120,
+				desc: "hey everybody i'm blitz"
+			},
+			{
+				id: 49,
+				name: "Bob XIII Hat",
+				price: 0,
+				scale: 120,
+				desc: "like and subscribe"
+			},
+			{
+				id: 57,
+				name: "Pumpkin",
+				price: 50,
+				scale: 120,
+				desc: "Spooooky"
+			},
+			{
+				id: 8,
+				name: "Bummle Hat",
+				price: 100,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 2,
+				name: "Straw Hat",
+				price: 500,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 15,
+				name: "Winter Cap",
+				price: 600,
+				scale: 120,
+				desc: "allows you to move at normal speed in snow",
+				coldM: 1
+			},
+			{
+				id: 5,
+				name: "Cowboy Hat",
+				price: 1000,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 4,
+				name: "Ranger Hat",
+				price: 2000,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 18,
+				name: "Explorer Hat",
+				price: 2000,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 31,
+				name: "Flipper Hat",
+				price: 2500,
+				scale: 120,
+				desc: "have more control while in water",
+				watrImm: true
+			},
+			{
+				id: 1,
+				name: "Marksman Cap",
+				price: 3000,
+				scale: 120,
+				desc: "increases arrow speed and range",
+				aMlt: 1.3
+			},
+			{
+				id: 10,
+				name: "Bush Gear",
+				price: 3000,
+				scale: 160,
+				desc: "allows you to disguise yourself as a bush"
+			},
+			{
+				id: 48,
+				name: "Halo",
+				price: 3000,
+				scale: 120,
+				desc: "no effect"
+			},
+			{
+				id: 6,
+				name: "Soldier Helmet",
+				price: 4000,
+				scale: 120,
+				desc: "reduces damage taken but slows movement",
+				spdMult: 0.94,
+				dmgMult: 0.75
+			},
+			{
+				id: 23,
+				name: "Anti Venom Gear",
+				price: 4000,
+				scale: 120,
+				desc: "makes you immune to poison",
+				poisonRes: 1
+			},
+			{
+				id: 13,
+				name: "Medic Gear",
+				price: 5000,
+				scale: 110,
+				desc: "slowly regenerates health over time",
+				healthRegen: 3
+			},
+			{
+				id: 9,
+				name: "Miners Helmet",
+				price: 5000,
+				scale: 120,
+				desc: "earn 1 extra gold per resource",
+				extraGold: 1
+			},
+			{
+				id: 32,
+				name: "Musketeer Hat",
+				price: 5000,
+				scale: 120,
+				desc: "reduces cost of projectiles",
+				projCost: 0.5
+			},
+			{
+				id: 7,
+				name: "Bull Helmet",
+				price: 6000,
+				scale: 120,
+				desc: "increases damage done but drains health",
+				healthRegen: -5,
+				dmgMultO: 1.5,
+				spdMult: 0.96
+			},
+			{
+				id: 22,
+				name: "Emp Helmet",
+				price: 6000,
+				scale: 120,
+				desc: "turrets won't attack but you move slower",
+				antiTurret: 1,
+				spdMult: 0.7
+			},
+			{
+				id: 12,
+				name: "Booster Hat",
+				price: 6000,
+				scale: 120,
+				desc: "increases your movement speed",
+				spdMult: 1.16
+			},
+			{
+				id: 26,
+				name: "Barbarian Armor",
+				price: 8000,
+				scale: 120,
+				desc: "knocks back enemies that attack you",
+				dmgK: 0.6
+			},
+			{
+				id: 21,
+				name: "Plague Mask",
+				price: 10000,
+				scale: 120,
+				desc: "melee attacks deal poison damage",
+				poisonDmg: 5,
+				poisonTime: 6
+			},
+			{
+				id: 46,
+				name: "Bull Mask",
+				price: 10000,
+				scale: 120,
+				desc: "bulls won't target you unless you attack them",
+				bullRepel: 1
+			},
+			{
+				id: 14,
+				name: "Windmill Hat",
+				topSprite: true,
+				price: 10000,
+				scale: 120,
+				desc: "generates points while worn",
+				pps: 1.5
+			},
+			{
+				id: 11,
+				name: "Spike Gear",
+				topSprite: true,
+				price: 10000,
+				scale: 120,
+				desc: "deal damage to players that damage you",
+				dmg: 0.45
+			},
+			{
+				id: 53,
+				name: "Turret Gear",
+				topSprite: true,
+				price: 10000,
+				scale: 120,
+				desc: "you become a walking turret",
+				turret: {
+					proj: 1,
+					range: 700,
+					rate: 2500
+				},
+				spdMult: 0.7
+			},
+			{
+				id: 20,
+				name: "Samurai Armor",
+				price: 12000,
+				scale: 120,
+				desc: "increased attack speed and fire rate",
+				atkSpd: 0.78
+			},
+			{
+				id: 58,
+				name: "Dark Knight",
+				price: 12000,
+				scale: 120,
+				desc: "restores health when you deal damage",
+				healD: 0.4
+			},
+			{
+				id: 27,
+				name: "Scavenger Gear",
+				price: 15000,
+				scale: 120,
+				desc: "earn double points for each kill",
+				kScrM: 2
+			},
+			{
+				id: 40,
+				name: "Tank Gear",
+				price: 15000,
+				scale: 120,
+				desc: "increased damage to buildings but slower movement",
+				spdMult: 0.3,
+				bDmg: 3.3
+			},
+			{
+				id: 52,
+				name: "Thief Gear",
+				price: 15000,
+				scale: 120,
+				desc: "steal half of a players gold when you kill them",
+				goldSteal: 0.5
+			},
+			{
+				id: 55,
+				name: "Bloodthirster",
+				price: 20000,
+				scale: 120,
+				desc: "Restore Health when dealing damage. And increased damage",
+				healD: 0.25,
+				dmgMultO: 1.2
+			},
+			{
+				id: 56,
+				name: "Assassin Gear",
+				price: 20000,
+				scale: 120,
+				desc: "Go invisible when not moving. Can't eat. Increased speed",
+				noEat: true,
+				spdMult: 1.1,
+				invisTimer: 1000
+			}
 		],
 		accessories: [
-			{ id: 12, name: "Snowball", price: 1000, scale: 105, xOff: 18, desc: "no effect" },
-			{ id: 9, name: "Tree Cape", price: 1000, scale: 90, desc: "no effect" },
-			{ id: 10, name: "Stone Cape", price: 1000, scale: 90, desc: "no effect" },
-			{ id: 3, name: "Cookie Cape", price: 1500, scale: 90, desc: "no effect" },
-			{ id: 8, name: "Cow Cape", price: 2000, scale: 90, desc: "no effect" },
-			{ id: 11, name: "Monkey Tail", price: 2000, scale: 97, xOff: 25, desc: "Super speed but reduced damage", spdMult: 1.35, dmgMultO: 0.2 },
-			{ id: 17, name: "Apple Basket", price: 3000, scale: 80, xOff: 12, desc: "slowly regenerates health over time", healthRegen: 1 },
-			{ id: 6, name: "Winter Cape", price: 3000, scale: 90, desc: "no effect" },
-			{ id: 4, name: "Skull Cape", price: 4000, scale: 90, desc: "no effect" },
-			{ id: 5, name: "Dash Cape", price: 5000, scale: 90, desc: "no effect" },
-			{ id: 2, name: "Dragon Cape", price: 6000, scale: 90, desc: "no effect" },
-			{ id: 1, name: "Super Cape", price: 8000, scale: 90, desc: "no effect" },
-			{ id: 7, name: "Troll Cape", price: 8000, scale: 90, desc: "no effect" },
-			{ id: 14, name: "Thorns", price: 10000, scale: 115, xOff: 20, desc: "no effect" },
-			{ id: 15, name: "Blockades", price: 10000, scale: 95, xOff: 15, desc: "no effect" },
-			{ id: 20, name: "Devils Tail", price: 10000, scale: 95, xOff: 20, desc: "no effect" },
-			{ id: 16, name: "Sawblade", price: 12000, scale: 90, spin: true, xOff: 0, desc: "deal damage to players that damage you", dmg: 0.15 },
-			{ id: 13, name: "Angel Wings", price: 15000, scale: 138, xOff: 22, desc: "slowly regenerates health over time", healthRegen: 3 },
-			{ id: 19, name: "Shadow Wings", price: 15000, scale: 138, xOff: 22, desc: "increased movement speed", spdMult: 1.1 },
-			{ id: 18, name: "Blood Wings", price: 20000, scale: 178, xOff: 26, desc: "restores health when you deal damage", healD: 0.2 },
-			{ id: 21, name: "Corrupt X Wings", price: 20000, scale: 178, xOff: 26, desc: "deal damage to players that damage you", dmg: 0.25 }
+			{
+				id: 12,
+				name: "Snowball",
+				price: 1000,
+				scale: 105,
+				xOff: 18,
+				desc: "no effect"
+			},
+			{
+				id: 9,
+				name: "Tree Cape",
+				price: 1000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 10,
+				name: "Stone Cape",
+				price: 1000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 3,
+				name: "Cookie Cape",
+				price: 1500,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 8,
+				name: "Cow Cape",
+				price: 2000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 11,
+				name: "Monkey Tail",
+				price: 2000,
+				scale: 97,
+				xOff: 25,
+				desc: "Super speed but reduced damage",
+				spdMult: 1.35,
+				dmgMultO: 0.2
+			},
+			{
+				id: 17,
+				name: "Apple Basket",
+				price: 3000,
+				scale: 80,
+				xOff: 12,
+				desc: "slowly regenerates health over time",
+				healthRegen: 1
+			},
+			{
+				id: 6,
+				name: "Winter Cape",
+				price: 3000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 4,
+				name: "Skull Cape",
+				price: 4000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 5,
+				name: "Dash Cape",
+				price: 5000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 2,
+				name: "Dragon Cape",
+				price: 6000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 1,
+				name: "Super Cape",
+				price: 8000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 7,
+				name: "Troll Cape",
+				price: 8000,
+				scale: 90,
+				desc: "no effect"
+			},
+			{
+				id: 14,
+				name: "Thorns",
+				price: 10000,
+				scale: 115,
+				xOff: 20,
+				desc: "no effect"
+			},
+			{
+				id: 15,
+				name: "Blockades",
+				price: 10000,
+				scale: 95,
+				xOff: 15,
+				desc: "no effect"
+			},
+			{
+				id: 20,
+				name: "Devils Tail",
+				price: 10000,
+				scale: 95,
+				xOff: 20,
+				desc: "no effect"
+			},
+			{
+				id: 16,
+				name: "Sawblade",
+				price: 12000,
+				scale: 90,
+				spin: true,
+				xOff: 0,
+				desc: "deal damage to players that damage you",
+				dmg: 0.15
+			},
+			{
+				id: 13,
+				name: "Angel Wings",
+				price: 15000,
+				scale: 138,
+				xOff: 22,
+				desc: "slowly regenerates health over time",
+				healthRegen: 3
+			},
+			{
+				id: 19,
+				name: "Shadow Wings",
+				price: 15000,
+				scale: 138,
+				xOff: 22,
+				desc: "increased movement speed",
+				spdMult: 1.1
+			},
+			{
+				id: 18,
+				name: "Blood Wings",
+				price: 20000,
+				scale: 178,
+				xOff: 26,
+				desc: "restores health when you deal damage",
+				healD: 0.2
+			},
+			{
+				id: 21,
+				name: "Corrupt X Wings",
+				price: 20000,
+				scale: 178,
+				xOff: 26,
+				desc: "deal damage to players that damage you",
+				dmg: 0.25
+			}
 		]
 	}
 	for (let i = 0; i < store.hats.length; ++i) {
@@ -802,9 +1239,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		customStoreScrollBar.style.height = `${elementHeight * 4}px`
 		customStoreScrollBar.style.marginTop = `${elementHeight * currentShopEle}px`
 		customStoreScrollBar.style.display = elements.length <= 4 ? "none" : "block"
-		if (win.recorder) {
-			win.updateStoreData = [currentStoreIndex, storeArray, elements.length, currentShopEle]
-			win.sendToLocal("addData", [
+		if (unsafeWindow.recorder) {
+			unsafeWindow.updateStoreData = [currentStoreIndex, storeArray, elements.length, currentShopEle]
+			unsafeWindow.sendToLocal("addData", [
 				Date.now().toString(),
 				{ type: "updateStore", data: [currentStoreIndex, storeArray, elements.length, currentShopEle] }
 			])
@@ -829,10 +1266,10 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 			var index = currentStoreIndex
 			tmpArray = index ? customStore.accessories : customStore.hats
 			totalShopEle = tmpArray.length
-			if(elementID("addEdit")) addEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("reloadEdit")) reloadEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("importBut")) importBut.style.display = customStoreButton.style.background == "red" ? null : "none"
-			if(elementID("exportBut")) exportBut.style.display = customStoreButton.style.background == "red" ? null : "none"
+			addEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
+			reloadEdit.style.display = customStoreButton.style.background == "red" ? null : "none"
+			importBut.style.display = customStoreButton.style.background == "red" ? null : "none"
+			exportBut.style.display = customStoreButton.style.background == "red" ? null : "none"
 			customStoreHolder.style.overflowY = customStoreButton.style.background == "red" ? null : "hidden"
 			Array.from(tmpArray).forEach((ele) => {
 				let tmp = document.createElement("div")
@@ -843,10 +1280,10 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 				let childtmp
 				if (!ele.blank) {
 					tmp.onmouseout = () => {
-						if(win.showItemInfo) win.showItemInfo()
+						if(unsafeWindow.showItemInfo) unsafeWindow.showItemInfo()
 					}
 					tmp.onmouseover = () => {
-						if(win.showItemInfo) win.showItemInfo(ele, false, true)
+						if(unsafeWindow.showItemInfo) unsafeWindow.showItemInfo(ele, false, true)
 					}
 
 					childtmp = document.createElement("img")
@@ -885,7 +1322,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Buy"
 						childtmp.onclick = () => {
-							if(win.storeBuy) win.storeBuy(ele.id, index)
+							if(unsafeWindow.storeBuy) unsafeWindow.storeBuy(ele.id, index)
 						}
 						tmp.appendChild(childtmp)
 
@@ -899,7 +1336,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Unequip"
 						childtmp.onclick = () => {
-							if(win.storeEquip) win.storeEquip(0, index)
+							if(unsafeWindow.storeEquip) unsafeWindow.storeEquip(0, index)
 						}
 						tmp.appendChild(childtmp)
 					} else {
@@ -908,7 +1345,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.style = "margin-top: 5px"
 						childtmp.textContent = "Equip"
 						childtmp.onclick = () => {
-							if(win.storeEquip) win.storeEquip(ele.id, index)
+							if(unsafeWindow.storeEquip) unsafeWindow.storeEquip(ele.id, index)
 						}
 						tmp.appendChild(childtmp)
 					}
@@ -919,22 +1356,20 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 				if (sortable != null) {
 					sortable.destroy()
 				}
-				if (typeof Sortable !== 'undefined') {
-					sortable = new Sortable.create(customStoreHolder, {
-						animation: 150,
-						onUpdate: (event) => {
-							let arr = index ? customStore.accessories : customStore.hats
-							if (event.newIndex >= arr.length) {
-								var k = event.newIndex - arr.length + 1
-								while (k--) {
-									arr.push(undefined)
-								}
+				sortable = new Sortable.create(customStoreHolder, {
+					animation: 150,
+					onUpdate: (event) => {
+						let arr = index ? customStore.accessories : customStore.hats
+						if (event.newIndex >= arr.length) {
+							var k = event.newIndex - arr.length + 1
+							while (k--) {
+								arr.push(undefined)
 							}
-							arr.splice(event.newIndex, 0, arr.splice(event.oldIndex, 1)[0])
-							localStorage.setItem("customStore", JSON.stringify(customStore))
 						}
-					})
-				}
+						arr.splice(event.newIndex, 0, arr.splice(event.oldIndex, 1)[0])
+						localStorage.setItem("customStore", JSON.stringify(customStore))
+					}
+				})
 			} else {
 				if (sortable != null) {
 					sortable.destroy()
@@ -949,20 +1384,20 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 	customStoreButton.className = "uiElement gameButton"
 	customStoreButton.innerHTML = `<i class="material-icons" style="font-size:40px; vertical-align:middle">store</i>`
 	customStoreButton.onclick = () => {
-		if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
+		if (elementID("storeMenu").style.display != "block") {
 			elementID("storeMenu").style.display = "block"
 			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
 			if(elementID("chatBox")) elementID("chatBox").value = ""
 			if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
 			generateStoreList()
-		} else if(elementID("storeMenu")) {
+		} else {
 			elementID("storeMenu").style.display = "none"
 			customStoreButton.style.background = null
 		}
 	}
 	customStoreButton.oncontextmenu = (event) => {
 		event.preventDefault()
-		if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
+		if (elementID("storeMenu").style.display != "block") {
 			elementID("storeMenu").style.display = "block"
 			if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
 			if(elementID("chatBox")) elementID("chatBox").value = ""
@@ -971,7 +1406,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 				customStoreButton.style.background = "red"
 			}
 			generateStoreList()
-		} else if(elementID("storeMenu")) {
+		} else {
 			elementID("storeMenu").style.display = "none"
 			customStoreButton.style.background = null
 		}
@@ -1003,24 +1438,20 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		})
 	})
 	const addEdit = document.createElement("div")
-	addEdit.id = "addEdit"
 	addEdit.className = "storeTab"
 	addEdit.textContent = "Add Blank"
 	addEdit.style.display = "none"
 	addEdit.style.marginLeft = "10px"
 	const reloadEdit = document.createElement("div")
-	reloadEdit.id = "reloadEdit"
 	reloadEdit.className = "storeTab"
 	reloadEdit.textContent = "Reload"
 	reloadEdit.style.display = "none"
 	reloadEdit.style.marginLeft = "10px"
 	const importBut = document.createElement("div")
-	importBut.id = "importBut"
 	importBut.className = "storeTab"
 	importBut.textContent = "Import"
 	importBut.style.marginLeft = "10px"
 	const exportBut = document.createElement("div")
-	exportBut.id = "exportBut"
 	exportBut.className = "storeTab"
 	exportBut.textContent = "Export"
 	exportBut.style.marginLeft = "10px"
@@ -1054,10 +1485,8 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		storeTab2.parentNode.appendChild(reloadEdit)
 		reloadEdit.onclick = () => {
 			let realStore = JSON.parse(localStorage.getItem("realStore"))
-			if(realStore) {
-				currentStoreIndex ? (customStore.accessories = realStore.accessories) : (customStore.hats = realStore.hats)
-				localStorage.setItem("customStore", JSON.stringify(customStore))
-			}
+			currentStoreIndex ? (customStore.accessories = realStore.accessories) : (customStore.hats = realStore.hats)
+			localStorage.setItem("customStore", JSON.stringify(customStore))
 			currentShopEle = 0
 			generateStoreList()
 		}
@@ -1093,17 +1522,17 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		}
 	})
 
-	win.addEventListener("keydown", (event) => {
+	unsafeWindow.addEventListener("keydown", (event) => {
 		if (event.code == "Escape") {
 			customStoreButton.style.background = null
-		} else if (event.code == "KeyB" && document.activeElement && document.activeElement.tagName != "INPUT" && inGame) {
-			if (elementID("storeMenu") && elementID("storeMenu").style.display != "block") {
+		} else if (event.code == "KeyB" && document.activeElement.tagName != "INPUT" && inGame) {
+			if (elementID("storeMenu").style.display != "block") {
 				elementID("storeMenu").style.display = "block"
 				if(elementID("allianceMenu")) elementID("allianceMenu").style.display = "none"
 				if(elementID("chatBox")) elementID("chatBox").value = ""
 				if(elementID("chatHolder")) elementID("chatHolder").style.display = "none"
 				generateStoreList()
-			} else if(elementID("storeMenu")) {
+			} else {
 				elementID("storeMenu").style.display = "none"
 				customStoreButton.style.background = null
 			}
@@ -1161,7 +1590,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		if (event.wheelDelta > 0) {
 			currentAllianceEle = Math.max(0, currentAllianceEle - 5)
 		} else {
-			currentAllianceEle = Math.min(Math.max(0, totalAllianceEle - 5), currentAllianceEle + 5)
+			currentAllianceEle = Math.min(totalAllianceEle - 5, currentAllianceEle + 5)
 		}
 		updateAllianceScroll()
 	})
@@ -1195,9 +1624,9 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 		customAllianceScrollBar.style.marginTop = `${elementHeight * currentAllianceEle}px`
 		customAllianceScrollBar.style.display = elements.length <= 5 ? "none" : "block"
 
-		if (win.recorder) {
-			win.updateAllianceData = [myPlayer.team, allianceArray, elements.length, currentAllianceEle]
-			win.sendToLocal("addData", [
+		if (unsafeWindow.recorder) {
+			unsafeWindow.updateAllianceData = [myPlayer.team, allianceArray, elements.length, currentAllianceEle]
+			unsafeWindow.sendToLocal("addData", [
 				Date.now().toString(),
 				{ type: "updateAlliance", data: [myPlayer.team, allianceArray, elements.length, currentAllianceEle] }
 			])
@@ -1212,8 +1641,8 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 
 	function showAllianceMenu() {
 		if (inGame) {
-			if (win.recorder) {
-				win.sendToLocal("addData", [Date.now().toString(), { type: "changeInputText", data: ["allianceInput", ""] }])
+			if (unsafeWindow.recorder) {
+				unsafeWindow.sendToLocal("addData", [Date.now().toString(), { type: "changeInputText", data: ["allianceInput", ""] }])
 			}
 			while (customAllianceHolder.hasChildNodes()) {
 				customAllianceHolder.removeChild(customAllianceHolder.lastChild)
@@ -1236,7 +1665,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 						childtmp.className = "joinAlBtn"
 						childtmp.textContent = "Kick"
 						childtmp.onclick = function () {
-							if(win.kickFromClan) win.kickFromClan(alliancePlayersArray[i])
+							unsafeWindow.kickFromClan(alliancePlayersArray[i])
 						}
 						tmp.appendChild(childtmp)
 					}
@@ -1257,7 +1686,7 @@ console.log("MOD DOSYASI BASARIYLA CALISTI!");
 					childtmp.className = "joinAlBtn"
 					childtmp.textContent = "Join"
 					childtmp.onclick = function () {
-						if(win.sendJoin) win.sendJoin(i)
+						unsafeWindow.sendJoin(i)
 					}
 					tmp.appendChild(childtmp)
 				}
